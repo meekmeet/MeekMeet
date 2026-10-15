@@ -1,0 +1,12 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [monorepo]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Vercel production deploy
+        run: curl -sS -X POST "$DEPLOY_HOOK_URL" -o /dev/null -w "Vercel response: %{http_code}\n"
