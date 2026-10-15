@@ -8,5 +8,17 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Check secret is present
+        run: |
+          if [ -z "$DEPLOY_HOOK_URL" ]; then
+            echo "SECRET MISSING: DEPLOY_HOOK_URL is empty"
+            exit 1
+          fi
+          echo "secret present (length: ${#DEPLOY_HOOK_URL})"
+          case "$DEPLOY_HOOK_URL" in
+            *[!A-Za-z0-9~._\?&=/:%+-]*) echo "WARNING: secret contains whitespace or unusual characters" ;;
+            *) echo "secret format looks clean" ;;
+          esac
+
       - name: Trigger Vercel production deploy
         run: curl -sS -X POST "$DEPLOY_HOOK_URL" -o /dev/null -w "Vercel response: %{http_code}\n"
