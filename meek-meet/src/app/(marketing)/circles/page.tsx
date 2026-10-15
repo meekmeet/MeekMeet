@@ -74,8 +74,10 @@ export default async function CirclesPage({ searchParams }: Props) {
             Circles Near You
           </h1>
           <p className="text-lg text-charcoal-muted max-w-2xl mx-auto mb-10">
-            Warm gatherings of faith, happening under the new moon across Australia.
-            Each circle is shepherded by a faithful leader from your community.
+            Meek Meet is an Australia-first initiative — warm gatherings of faith under
+            the new moon, opening across Australia and shepherded by faithful leaders
+            from each community. As demand grows, new circles form in new regions,
+            online and in person.
           </p>
           <SearchForm />
         </div>

@@ -71,6 +71,15 @@ export default function MediaHero() {
           and remembering what humanity can do when it stops dividing itself.
         </motion.p>
 
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.9, delay: 0.75 }}
+          className="text-xs tracking-[0.25em] uppercase text-sage-dark font-medium mb-10"
+        >
+          Born in Australia · Expanding as communities form
+        </motion.p>
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

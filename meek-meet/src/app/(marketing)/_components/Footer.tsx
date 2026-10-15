@@ -68,9 +68,9 @@ export default function Footer() {
               <li className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 text-charcoal-muted mt-0.5" strokeWidth={1.5} />
                 <span className="text-sm text-charcoal-muted">
-                  Serving communities across
+                  An Australia-first initiative —
                   <br />
-                  Australia and beyond
+                  expanding as demand grows
                 </span>
               </li>
               <li className="flex items-center gap-3">

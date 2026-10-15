@@ -94,7 +94,7 @@ export default function HeroSection() {
           transition={{ duration: 0.8, delay: 0.9 }}
           className="text-sm tracking-[0.15em] uppercase text-sage-dark mb-12 font-medium"
         >
-          From Australia — Reaching the World
+          Australia-First · Expanding As Demand Grows
         </motion.p>
 
         <motion.div
