@@ -4,6 +4,25 @@ import { ApproveButton, RejectButton } from "./_components/action-buttons";
 
 export const revalidate = 0;
 
+interface ShepherdApplication {
+  id: string;
+  user_id: string;
+  status: "pending" | "approved" | "rejected" | string;
+  full_name: string;
+  email: string;
+  location: string;
+  denomination: string;
+  wwcc_number?: string | null;
+  wwcc_expiry?: string | null;
+  police_check_date?: string | null;
+  first_aid_expiry?: string | null;
+  emergency_name?: string | null;
+  emergency_phone?: string | null;
+  reference_name?: string | null;
+  reference_contact?: string | null;
+  created_at: string;
+}
+
 export default async function AdminApplicationsPage({
   searchParams,
 }: {
@@ -11,11 +30,11 @@ export default async function AdminApplicationsPage({
 }) {
   const { status } = await searchParams;
 
-  let applications: any[] = [];
+  let applications: ShepherdApplication[] = [];
   let error: string | null = null;
 
   try {
-    applications = await getApplications(status);
+    applications = (await getApplications(status)) as ShepherdApplication[];
   } catch (err) {
     error = err instanceof Error ? err.message : String(err);
   }
@@ -79,7 +98,7 @@ export default async function AdminApplicationsPage({
         </div>
       ) : (
         <div className="space-y-4">
-          {applications.map((app: any) => (
+          {applications.map((app) => (
             <div
               key={app.id}
               className="bg-cream-warm rounded-2xl border border-border-soft p-6"

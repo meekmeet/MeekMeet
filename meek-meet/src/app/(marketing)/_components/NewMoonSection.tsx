@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useInView } from "framer-motion";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useSyncExternalStore } from "react";
 import { Moon, Clock, MapPin, Sparkles, BookOpen } from "lucide-react";
 import AsciiArt from "./AsciiArt";
 
@@ -47,16 +47,19 @@ function getCountdown(target: Date) {
   return { days, hours, minutes, seconds };
 }
 
+// Hydration flag: false on the server, true after the client mounts.
+const subscribeToNothing = () => () => {};
+const getClientSnapshot = () => true;
+const getServerSnapshot = () => false;
+
 export default function NewMoonSection() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const [nextNewMoon] = useState(() => getNextNewMoon());
-  const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-  const [mounted, setMounted] = useState(false);
+  const [countdown, setCountdown] = useState(() => getCountdown(nextNewMoon));
+  const mounted = useSyncExternalStore(subscribeToNothing, getClientSnapshot, getServerSnapshot);
 
   useEffect(() => {
-    setMounted(true);
-    setCountdown(getCountdown(nextNewMoon));
     const timer = setInterval(() => {
       setCountdown(getCountdown(nextNewMoon));
     }, 1000);
@@ -116,7 +119,7 @@ export default function NewMoonSection() {
               </p>
               <p className="text-sm text-charcoal-muted">— Psalm 81:3-4</p>
               <p className="text-sm text-charcoal-muted mt-2">
-                From ancient Israel to modern Australia, the new moon has called God's people 
+                From ancient Israel to modern Australia, the new moon has called God&rsquo;s people 
                 to pause, reflect, and begin again. We honour this rhythm.
               </p>
             </div>

@@ -23,6 +23,7 @@ interface Meeting {
 
 export default function MeetingsPage({ params }: Props) {
   const [circleId, setCircleId] = useState<string | null>(null);
+  const [circleKind, setCircleKind] = useState<"global" | "local" | null>(null);
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -59,11 +60,26 @@ export default function MeetingsPage({ params }: Props) {
     params.then(({ circleId: id }) => {
       setCircleId(id);
       loadMeetings(id);
+      // Virtual-first circles default new meetings to digital.
+      supabase
+        .from("circles")
+        .select("kind")
+        .eq("id", id)
+        .single()
+        .then(({ data }) => {
+          const kind = data?.kind === "global" ? "global" : "local";
+          setCircleKind(kind);
+          setMeetingType(kind === "global" ? "digital" : "in_person");
+        });
     });
-  }, [params, loadMeetings]);
+  }, [params, loadMeetings, supabase]);
 
   const handleAdd = () => {
     if (!date || !time || !circleId) return;
+    if (meetingType === "digital" && !joinUrl.trim()) {
+      setError("A join URL is required for digital meetings — e.g. a Zoom or Google Meet link.");
+      return;
+    }
     const scheduledAt = new Date(`${date}T${time}`).toISOString();
     setError(null);
 
@@ -85,7 +101,7 @@ export default function MeetingsPage({ params }: Props) {
         setLocationName("");
         setLocationAddress("");
         setNotes("");
-        setMeetingType("in_person");
+        setMeetingType(circleKind === "global" ? "digital" : "in_person");
         setJoinUrl("");
         setShowForm(false);
         await loadMeetings(circleId);
@@ -246,15 +262,20 @@ export default function MeetingsPage({ params }: Props) {
             <div>
               <label className="text-sm text-charcoal-light font-medium mb-1.5 block flex items-center gap-1.5">
                 <Video className="w-3.5 h-3.5" strokeWidth={1.5} />
-                Join URL
+                Join URL {meetingType === "digital" && <span className="text-terracotta">*</span>}
               </label>
               <input
                 type="url"
                 value={joinUrl}
                 onChange={(e) => setJoinUrl(e.target.value)}
-                placeholder="https://..."
+                placeholder="https://zoom.us/j/... or https://meet.google.com/..."
+                required={meetingType === "digital"}
                 className="w-full px-4 py-3 bg-cream border border-border-soft rounded-xl focus:border-terracotta focus:outline-none text-sm"
               />
+              <p className="text-xs text-charcoal-muted mt-1.5">
+                Paste a Zoom or Google Meet link. It is only shown to members who
+                RSVP &ldquo;Going&rdquo; — never published publicly.
+              </p>
             </div>
           )}
 
@@ -271,7 +292,7 @@ export default function MeetingsPage({ params }: Props) {
 
           <button
             onClick={handleAdd}
-            disabled={isPending || !date || !time || !circleId}
+            disabled={isPending || !date || !time || !circleId || (meetingType === "digital" && !joinUrl.trim())}
             className="w-full py-3 bg-midnight text-cream rounded-full hover:bg-midnight-soft transition-all text-sm font-medium disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}

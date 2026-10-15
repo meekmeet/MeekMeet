@@ -14,8 +14,9 @@ export default async function AdminShepherdsPage() {
   ]);
 
   const circlesByUser = new Map<string, string[]>();
-  for (const link of links ?? []) {
-    const name = (link.circles as any)?.name;
+  for (const link of (links ?? []) as { user_id: string; circles?: { name: string | null } | { name: string | null }[] | null }[]) {
+    const rel = link.circles;
+    const name = (Array.isArray(rel) ? rel[0]?.name : rel?.name) ?? null;
     if (!name) continue;
     const list = circlesByUser.get(link.user_id) ?? [];
     list.push(name);

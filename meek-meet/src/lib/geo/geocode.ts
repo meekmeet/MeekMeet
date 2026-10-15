@@ -9,6 +9,24 @@ export interface GeocodeResult {
   postalCode?: string;
 }
 
+interface GeocodeAddressComponent {
+  long_name: string;
+  short_name: string;
+  types: string[];
+}
+
+interface GeocodeApiResult {
+  formatted_address: string;
+  geometry: { location: { lat: number; lng: number } };
+  address_components: GeocodeAddressComponent[];
+}
+
+interface GeocodeApiResponse {
+  status: string;
+  results?: GeocodeApiResult[];
+  error_message?: string;
+}
+
 export async function geocodeAddress(address: string): Promise<GeocodeResult | null> {
   const apiKey = process.env.GOOGLE_MAPS_API_KEY;
   if (!apiKey) {
@@ -23,7 +41,7 @@ export async function geocodeAddress(address: string): Promise<GeocodeResult | n
     url.searchParams.set("region", "au");
 
     const res = await fetch(url.toString());
-    const data = await res.json();
+    const data = (await res.json()) as GeocodeApiResponse;
 
     if (data.status !== "OK" || !data.results?.[0]) {
       console.error("Geocoding failed:", data.status, data.error_message);
@@ -34,7 +52,7 @@ export async function geocodeAddress(address: string): Promise<GeocodeResult | n
     const location = result.geometry.location;
 
     const component = (type: string) =>
-      result.address_components.find((c: any) => c.types.includes(type))?.long_name;
+      result.address_components.find((c) => c.types.includes(type))?.long_name;
 
     return {
       latitude: location.lat,

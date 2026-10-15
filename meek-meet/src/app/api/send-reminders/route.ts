@@ -7,6 +7,29 @@ import { isAuthorizedCron } from "@/lib/cron-auth";
 // This endpoint sends reminder emails for meetings happening tomorrow.
 // It runs with the Supabase service role so it can read across RLS boundaries.
 // Trigger it daily via Vercel Cron (vercel.json) or an external scheduler.
+
+interface ReminderProfile {
+  email: string | null;
+  full_name: string | null;
+}
+
+interface ReminderRsvp {
+  user_id: string;
+  status: string;
+  profiles?: ReminderProfile | ReminderProfile[] | null;
+}
+
+interface ReminderMeeting {
+  scheduled_at: string;
+  location_name?: string | null;
+  location_address?: string | null;
+  circles?: { name: string | null } | { name: string | null }[] | null;
+  rsvps?: ReminderRsvp[] | null;
+}
+
+function first<T>(rel: T | T[] | null | undefined): T | null {
+  return Array.isArray(rel) ? (rel[0] ?? null) : (rel ?? null);
+}
 export async function GET(request: NextRequest) {
   // Authorize via CRON_SECRET Bearer header (sent automatically by Vercel Cron).
   // The endpoint is idempotent; additional rate limiting can be added later.
@@ -37,13 +60,14 @@ export async function GET(request: NextRequest) {
 
   let sent = 0;
 
-  for (const meeting of meetings) {
+  for (const meeting of (meetings as ReminderMeeting[])) {
     const goingRsvps =
-      (meeting as any).rsvps?.filter((r: any) => r.status === "going") ?? [];
+      meeting.rsvps?.filter((r) => r.status === "going") ?? [];
 
     for (const rsvp of goingRsvps) {
-      const email = rsvp.profiles?.email;
-      const name = rsvp.profiles?.full_name ?? "Friend";
+      const profile = first(rsvp.profiles);
+      const email = profile?.email;
+      const name = profile?.full_name ?? "Friend";
       if (!email) continue;
 
       const meetingDate = new Date(meeting.scheduled_at).toLocaleDateString(
@@ -63,7 +87,7 @@ export async function GET(request: NextRequest) {
       );
 
       const safeName = escapeHtml(name);
-      const safeCircleName = escapeHtml((meeting as any).circles?.name ?? "Your circle");
+      const safeCircleName = escapeHtml(first(meeting.circles)?.name ?? "Your circle");
       const safeLocationName = escapeHtml(meeting.location_name ?? "");
       const safeLocationAddress = escapeHtml(meeting.location_address ?? "");
 

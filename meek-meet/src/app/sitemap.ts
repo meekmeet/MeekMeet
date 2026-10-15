@@ -10,6 +10,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/shepherd",
     "/shepherd/apply",
     "/voice",
+    "/media",
     "/privacy",
     "/terms",
     "/delete-account",

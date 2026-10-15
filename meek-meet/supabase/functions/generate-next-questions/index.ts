@@ -15,6 +15,24 @@ interface GeneratedResult {
   questions: GeneratedQuestion[]
 }
 
+interface InsightTheme {
+  theme: string
+  sentiment: string
+  count: number
+  sample_quotes?: string[] | null
+}
+
+interface InsightConsensusItem {
+  statement: string
+  agreement_level: number
+}
+
+interface CircleInsight {
+  top_themes?: InsightTheme[] | null
+  consensus_items?: InsightConsensusItem[] | null
+  raw_summary?: string | null
+}
+
 const SYSTEM_PROMPT = `You are a facilitator for Meek Meet circles.
 You will receive a circle's recent insight summary: its top themes, consensus items, and anonymised quotes.
 Your job is to generate 3-5 follow-up discussion questions that help the circle go deeper on the most important or unresolved issues.
@@ -65,11 +83,13 @@ serve(async (req) => {
 
     const supabase = createClient(SB_URL, SB_SECRET_KEY)
 
-    const { data: insight, error: insightError } = await supabase
+    const { data: rawInsight, error: insightError } = await supabase
       .from('circle_insights')
       .select('*')
       .eq('id', insight_id)
       .single()
+
+    const insight = rawInsight as CircleInsight | null
 
     if (insightError || !insight) {
       return new Response(
@@ -80,13 +100,13 @@ serve(async (req) => {
 
     const promptText = `Circle insight summary:\n\nTop themes:\n${(insight.top_themes ?? [])
       .map(
-        (t: any) =>
+        (t) =>
           `- ${t.theme} (${t.sentiment}, ${t.count} mentions). Quotes: ${(t.sample_quotes ?? [])
             .slice(0, 2)
             .join('; ')}`
       )
       .join('\n')}\n\nConsensus items:\n${(insight.consensus_items ?? [])
-      .map((c: any) => `- ${c.statement} (${c.agreement_level}% agreement)`)
+      .map((c) => `- ${c.statement} (${c.agreement_level}% agreement)`)
       .join('\n')}\n\nSummary:\n${insight.raw_summary ?? ''}`
 
     const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {

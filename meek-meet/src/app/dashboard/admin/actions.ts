@@ -184,8 +184,7 @@ export async function getPendingDocuments() {
 
 export async function reviewDocument(
   documentId: string,
-  decision: "verified" | "rejected",
-  notes?: string
+  decision: "verified" | "rejected"
 ) {
   if (!isValidUuid(documentId)) throw new Error("Invalid document ID");
 

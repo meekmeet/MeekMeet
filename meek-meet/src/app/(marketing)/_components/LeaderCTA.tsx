@@ -46,12 +46,12 @@ export default function LeaderCTA() {
             </div>
             <p className="text-lg text-cream/70 leading-relaxed mb-6 font-light">
               Every movement begins with one person who says <em>yes</em>. As a
-              Meek Meet leader, you become the bridge between your community's
+              Meek Meet leader, you become the bridge between your community&rsquo;s
               quiet hopes and the change they long for.
             </p>
             <p className="text-cream/60 leading-relaxed mb-8">
               You will choose the gathering place, curate the questions, welcome
-              the conversation, and receive the stories that prove your community's
+              the conversation, and receive the stories that prove your community&rsquo;s
               needs are real and beautiful. You do not need to be loud.
               You need only be faithful.
             </p>

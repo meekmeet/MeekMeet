@@ -58,7 +58,21 @@ export default function AuthoritiesPage() {
   };
 
   useEffect(() => {
-    load();
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = await getAuthorities();
+        if (!cancelled) setAuthorities(data as Authority[]);
+      } catch (err) {
+        if (!cancelled)
+          setError(err instanceof Error ? err.message : "Failed to load authorities");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const handleCreate = () => {

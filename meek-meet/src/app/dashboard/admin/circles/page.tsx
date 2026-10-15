@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { MapPin, Users } from "lucide-react";
+import CircleOrganizerButton from "./_components/circle-organizer-button";
 
 export default async function AdminCirclesPage() {
   const supabase = await createClient();
@@ -7,10 +8,16 @@ export default async function AdminCirclesPage() {
   const [{ data: circles }, { data: links }] = await Promise.all([
     supabase
       .from("circles")
-      .select("id, name, location, is_active, created_at")
+      .select("id, name, location, kind, is_active, created_at")
       .order("created_at", { ascending: false }),
     supabase.from("circle_shepherds").select("circle_id"),
   ]);
+
+  // Global (virtual-first) circles listed first, then newest locals.
+  const sortedCircles = (circles ?? []).sort((a, b) => {
+    if (a.kind === b.kind) return 0;
+    return a.kind === "global" ? -1 : 1;
+  });
 
   const shepherdCounts = new Map<string, number>();
   for (const link of links ?? []) {
@@ -24,13 +31,17 @@ export default async function AdminCirclesPage() {
         Every circle across the community.
       </p>
 
+      <div className="mb-8">
+        <CircleOrganizerButton />
+      </div>
+
       {!circles || circles.length === 0 ? (
         <div className="text-center py-20 bg-cream-warm rounded-2xl border border-border-soft">
           <p className="text-charcoal-muted">No circles yet.</p>
         </div>
       ) : (
         <div className="space-y-4">
-          {circles.map((circle) => (
+          {sortedCircles.map((circle) => (
             <div
               key={circle.id}
               className="bg-cream-warm rounded-2xl border border-border-soft p-6"
@@ -39,6 +50,15 @@ export default async function AdminCirclesPage() {
                 <div className="space-y-2">
                   <div className="flex items-center gap-3">
                     <span className="text-sm text-charcoal font-medium">{circle.name}</span>
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-medium ${
+                        circle.kind === "global"
+                          ? "bg-sky-pale text-midnight"
+                          : "bg-wheat-pale text-wheat-dark"
+                      }`}
+                    >
+                      {circle.kind === "global" ? "Global" : "Local"}
+                    </span>
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-medium ${
                         circle.is_active

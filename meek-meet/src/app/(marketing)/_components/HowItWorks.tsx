@@ -90,7 +90,7 @@ export default function HowItWorks() {
             <span className="text-wheat text-lg">&#10022;</span>
           </div>
           <p className="text-lg text-charcoal-muted max-w-3xl mx-auto leading-relaxed font-light">
-            From one person's courage to a movement that reshapes neighbourhoods.
+            From one person&rsquo;s courage to a movement that reshapes neighbourhoods.
             This is the gentle path from faith to action.
           </p>
         </motion.div>

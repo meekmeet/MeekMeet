@@ -1,3 +1,26 @@
+# Edge function JWT policy.
+# Every caller (cron API routes via service-role key, pg_net DB triggers via
+# the Vault-stored service key) sends `Authorization: Bearer <service key>`,
+# so JWT verification stays ON for all functions. Defense in depth: the
+# functions also re-check the bearer token where noted in their source.
+# NOTE: this file is applied on `supabase functions deploy` — it does not
+# retroactively change live function config by itself.
 [functions.generate-news-questions]
+enabled = true
+verify_jwt = true
+
+[functions.generate-next-questions]
+enabled = true
+verify_jwt = true
+
+[functions.synthesize-meeting]
+enabled = true
+verify_jwt = true
+
+[functions.synthesize-circle]
+enabled = true
+verify_jwt = true
+
+[functions.synthesize-region]
 enabled = true
 verify_jwt = true

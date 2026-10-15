@@ -68,6 +68,37 @@ export default async function CircleDetailPage({ params }: Props) {
     userRsvps = rsvps ?? [];
   }
 
+  // join_url never appears in the public view. For signed-in users, read
+  // meeting_type/join_url from the meetings table (RLS: authenticated) and
+  // only pass a join link down when this user has an active 'going' RSVP.
+  const goingMeetingIds = new Set(
+    userRsvps.filter((r) => r.status === "going").map((r) => r.meeting_id)
+  );
+  const joinLinks: Record<string, string> = {};
+  const digitalMeetingIds: string[] = [];
+  if (user && meetings && meetings.length > 0) {
+    const { data: meetingDetails } = await supabase
+      .from("meetings")
+      .select("id, meeting_type, join_url")
+      .in(
+        "id",
+        meetings.map((m) => m.id)
+      );
+    for (const m of meetingDetails ?? []) {
+      const type = m.meeting_type as string | null;
+      if (type === "digital" || type === "hybrid") {
+        digitalMeetingIds.push(m.id);
+      }
+      if (
+        goingMeetingIds.has(m.id) &&
+        typeof m.join_url === "string" &&
+        m.join_url
+      ) {
+        joinLinks[m.id] = m.join_url;
+      }
+    }
+  }
+
   const totalRoutineMinutes =
     (routines ?? []).reduce((sum, r) => sum + (r.duration_minutes ?? 0), 0);
 
@@ -133,6 +164,8 @@ export default async function CircleDetailPage({ params }: Props) {
                 }))
               }
               isAuthenticated={!!user}
+              joinLinks={joinLinks}
+              digitalMeetingIds={digitalMeetingIds}
             />
           </div>
         )}
@@ -209,7 +242,7 @@ export default async function CircleDetailPage({ params }: Props) {
           {user ? (
             <>
               <h2 className="font-serif text-2xl md:text-3xl text-cream mb-4">
-                You're connected
+                You&rsquo;re connected
               </h2>
               <p className="text-cream/60 max-w-md mx-auto mb-6">
                 Head to your dashboard to see all your upcoming gatherings and circle updates.

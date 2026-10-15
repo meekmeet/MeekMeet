@@ -1,4 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
+import { Globe, Video, ArrowRight } from "lucide-react";
+import Link from "next/link";
 import CircleCard from "../_components/circle-card";
 import SearchForm from "./_components/search-form";
 
@@ -45,6 +47,22 @@ export default async function CirclesPage({ searchParams }: Props) {
     console.error("Failed to fetch circles:", error);
   }
 
+  // Surface the global (virtual-first) circle above search results,
+  // but only when no search filters are actively narrowing the list.
+  let globalCircle: NonNullable<typeof circles>[number] | null = null;
+  if (!q && !location) {
+    const { data } = await supabase
+      .from("circles")
+      .select("*")
+      .eq("is_active", true)
+      .eq("kind", "global")
+      .limit(1)
+      .maybeSingle();
+    globalCircle = data;
+  }
+
+  const localCircles = (circles ?? []).filter((c) => c.id !== globalCircle?.id);
+
   return (
     <section className="min-h-screen pt-32 pb-20 bg-cream">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
@@ -62,9 +80,38 @@ export default async function CirclesPage({ searchParams }: Props) {
           <SearchForm />
         </div>
 
-        {circles && circles.length > 0 ? (
+        {globalCircle && (
+          <Link
+            href={`/circles/${globalCircle.slug}`}
+            className="group block bg-midnight rounded-3xl p-8 md:p-10 mb-12 card-warm grain-texture relative overflow-hidden"
+          >
+            <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-wheat/5 blur-[100px]" />
+            <div className="relative flex flex-col md:flex-row md:items-center gap-6 md:gap-10">
+              <div className="flex-1">
+                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sage/15 border border-sage/30 text-sage-light text-xs tracking-widest uppercase font-medium mb-4">
+                  <Globe className="w-3.5 h-3.5" strokeWidth={1.5} />
+                  Join from anywhere — online
+                </span>
+                <h2 className="font-serif text-3xl md:text-4xl text-cream mb-3 group-hover:text-wheat-light transition-colors duration-300">
+                  {globalCircle.name}
+                </h2>
+                <p className="text-cream/60 leading-relaxed max-w-2xl">
+                  {globalCircle.description ||
+                    "A warm virtual gathering under the new moon — open to everyone, wherever you are in the world."}
+                </p>
+              </div>
+              <div className="flex-shrink-0 flex items-center gap-3 px-6 py-3 bg-wheat text-midnight text-sm font-medium tracking-wide rounded-full group-hover:bg-wheat-light transition-all">
+                <Video className="w-4 h-4" strokeWidth={1.5} />
+                Join Online
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" strokeWidth={1.5} />
+              </div>
+            </div>
+          </Link>
+        )}
+
+        {localCircles.length > 0 ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {circles.map((circle, i) => (
+            {localCircles.map((circle, i) => (
               <CircleCard key={circle.id} circle={circle} index={i} />
             ))}
           </div>

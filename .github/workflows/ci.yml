@@ -22,6 +22,9 @@ jobs:
       - name: Build core package
         run: npm run build --workspace=@meekmeet/core
 
+      - name: Lint website
+        run: npm run lint --workspace=meek-meet
+
       - name: Build website
         run: npm run build --workspace=meek-meet
         env:

@@ -60,7 +60,9 @@ export default function ReportsPage() {
           <label className="text-sm text-charcoal-light font-medium mb-2 block">Time window</label>
           <select
             value={timeWindow}
-            onChange={(e) => setTimeWindow(e.target.value as any)}
+            onChange={(e) =>
+              setTimeWindow(e.target.value as "all_time" | "last_30_days" | "last_90_days")
+            }
             className="w-full px-4 py-3 bg-cream border border-border-soft rounded-xl focus:border-terracotta focus:outline-none text-sm mb-4"
           >
             <option value="all_time">All time</option>

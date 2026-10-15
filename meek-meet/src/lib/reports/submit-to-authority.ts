@@ -3,6 +3,15 @@
 import { createClient } from "@/lib/supabase/server";
 import { getResend } from "@/lib/resend";
 import { escapeHtml } from "@/lib/validation";
+import type { ReportContent } from "@/lib/reports/generate-report";
+
+interface CircleRef {
+  name: string | null;
+  location: string | null;
+  lga_code: string | null;
+  lga_name: string | null;
+  state_code: string | null;
+}
 
 export async function submitReportToAuthority(reportId: string, authorityId?: string) {
   const supabase = await createClient();
@@ -40,7 +49,7 @@ export async function submitReportToAuthority(reportId: string, authorityId?: st
     authority = data;
   } else {
     // Match by circle region
-    const circle = report.circles as any;
+    const circle = report.circles as CircleRef | null;
     const regionType = circle?.lga_code ? "lga" : circle?.state_code ? "state" : null;
     const regionCode = circle?.lga_code ?? circle?.state_code;
 
@@ -60,21 +69,22 @@ export async function submitReportToAuthority(reportId: string, authorityId?: st
     throw new Error("No matching authority with email found. Please add an authority first.");
   }
 
-  const circleName = escapeHtml((report.circles as any)?.name ?? "A Meek Meet Circle");
-  const circleLocation = escapeHtml((report.circles as any)?.location ?? "your community");
-  const content = (report.content as any) ?? {};
+  const circle = report.circles as CircleRef | null;
+  const circleName = escapeHtml(circle?.name ?? "A Meek Meet Circle");
+  const circleLocation = escapeHtml(circle?.location ?? "your community");
+  const content = (report.content ?? {}) as Partial<ReportContent>;
   const summary = escapeHtml(report.summary ?? content.rawSummary ?? "");
 
   const themesHtml = (content.topThemes ?? [])
     .map(
-      (t: any) =>
+      (t) =>
         `<li><strong>${escapeHtml(t.theme)}</strong> (${t.sentiment}, ${t.count} mentions)</li>`
     )
     .join("");
 
   const consensusHtml = (content.consensusItems ?? [])
     .map(
-      (c: any) =>
+      (c) =>
         `<li>${escapeHtml(c.statement)} — ${c.agreementLevel}% estimated agreement</li>`
     )
     .join("");

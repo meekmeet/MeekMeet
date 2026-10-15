@@ -20,9 +20,13 @@ const AuthContext = createContext<AuthContextType>({
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [role, setRole] = useState<string | null>(null);
+  const [roleState, setRoleState] = useState<{ userId: string; role: string } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const supabase = createClient();
+
+  // Role only applies while it belongs to the current user; it is derived
+  // from userId-keyed state so it clears automatically on sign-out/switch.
+  const role = user && roleState?.userId === user.id ? roleState.role : null;
 
   // Listen for auth state changes
   useEffect(() => {
@@ -45,27 +49,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Fetch profile role when user changes (separate effect, NOT inside onAuthStateChange)
   useEffect(() => {
-    if (!user) {
-      setRole(null);
-      return;
-    }
+    if (!user) return;
 
+    let cancelled = false;
     const fetchProfile = async () => {
       const { data } = await supabase
         .from("profiles")
         .select("role")
         .eq("id", user.id)
         .single();
-      setRole(data?.role ?? "member");
+      if (!cancelled) {
+        setRoleState({ userId: user.id, role: data?.role ?? "member" });
+      }
     };
 
     fetchProfile();
+    return () => {
+      cancelled = true;
+    };
   }, [user, supabase]);
 
   const signOut = async () => {
     await supabase.auth.signOut();
     setUser(null);
-    setRole(null);
   };
 
   return (

@@ -7,6 +7,14 @@ const statusStyles: Record<string, string> = {
   completed: "bg-sage-pale text-sage-dark",
 };
 
+interface AdminMeeting {
+  id: string;
+  scheduled_at: string;
+  status: string;
+  is_cancelled: boolean;
+  circles?: { name: string | null } | { name: string | null }[] | null;
+}
+
 export default async function AdminMeetingsPage() {
   const supabase = await createClient();
 
@@ -29,7 +37,7 @@ export default async function AdminMeetingsPage() {
         </div>
       ) : (
         <div className="space-y-4">
-          {meetings.map((meeting) => {
+          {(meetings as AdminMeeting[]).map((meeting) => {
             const status = meeting.is_cancelled ? "cancelled" : meeting.status;
             return (
               <div
@@ -47,7 +55,9 @@ export default async function AdminMeetingsPage() {
                     </span>
                     <span className="flex items-center gap-2 text-sm text-charcoal font-medium">
                       <MapPin className="w-4 h-4 text-sage" strokeWidth={1.5} />
-                      {(meeting.circles as any)?.name ?? "No circle"}
+                      {(Array.isArray(meeting.circles)
+                        ? meeting.circles[0]?.name
+                        : meeting.circles?.name) ?? "No circle"}
                     </span>
                   </div>
                   <span className="flex items-center gap-2 text-sm text-charcoal-muted">

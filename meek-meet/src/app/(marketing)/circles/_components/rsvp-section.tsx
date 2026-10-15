@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { createOrUpdateRsvp, deleteRsvp } from "@/app/actions";
-import { Check, Loader2 } from "lucide-react";
+import { Check, Loader2, Video } from "lucide-react";
 
 interface Meeting {
   id: string;
@@ -21,14 +21,18 @@ interface Props {
   meetings: Meeting[];
   userRsvps: Rsvp[];
   isAuthenticated: boolean;
+  /** Meeting IDs with meeting_type 'digital' or 'hybrid' (only known for signed-in users). */
+  digitalMeetingIds?: string[];
+  /** Join URLs, only present for meetings this user has an active 'going' RSVP on. */
+  joinLinks?: Record<string, string>;
 }
 
-export default function RsvpSection({ meetings, userRsvps, isAuthenticated }: Props) {
+export default function RsvpSection({ meetings, userRsvps, isAuthenticated, digitalMeetingIds = [], joinLinks = {} }: Props) {
   const [rsvps, setRsvps] = useState<Record<string, string>>(
     Object.fromEntries(userRsvps.map((r) => [r.meeting_id, r.status]))
   );
   const [loadingId, setLoadingId] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   const handleRsvp = (meetingId: string, status: "going" | "maybe" | "not_going") => {
     setLoadingId(meetingId);
@@ -107,6 +111,24 @@ export default function RsvpSection({ meetings, userRsvps, isAuthenticated }: Pr
                   {meeting.location_name}
                 </p>
               )}
+              {joinLinks[meeting.id] ? (
+                <a
+                  href={joinLinks[meeting.id]}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 mt-3 px-4 py-2 bg-midnight text-cream text-sm rounded-full hover:bg-midnight-soft transition-all"
+                >
+                  <Video className="w-4 h-4 text-wheat" strokeWidth={1.5} />
+                  Join Online
+                </a>
+              ) : (
+                digitalMeetingIds.includes(meeting.id) && (
+                  <p className="flex items-center gap-1.5 text-xs text-charcoal-muted mt-2">
+                    <Video className="w-3.5 h-3.5 text-wheat" strokeWidth={1.5} />
+                    The join link is shared with members who RSVP &ldquo;Going&rdquo;.
+                  </p>
+                )
+              )}
             </div>
 
             {isLoading ? (
@@ -157,7 +179,7 @@ export default function RsvpSection({ meetings, userRsvps, isAuthenticated }: Pr
                   onClick={() => handleRsvp(meeting.id, "not_going")}
                   className="px-4 py-2 border border-charcoal/10 text-charcoal text-sm rounded-full hover:border-terracotta hover:text-terracotta transition-all"
                 >
-                  Can't Make It
+                  Can&rsquo;t Make It
                 </button>
               </div>
             )}

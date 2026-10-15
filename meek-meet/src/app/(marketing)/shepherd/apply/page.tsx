@@ -114,7 +114,7 @@ export default function ShepherdApplyPage() {
       }
       setUploadStatus((prev) => ({ ...prev, [type]: "success" }));
       return true;
-    } catch (err) {
+    } catch {
       setUploadStatus((prev) => ({ ...prev, [type]: "error" }));
       return false;
     }

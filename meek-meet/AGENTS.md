@@ -32,7 +32,7 @@ src/
     dashboard/            # authenticated member area
       admin/              # admin-only: applications, verification, authorities
       shepherd/[circleId]/# shepherd area: meetings, questions, routine, reports, settings
-    api/                  # route handlers (cron + public insights + upload)
+    api/                  # route handlers (cron + public insights + upload + circle-organizer)
     auth/callback/        # OAuth/magic-link callback
     login/ voice/ privacy/ terms/ delete-account/
   components/             # shared components (auth-provider)
@@ -44,7 +44,7 @@ src/
     validation.ts         # isValidUuid, escapeHtml, assertNonEmptyString, ...
   middleware.ts           # session refresh + /dashboard guard
 supabase/
-  migrations/             # ordered SQL; 000025 = production hardening (run in order)
+  migrations/             # ordered SQL; 000025 = production hardening, 000029 = virtual-first circles (run in order)
   functions/              # 5 edge functions (Deno): synthesize-*, generate-*
   config.toml             # verify_jwt per function
 ```
@@ -54,6 +54,7 @@ supabase/
 - **Service-role key never in the database.** It lives in Supabase Vault (`supabase_service_role_key` secret); `meek_meet_config` holds only non-secret config. See DEPLOYMENT.md §4.
 - **Cron routes** accept only `Authorization: Bearer $CRON_SECRET` via `src/lib/cron-auth.ts`. No User-Agent checks, no URL secrets.
 - **Anonymous meeting reads** go through the `public_meetings` view (no join_url/notes/coordinates). The `meetings` table itself is authenticated-only.
+- **Join URLs are never public**: `join_url` renders only for signed-in users with an active `going` RSVP on that meeting (see the `[slug]` page). Never expose it in public queries or anonymous HTML.
 - **Admin stats** come from the `get_admin_stats()` RPC (admin-gated), not a view.
 - Server actions must call `supabase.auth.getUser()` and verify role/membership before any mutation (see `src/app/dashboard/admin/actions.ts` for the pattern).
 - Never expose `SUPABASE_SECRET_KEY` to client components; the `NEXT_PUBLIC_*` publishable key is the only key the browser sees.

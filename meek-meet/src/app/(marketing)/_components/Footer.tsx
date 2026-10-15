@@ -40,6 +40,7 @@ export default function Footer() {
                 { href: "/about", label: "Who We Are" },
                 { href: "/about#heart", label: "Our Heart" },
                 { href: "/about#journey", label: "The Journey" },
+                { href: "/media", label: "Media & Mission" },
                 { href: "/circles", label: "Circles" },
                 { href: "/shepherd", label: "Become a Shepherd" },
               ].map((link) => (

@@ -21,7 +21,17 @@ export interface Circle {
   meeting_address: string | null;
   image_url: string | null;
   shepherd_id: string | null;
+  kind: "global" | "local";
   is_active: boolean;
+  created_at: string;
+}
+
+export interface CircleAutoGroup {
+  id: string;
+  area_key: string;
+  area_name: string;
+  member_count: number;
+  circle_id: string;
   created_at: string;
 }
 
@@ -54,6 +64,8 @@ export interface Meeting {
   latitude: number | null;
   longitude: number | null;
   notes: string | null;
+  meeting_type: "in_person" | "digital" | "hybrid";
+  join_url: string | null;
   is_cancelled: boolean;
   created_at: string;
 }

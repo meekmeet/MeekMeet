@@ -10,13 +10,14 @@ import { useAuth } from "@/components/auth-provider";
 const navLinks = [
   { href: "/about", label: "Who We Are" },
   { href: "/voice", label: "The Voice" },
+  { href: "/media", label: "Media" },
   { href: "/circles", label: "Circles" },
   { href: "/#new-moon", label: "New Moon" },
 ];
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const { user, isLoading } = useAuth();
+  const { user } = useAuth();
 
   return (
     <motion.nav

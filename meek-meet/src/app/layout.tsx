@@ -26,6 +26,9 @@ const caveat = Caveat({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://meekmeet.com"),
+  verification: {
+    google: "zKim6gzkkssIQao4l_3Nw4AfGwa9BkhvA7s0vFkAKpY",
+  },
   title: "Meek Meet | Blessed Are The Meek",
   description:
     "A warm community of faith where the meek gather, share, and build something beautiful together. Join us under the new moon.",

@@ -3,6 +3,15 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { BookOpen, Clock, Calendar, Settings, ArrowRight } from "lucide-react";
 
+interface Circle {
+  id: string;
+  name: string;
+  location: string | null;
+  slug: string;
+  is_active: boolean;
+  created_at: string;
+}
+
 export default async function ShepherdDashboardPage() {
   const supabase = await createClient();
 
@@ -27,10 +36,10 @@ export default async function ShepherdDashboardPage() {
       .eq("user_id", user.id),
   ]);
 
-  const circleMap = new Map<string, any>();
-  for (const c of ownedCircles ?? []) circleMap.set(c.id, c);
-  for (const row of shepherdedCircles ?? []) {
-    const c = (row as any).circle;
+  const circleMap = new Map<string, Circle>();
+  for (const c of (ownedCircles ?? []) as Circle[]) circleMap.set(c.id, c);
+  for (const row of (shepherdedCircles ?? []) as unknown as { circle: Circle | null }[]) {
+    const c = row.circle;
     if (c && c.is_active) circleMap.set(c.id, c);
   }
   const myCircles = Array.from(circleMap.values()).sort(

@@ -52,7 +52,21 @@ export default function VerificationPage() {
   };
 
   useEffect(() => {
-    load();
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = await getPendingDocuments();
+        if (!cancelled) setDocuments(data as Document[]);
+      } catch (err) {
+        if (!cancelled)
+          setError(err instanceof Error ? err.message : "Failed to load documents");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const handleDecision = (documentId: string, decision: "verified" | "rejected") => {
