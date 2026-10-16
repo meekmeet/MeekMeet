@@ -605,25 +605,25 @@ function analyticsScreen(w, h, landscape, k, phone) {
   return `<div class="scroll" style="display:flex;flex-direction:column">${body}</div>${phone ? '<div class="homeind"></div>' : ''}`
 }
 
-// ── 8 · shepherd dashboard / council report ──────────────────────────────
+// ── 8 · shepherd dashboard / community insight report ────────────────────
 
 function shepherdScreen(w, h, landscape, k, phone) {
   const report = `
     <div style="background:#1e2337;color:#faf6ee;border-radius:${c(18)};padding:${c(18)};position:relative;overflow:hidden">
       <div style="position:absolute;top:${c(-40)};right:${c(-40)};width:${c(160)};height:${c(160)};border-radius:50%;background:radial-gradient(circle,rgba(201,169,110,.18),transparent 70%)"></div>
-      <div style="display:flex;align-items:center;gap:${c(7)};margin-bottom:${c(9)}">${ic('filetext', 15, '#c9a96e')}<span class="sect" style="color:#c9a96e">Report ready for submission</span></div>
-      <div class="serif" style="font-size:${c(21)};font-weight:600;line-height:1.25">City of Sydney Council</div>
-      <div style="font-size:${c(12)};color:rgba(250,246,238,.6);margin-top:${c(3)}">Community Voices — November submission</div>
+      <div style="display:flex;align-items:center;gap:${c(7)};margin-bottom:${c(9)}">${ic('filetext', 15, '#c9a96e')}<span class="sect" style="color:#c9a96e">Community insight report</span></div>
+      <div class="serif" style="font-size:${c(21)};font-weight:600;line-height:1.25">Newtown Circle</div>
+      <div style="font-size:${c(12)};color:rgba(250,246,238,.6);margin-top:${c(3)}">Community Voices — November</div>
       <div style="display:flex;gap:${c(18)};margin:${c(13)} 0;padding:${c(11)} 0;border-top:1px solid rgba(250,246,238,.14);border-bottom:1px solid rgba(250,246,238,.14)">
         ${[['86', 'responses'], ['24', 'contributors'], ['5', 'themes']].map(([n, l]) => `
           <div><div class="serif" style="font-size:${c(22)};font-weight:600;color:#d9bd8a;line-height:1">${n}</div>
           <div style="font-size:${c(10)};color:rgba(250,246,238,.55);letter-spacing:${c(1)};text-transform:uppercase">${l}</div></div>`).join('')}
       </div>
       <div style="font-size:${c(12)};color:rgba(250,246,238,.8);line-height:1.5">Top concerns: cost of living, loneliness among elders, youth employment.</div>
-      <div style="font-size:${c(12)};color:rgba(250,246,238,.8);line-height:1.5;margin-top:${c(3)}">Recommended asks: food-relief funding, visiting-companions program.</div>
+      <div style="font-size:${c(12)};color:rgba(250,246,238,.8);line-height:1.5;margin-top:${c(3)}">Where the circle wants to help: food relief, visiting companions for elders.</div>
       <div style="display:flex;align-items:center;gap:${c(6)};margin-top:${c(11)};font-size:${c(10.5)};color:rgba(250,246,238,.5)">${ic('lock', 12, '#c9a96e')} Fully anonymised — no names, no attributed quotes.</div>
       <div style="display:flex;gap:${c(9)};margin-top:${c(13)}">
-        <span class="btn" style="flex:1;background:#c9a96e;color:#1e2337;font-size:${c(13)};padding:${c(10)}">Review &amp; Submit ${ic('arrowright', 14, '#1e2337', 2.2)}</span>
+        <span class="btn" style="flex:1;background:#c9a96e;color:#1e2337;font-size:${c(13)};padding:${c(10)}">Review &amp; Share ${ic('arrowright', 14, '#1e2337', 2.2)}</span>
         <span class="btn" style="background:transparent;color:#faf6ee;font-size:${c(12.5)};padding:${c(10)} ${c(13)};border:1px solid rgba(250,246,238,.35)">${ic('download', 14, '#faf6ee')} PDF</span>
       </div>
     </div>`
@@ -682,7 +682,7 @@ export const CONCEPTS = [
   { slug: 'new-moon', headline: 'Gather under the new moon', sub: 'Virtual meetups now; local circles form as you grow.', render: circleDetailScreen },
   { slug: 'voice-counted', headline: 'One voice, counted', sub: 'Questions seeded to your phone — answer in your own time.', render: questionsScreen },
   { slug: 'pattern-emerges', headline: 'The pattern emerges', sub: 'Anonymised insights from many voices, heard as one.', render: analyticsScreen },
-  { slug: 'meek-organise', headline: 'The meek organise', sub: 'From shared concern to councils and MPs. Change from the inside out.', render: shepherdScreen },
+  { slug: 'meek-organise', headline: 'The meek organise', sub: 'From shared concern to shared action. Change from the inside out.', render: shepherdScreen },
 ]
 
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v))

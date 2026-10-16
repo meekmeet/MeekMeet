@@ -19,6 +19,9 @@ Blessed are the meek — organised. Free sacred texts, new-moon meetups. No ads.
 Meek Meet is where the quiet ones become a chorus. 🕊️
 Sacred texts from five faiths. New-moon community meetups. A safe way to turn shared concern into real change — 100% free, no ads, and no tracking of your reading. Ever.
 
+⚠️ INDEPENDENT INITIATIVE
+Meek Meet is a private community app. It is not a government entity, is not affiliated with any government, council or public authority, and does not provide government services. Official government portal: https://www.australia.gov.au
+
 📖 THE SACRED LIBRARY — FREE FOREVER
 Read the Holy Bible, the Holy Quran, the Tanakh, the Dhammapada and the Book of Mormon in one warm, reverent reading space. Daily verses, weekly themes, bookmarks, highlights and journaling — every feature free. No subscriptions. No paywalls. No advertisement ever interrupting Scripture. Sacred words should never sit behind a price tag — so they never will here.
 
@@ -33,10 +36,10 @@ In each gathering, thoughtful questions arrive on your phone. Answer in your own
 
 📊 QUIET POWER, PROVEN
 "Blessed are the meek, for they shall inherit the earth." — Matthew 5:5
-The meek do not shout — they organise. When many small voices speak together, councils listen, MPs listen, and neighbourhoods change. Meek Meet turns circle conversations into anonymised, decision-ready reports for councils, MPs and decision-makers. The gentlest among us, gathered, are the strongest force in society. We build the world from the inside out. 🌍
+The meek do not shout — they organise. When many small voices speak together, neighbourhoods change and leaders listen. Meek Meet turns circle conversations into anonymised, decision-ready reports — yours to share with local councils, MPs or community groups through their official channels (find them at https://www.australia.gov.au). The gentlest among us, gathered, are the strongest force in society. We build the world from the inside out. 🌍
 
 🐑 BECOME A SHEPHERD
-Lead a circle in your area. Full shepherd tools: meeting scheduling, guided questions, live meeting flow, anonymised analytics and one-tap report generation — with working-with-children and police-check verification built in. Lead your community the way it deserves.
+Lead a circle in your area. Full shepherd tools: meeting scheduling, guided questions, live meeting flow, anonymised analytics and one-tap report generation — with identity and safeguarding verification for every leader. Lead your community the way it deserves.
 
 ✨ WHY MEEK MEET
 🕊️ Sacred texts from five traditions — Bible, Quran, Tanakh, Dhammapada, Book of Mormon
@@ -48,14 +51,14 @@ Lead a circle in your area. Full shepherd tools: meeting scheduling, guided ques
 🤝 People of every faith, culture and way of life — everyone welcome
 🔒 Anonymised answers — your words count, your identity stays yours
 📈 Insight patterns emerge from collective listening
-🏛️ Decision-ready reports reach councils, MPs and authorities
+🏛️ Decision-ready reports — share them with whoever can act
 🎨 Warm, calm design — an app that feels like rest, not noise
 🚫 Zero ads. Zero data selling. That's a promise.
 
 The world doesn't need more noise. It needs the meek — organised. 🕊️
 Download Meek Meet. Bring your voice. Meet the others.
 
-🏳️ An Australia-first initiative, expanding as communities form. Everyone welcome — every faith, every culture, every way of life.
+🏳️ An Australia-first initiative — expanding as communities form.
 
 ---
 
@@ -68,7 +71,7 @@ Download Meek Meet. Bring your voice. Meet the others.
 5. **Gather under the new moon** — Virtual meetups now; local circles form as you grow.
 6. **One voice, counted** — Questions seeded to your phone; answer in your own time.
 7. **The pattern emerges** — Anonymised insights from many voices, heard as one.
-8. **The meek organise** — From shared concern to councils and MPs. Change from the inside out.
+8. **The meek organise** — From shared concern to shared action. Change from the inside out.
 
 ---
 

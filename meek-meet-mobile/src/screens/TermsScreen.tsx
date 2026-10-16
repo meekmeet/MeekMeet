@@ -35,6 +35,15 @@ export default function TermsScreen() {
           </p>
         </section>
 
+        <section className="rounded-xl bg-sky-pale/60 p-4">
+          <h2 className="font-medium text-midnight mb-2">Independent Initiative</h2>
+          <p className="text-sm text-charcoal-muted leading-relaxed">
+            Meek Meet is a private community app. It is not a government entity, is not
+            affiliated with any government, council or public authority, and does not
+            provide government services.
+          </p>
+        </section>
+
         <section>
           <h2 className="font-medium text-midnight mb-2">Eligibility</h2>
           <p className="text-sm text-charcoal-muted leading-relaxed">
