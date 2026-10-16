@@ -12,7 +12,7 @@ In-app / brand name: **Meek Meet**
 
 ## Short Description (80 characters max)
 
-Blessed are the meek — organised. Free sacred texts, new-moon meetups. No ads.
+Blessed are the meek — organised. Sacred texts, new-moon meetups, real change.
 
 ## Full Description (4,000 characters max)
 
