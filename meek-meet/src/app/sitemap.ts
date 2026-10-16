@@ -13,6 +13,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/media",
     "/privacy",
     "/terms",
+    "/child-safety",
     "/delete-account",
   ];
 
