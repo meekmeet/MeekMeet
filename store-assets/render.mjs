@@ -148,6 +148,55 @@ function pngSize(file) {
   return { w: b.readUInt32BE(16), h: b.readUInt32BE(20) }
 }
 
+// Walk the device screen (.scr) and report descendants whose bounding box
+// exceeds the screen bounds. `clippedBy` marks elements hidden behind an
+// intermediate overflow:hidden/clip/scroll ancestor (e.g. the scroll-region
+// fade) — visually intentional. Unclipped offenders paint (or half-paint)
+// outside the screen and are the real bugs.
+const AUDIT_FN = `() => {
+  const scr = document.querySelector('.scr')
+  if (!scr) return []
+  const sr = scr.getBoundingClientRect()
+  const tol = 1.5
+  const hiddenish = (o) => /(hidden|clip|scroll|auto)/.test(o.overflowX) || /(hidden|clip|scroll|auto)/.test(o.overflowY)
+  // The .scroll region clips exactly at the screen bounds, so it masks
+  // nothing on the right axis (a right overflow is always a visible cut)
+  // but on the bottom axis its fade makes clipped content look scrollable.
+  const protectedFor = (el, axis) => {
+    let a = el.parentElement
+    while (a && a !== scr) {
+      if (a.classList && a.classList.contains('scroll')) return axis === 'bottom'
+      if (hiddenish(getComputedStyle(a))) return true
+      a = a.parentElement
+    }
+    return false
+  }
+  const bad = []
+  for (const el of scr.querySelectorAll('*')) {
+    const r = el.getBoundingClientRect()
+    if (r.width === 0 || r.height === 0) continue
+    const overRight = r.right - sr.right
+    const overBottom = r.bottom - sr.bottom
+    const hardRight = overRight > tol && !protectedFor(el, 'right')
+    const softBottom = overBottom > tol && !protectedFor(el, 'bottom')
+    if (hardRight || softBottom) {
+      bad.push({
+        sel: (el.tagName + '.' + (el.getAttribute('class') || '')).trim().slice(0, 48),
+        txt: (el.textContent || '').trim().replace(/\\s+/g, ' ').slice(0, 44),
+        overRight: Math.round(overRight),
+        overBottom: Math.round(overBottom),
+        kind: hardRight ? 'right' : 'bottom',
+        clippedBy: hardRight ? null : 'scroll-fade',
+      })
+    }
+  }
+  return bad
+}`
+
+async function auditScreen(page) {
+  return page.evaluate(`(${AUDIT_FN})()`)
+}
+
 async function main() {
   const only = process.argv[2] // optional: device dir (phone|tablet7|chromebook), slug, or 'all'
   const browser = await puppeteer.launch({ headless: true })
@@ -191,15 +240,27 @@ async function main() {
       await page.screenshot({ path: file, clip: { x: 0, y: 0, width: device.W, height: device.H } })
       const dim = pngSize(file)
       const ok = !!dim && dim.w === device.W && dim.h === device.H
-      results.push({ file: path.relative(ROOT, file), ...dim, ok })
-      console.log(`${ok ? '✓' : '✗'} ${path.relative(ROOT, file)} ${dim.w}×${dim.h}`)
+
+      const offenders = await auditScreen(page)
+      const hard = offenders.filter((o) => o.kind === 'right')
+      const soft = offenders.filter((o) => o.kind === 'bottom')
+      results.push({ file: path.relative(ROOT, file), ...dim, ok, hard, soft })
+      console.log(`${ok ? '✓' : '✗'} ${path.relative(ROOT, file)} ${dim.w}×${dim.h}` +
+        (hard.length ? `  ⚠ ${hard.length} RIGHT-OVERFLOW` : '') +
+        (soft.length ? `  (${soft.length} bottom/fade)` : ''))
+      for (const o of hard) console.log(`    ✗ +${o.overRight}px right  ${o.sel}  "${o.txt}"`)
     }
   }
   await browser.close()
 
   const bad = results.filter((r) => !r.ok)
-  console.log(`\n${results.length} rendered, ${bad.length} dimension mismatches`)
-  if (bad.length) process.exit(1)
+  const overflowed = results.filter((r) => r.hard.length)
+  console.log(`\n${results.length} rendered, ${bad.length} dimension mismatches, ${overflowed.length} screens with right-overflow`)
+  for (const r of overflowed) {
+    console.log(`  ${r.file}:`)
+    for (const o of r.hard) console.log(`    +${o.overRight}px right (bottom +${o.overBottom})  ${o.sel}  "${o.txt}"`)
+  }
+  if (bad.length || overflowed.length) process.exit(1)
 }
 
 main().catch((err) => {

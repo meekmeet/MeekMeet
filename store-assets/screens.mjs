@@ -52,6 +52,9 @@ export const SCREEN_CSS = `
 .scr{position:absolute;top:0;left:0;overflow:hidden;background:#faf6ee;color:#2c2c2c;
   font-family:'Source Sans 3','Inter',system-ui,-apple-system,sans-serif;
   font-size:${c(15)};line-height:1.45;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+/* fluidity guardrails: grid/flex items must shrink below content min-width,
+   and nothing may exceed its parent's width — prevents screen-edge blowouts */
+.scr *{min-width:0;max-width:100%}
 .serif{font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif}
 .mut{color:#6b6b6b}.mut2{color:#a39e92}.mid{color:#1e2337}.cream{color:#faf6ee}.wheat-t{color:#c9a96e}.terr-t{color:#b85c3f}
 .card{background:#fff;border:1px solid #e8e0cc;border-radius:${c(16)}}
@@ -185,7 +188,9 @@ function homeScreen(w, h, landscape, k, phone) {
   const sacred = landscape
     ? `<div>
         <div class="sect" style="margin-bottom:${c(8)}">Sacred Texts — five traditions</div>
-        <div style="display:flex;gap:${c(10)}">${traditions.map((t) => miniTrad(t, true)).join('')}</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:${c(8)}">
+          ${traditions.map((t) => miniTrad(t, false)).join('')}
+        </div>
       </div>`
     : `<div>
         <div class="sect" style="margin-bottom:${c(8)}">Sacred Texts</div>
@@ -218,7 +223,7 @@ function homeScreen(w, h, landscape, k, phone) {
   }
 
   return `
-    <div class="scroll" style="display:flex;flex-direction:column">${body}<div class="fadebottom"></div></div>
+    <div class="scroll" style="display:flex;flex-direction:column">${body}</div>
     ${phone ? tabbar('home') + '<div class="homeind"></div>' : ''}
   `
 }
@@ -289,7 +294,7 @@ function themesScreen(w, h, landscape, k, phone) {
         <div style="font-weight:600;font-size:${c(13.5)};color:#1e2337">${ref}${state === 'today' ? ` <span class="chip" style="background:#b85c3f;color:#faf6ee;margin-left:${c(6)}">Today</span>` : ''}</div>
         <div class="mut" style="font-size:${c(11.5)};font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${quote}</div>
       </div>
-      ${state === 'done' ? ic('circlecheck', 18, '#6b8f71') : state === 'today' ? ic('chevronright', 17, '#b85c3f', 2.2) : `<span class="mut2" style="font-size:${c(11)}">Locked ${ic('lock', 11, '#a39e92')}</span>`}
+      ${state === 'done' ? ic('circlecheck', 18, '#6b8f71') : state === 'today' ? ic('chevronright', 17, '#b85c3f', 2.2) : `<span class="mut2" style="font-size:${c(11)};white-space:nowrap;flex-shrink:0;display:flex;align-items:center;gap:${c(3)}">Locked ${ic('lock', 11, '#a39e92')}</span>`}
     </div>`
 
   const list = `<div style="display:grid;grid-template-columns:${landscape ? '1fr 1fr' : '1fr'};gap:${c(9)}">${days.map(dayRow).join('')}</div>`
@@ -317,7 +322,7 @@ function themesScreen(w, h, landscape, k, phone) {
     ? `<div style="display:grid;grid-template-columns:1fr 1fr;gap:${c(12)} ${c(16)};padding:${c(16)} ${c(24)} 0;height:100%;align-content:start">${header.replace('padding:' + c(4) + ' ' + c(20) + ' 0', `padding:${c(4)} 0 0;grid-column:1/-1`)}<div style="grid-column:1/-1">${list}</div></div>`
     : `<div style="display:flex;flex-direction:column;gap:${c(14)};padding:${c(6)} ${c(18)} 0;height:100%">${header.replace('padding:' + c(4) + ' ' + c(20) + ' 0', `padding:${c(4)} ${c(2)} 0`)}${list}${themeNote}</div>`
 
-  return `<div class="scroll" style="display:flex;flex-direction:column">${body}<div class="fadebottom"></div></div>${phone ? '<div class="homeind"></div>' : ''}`
+  return `<div class="scroll" style="display:flex;flex-direction:column">${body}</div>${phone ? '<div class="homeind"></div>' : ''}`
 }
 
 // ── 4 · circles discovery ────────────────────────────────────────────────
@@ -328,7 +333,7 @@ function circlesScreen(w, h, landscape, k, phone) {
       <div style="display:flex;gap:${c(6)};flex-wrap:wrap">${badges}</div>
       <div class="serif mid" style="font-size:${c(18)};font-weight:600;line-height:1.2">${name}</div>
       <div style="display:flex;align-items:center;gap:${c(5)};font-size:${c(12)};color:#6b6b6b">${locationRow}</div>
-      <div class="mut" style="font-size:${c(12)};line-height:1.45">${desc}</div>
+      <div class="mut" style="font-size:${c(12)};line-height:1.45;${landscape ? 'display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden' : ''}">${desc}</div>
       <div style="display:flex;align-items:center;gap:${c(12)};margin-top:${c(2)}">
         <span style="display:flex;align-items:center;gap:${c(5)};font-size:${c(11.5)};font-weight:600;color:#a6834a">${meta[0]}</span>
         <span style="display:flex;align-items:center;gap:${c(5)};font-size:${c(11.5)};color:#6b6b6b">${meta[1]}</span>
@@ -384,7 +389,7 @@ function circlesScreen(w, h, landscape, k, phone) {
     : `<div style="padding:${c(8)} ${c(18)} 0;height:100%;display:flex;flex-direction:column;gap:${c(10)}">${header}
          <div style="display:flex;flex-direction:column;gap:${c(10)}">${cards.join('')}</div></div>`
 
-  return `<div class="scroll" style="display:flex;flex-direction:column">${body}<div class="fadebottom"></div></div>${phone ? tabbar('circles') + '<div class="homeind"></div>' : ''}`
+  return `<div class="scroll" style="display:flex;flex-direction:column">${body}</div>${phone ? tabbar('circles') + '<div class="homeind"></div>' : ''}`
 }
 
 // ── 5 · circle detail / upcoming meet ────────────────────────────────────
@@ -456,7 +461,7 @@ function circleDetailScreen(w, h, landscape, k, phone) {
     ? `<div style="display:grid;grid-template-columns:1fr 1.05fr;gap:${c(14)};padding:${c(10)} ${c(22)} 0;height:100%;align-content:start">${header.replace('padding:' + c(2) + ' ' + c(18) + ' 0', `padding:${c(2)} 0 ${c(4)};grid-column:1/-1`)}${flow}${upcoming}<div style="grid-column:1/-1">${questions}</div></div>`
     : `<div style="display:flex;flex-direction:column;gap:${c(13)};padding:${c(4)} ${c(18)} 0;height:100%">${header}${flow}${upcoming}${questions}</div>`
 
-  return `<div class="scroll" style="display:flex;flex-direction:column">${body}<div class="fadebottom"></div></div>${phone ? '<div class="homeind"></div>' : ''}`
+  return `<div class="scroll" style="display:flex;flex-direction:column">${body}</div>${phone ? '<div class="homeind"></div>' : ''}`
 }
 
 // ── 6 · meeting questions / your voice ───────────────────────────────────
@@ -515,7 +520,7 @@ function questionsScreen(w, h, landscape, k, phone) {
     ? `<div style="display:grid;grid-template-columns:1fr 1.1fr;gap:${c(14)};padding:${c(10)} ${c(22)} 0;height:100%;align-content:start">${live.replace('padding:' + c(2) + ' ' + c(18) + ' 0', `padding:${c(2)} 0 ${c(4)};grid-column:1/-1`)}<div style="display:flex;flex-direction:column;gap:${c(12)}">${prevAnswered}${response}</div><div style="display:flex;flex-direction:column;gap:${c(12)}">${qCard}${submit}<div style="grid-column:1/-1">${nextLocked}</div></div></div>`
     : `<div style="display:flex;flex-direction:column;gap:${c(13)};padding:${c(4)} ${c(18)} 0;height:100%">${live}${prevAnswered}${qCard}${response}${submit}${nextLocked}</div>`
 
-  return `<div class="scroll" style="display:flex;flex-direction:column">${body}<div class="fadebottom"></div></div>${phone ? '<div class="homeind"></div>' : ''}`
+  return `<div class="scroll" style="display:flex;flex-direction:column">${body}</div>${phone ? '<div class="homeind"></div>' : ''}`
 }
 
 // ── 7 · meeting analytics / insights ─────────────────────────────────────
@@ -597,7 +602,7 @@ function analyticsScreen(w, h, landscape, k, phone) {
          <div style="display:grid;grid-template-columns:1.25fr 1fr;gap:${c(12)};align-items:start">${insightsBlock}<div style="display:flex;flex-direction:column;gap:${c(12)}">${trendBlock}${themesBlock}</div></div></div>`
     : `<div style="padding:${c(4)} ${c(16)} 0;height:100%;display:flex;flex-direction:column;gap:${c(11)}">${header}${insightsBlock}${trendBlock}${themesBlock}</div>`
 
-  return `<div class="scroll" style="display:flex;flex-direction:column">${body}<div class="fadebottom"></div></div>${phone ? '<div class="homeind"></div>' : ''}`
+  return `<div class="scroll" style="display:flex;flex-direction:column">${body}</div>${phone ? '<div class="homeind"></div>' : ''}`
 }
 
 // ── 8 · shepherd dashboard / council report ──────────────────────────────
@@ -664,7 +669,7 @@ function shepherdScreen(w, h, landscape, k, phone) {
     ? `<div style="display:grid;grid-template-columns:1.25fr 1fr;gap:${c(16)};padding:${c(12)} ${c(22)} 0;height:100%;align-content:start">${header.replace('padding:' + c(2) + ' ' + c(18) + ' 0', `padding:${c(2)} 0 ${c(6)};grid-column:1/-1`)}${report}${actions}</div>`
     : `<div style="display:flex;flex-direction:column;gap:${c(13)};padding:${c(4)} ${c(18)} 0;height:100%">${header}${report}${nextMeet}${actions}</div>`
 
-  return `<div class="scroll" style="display:flex;flex-direction:column">${body}<div class="fadebottom"></div></div>${phone ? '<div class="homeind"></div>' : ''}`
+  return `<div class="scroll" style="display:flex;flex-direction:column">${body}</div>${phone ? '<div class="homeind"></div>' : ''}`
 }
 
 // ── registry ─────────────────────────────────────────────────────────────
@@ -683,7 +688,9 @@ export const CONCEPTS = [
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v))
 
 export function buildScreen(concept, w, h, landscape, phone) {
-  const k = clamp(Math.min(w, h * 0.78) / 390, 0.62, 2.4)
+  // h*0.85 lets landscape screens fill their height better (portrait phones are
+  // width-bound, so this only affects landscape devices)
+  const k = clamp(Math.min(w, h * 0.85) / 390, 0.62, 2.4)
   const inner = concept.render(w, h, landscape, k, phone)
   return `<div class="scr" style="--k:${k.toFixed(3)};width:${Math.round(w)}px;height:${Math.round(h)}px;display:flex;flex-direction:column">
     ${statusbar()}
