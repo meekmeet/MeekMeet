@@ -41,3 +41,7 @@ jobs:
 
       - name: Test mobile app
         run: npm run test:run --workspace=meek-meet-mobile
+        env:
+          # supabase client is constructed at module load in some test files
+          VITE_SUPABASE_URL: https://placeholder.supabase.co
+          VITE_SUPABASE_PUBLISHABLE_KEY: placeholder
