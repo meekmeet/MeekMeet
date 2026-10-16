@@ -6,70 +6,56 @@ Use this content when creating your Play Store listing.
 
 ## App Name
 
-**Meek Meet**
+Play Store title (30-char limit): **Meek Meet: Sacred Text & Voice**
+
+In-app / brand name: **Meek Meet**
 
 ## Short Description (80 characters max)
 
-Free sacred texts. New-moon meetups. A voice that counts. No ads — ever.
+Blessed are the meek — organised. Free sacred texts, new-moon meetups. No ads.
 
 ## Full Description (4,000 characters max)
 
-Meek Meet is where quiet people become a chorus. Sacred texts from five faiths,
-new-moon community meetups, and a safe way to turn shared concern into real change
-— free, and with no ads. Ever.
+Meek Meet is where the quiet ones become a chorus. 🕊️
+Sacred texts from five faiths. New-moon community meetups. A safe way to turn shared concern into real change — 100% free, no ads, and no tracking of your reading. Ever.
 
-**A SACRED LIBRARY — FREE FOREVER**
-Read the Bible, Quran, Tanakh, Dhammapada and Book of Mormon in one warm, reverent
-reading space. Daily verses, weekly themes, bookmarks and highlights — everything
-free. No subscriptions, no paywalls, no advertisements. Sacred words should never
-sit behind a price tag.
+📖 THE SACRED LIBRARY — FREE FOREVER
+Read the Holy Bible, the Holy Quran, the Tanakh, the Dhammapada and the Book of Mormon in one warm, reverent reading space. Daily verses, weekly themes, bookmarks, highlights and journaling — every feature free. No subscriptions. No paywalls. No advertisement ever interrupting Scripture. Sacred words should never sit behind a price tag — so they never will here.
 
-**FIND THE OTHER MEEK IN YOUR AREA**
-Meek Meet is an Australia-first initiative that grows with demand. Discover a
-New Moon Circle near you — or gather online from anywhere while your community
-forms. Every circle is shepherded by a verified local leader, so every room stays
-safe, warm and honest.
+🧭 FIND THE OTHER MEEK IN YOUR AREA
+Meek Meet is an Australia-first initiative that grows with demand — now welcoming the world. Discover a New Moon Circle near you: church-basement warmth, a mosque's welcome, a synagogue's depth, a meditation hall's calm — or gather online by video call from anywhere while your local community forms. Every circle is led by a verified local shepherd, so every room stays safe, warm and honest.
 
-**GATHER UNDER THE NEW MOON**
-For thousands of years the new moon has called communities to pause, reflect and
-begin again. We honour that rhythm: monthly meetups, in person or by video call,
-where every voice is heard and no one is shouted over. Few people? One global
-circle. Many? The community gently divides into local circles — the system organises
-itself as you grow.
+🌙 GATHER UNDER THE NEW MOON
+For thousands of years the new moon has called communities to pause, reflect and begin again. We honour that rhythm: monthly meetups, in person or by video call, where every voice is heard and nobody is shouted over. Few people? Everyone meets in one global circle. Many? The community gently divides into local circles — the system organises itself as you grow. No logistics, no gatekeeping, no loneliness.
 
-**YOUR VOICE IS THE POINT**
-In each gathering, thoughtful questions are seeded to your phone. Answer in your
-own time, in your own words. Meek Meet's anonymised synthesis weaves many answers
-into one clear signal — the patterns, concerns and hopes your community actually
-shares. Not the loudest voice. The truest one.
+🗣️ YOUR VOICE IS THE POINT
+In each gathering, thoughtful questions arrive on your phone. Answer in your own time, in your own words — like journaling, except your words join a chorus. Meek Meet's anonymised synthesis weaves many answers into one clear signal: the real patterns, concerns and hopes your community shares. Not the loudest voice. The truest one.
 
-**QUIET POWER, PROVEN**
-"Blessed are the meek, for they shall inherit the earth." The meek do not shout —
-they organise. When many small voices speak together, councils listen, MPs listen,
-and neighbourhoods change. Meek Meet turns circle conversations into anonymised,
-decision-ready reports for local authorities. The gentlest among us, gathered, are
-the strongest force in society — we build it from the inside out.
+📊 QUIET POWER, PROVEN
+"Blessed are the meek, for they shall inherit the earth." — Matthew 5:5
+The meek do not shout — they organise. When many small voices speak together, councils listen, MPs listen, and neighbourhoods change. Meek Meet turns circle conversations into anonymised, decision-ready reports for councils, MPs and decision-makers. The gentlest among us, gathered, are the strongest force in society. We build the world from the inside out. 🌍
 
-**BECOME A SHEPHERD**
-Lead a circle in your area. Full shepherd tools: meeting scheduling, guided
-questions, live meeting flow, anonymised analytics and report generation — with
-working-with-children and police-check verification built in.
+🐑 BECOME A SHEPHERD
+Lead a circle in your area. Full shepherd tools: meeting scheduling, guided questions, live meeting flow, anonymised analytics and one-tap report generation — with working-with-children and police-check verification built in. Lead your community the way it deserves.
 
-**WHY MEEK MEET**
-• Sacred texts from five traditions — free forever, no ads, no tracking of your reading
-• Daily verses and weekly themes for reflection and journaling
-• Find or lead local circles; verified shepherds keep gatherings safe
-• New moon meeting rhythm — monthly reset, ancient and alive
-• Virtual meetups from anywhere; local circles form as your community grows
-• Answer community questions and see anonymised insight patterns emerge
-• Decision-ready reports to councils, MPs and decision-makers
-• Warm, calm design — an app that feels like rest, not noise
+✨ WHY MEEK MEET
+🕊️ Sacred texts from five traditions — Bible, Quran, Tanakh, Dhammapada, Book of Mormon
+💛 Free forever — no ads, no subscriptions, no paywalls
+📿 Daily verses and weekly themes for prayer, reflection and journaling
+⭕ Find or lead local circles — verified shepherds keep every gathering safe
+🌙 New-moon rhythm — a monthly reset, ancient and alive
+💻 Virtual meetups from anywhere; local circles form as your community grows
+🤝 People of every faith, culture and way of life — everyone welcome
+🔒 Anonymised answers — your words count, your identity stays yours
+📈 Insight patterns emerge from collective listening
+🏛️ Decision-ready reports reach councils, MPs and authorities
+🎨 Warm, calm design — an app that feels like rest, not noise
+🚫 Zero ads. Zero data selling. That's a promise.
 
-The world does not need more noise. It needs the meek, organised. Download Meek
-Meet — bring your voice, and meet the others.
+The world doesn't need more noise. It needs the meek — organised. 🕊️
+Download Meek Meet. Bring your voice. Meet the others.
 
-*An Australia-first initiative, expanding as communities form. Everyone welcome —
-every faith, every culture, every way of life.*
+🏳️ An Australia-first initiative, expanding as communities form. Everyone welcome — every faith, every culture, every way of life.
 
 ---
 
