@@ -6,11 +6,9 @@ APP NAME / TITLE (30 character limit)
 ============================================================
 Meek Meet: Sacred Text & Voice
 
-(Brand name used inside the app stays "Meek Meet". If Play Console splits
-title and short description into separate fields, put the text above in the
-app name field only if your console version allows 30 chars; otherwise use
-"Meek Meet" as the name and this title text nowhere else - the short
-description below does the heavy lifting.)
+(Paste this into EVERY language's "App name" field - it is exactly 30
+characters, the Play Console limit. The brand name inside the app stays
+"Meek Meet".)
 
 ============================================================
 SHORT DESCRIPTION (80 character limit)

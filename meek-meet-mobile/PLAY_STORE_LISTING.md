@@ -8,7 +8,7 @@ Use this content when creating your Play Store listing.
 
 Play Store title (30-char limit): **Meek Meet: Sacred Text & Voice**
 
-In-app / brand name: **Meek Meet**
+Paste this exact title into the "App name" field for **every** language in your listing (it is exactly 30 characters). The brand name inside the app stays **Meek Meet**.
 
 ## Short Description (80 characters max)
 
