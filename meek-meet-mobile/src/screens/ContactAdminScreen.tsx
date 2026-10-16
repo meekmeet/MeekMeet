@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Send, CheckCircle2, User } from 'lucide-react'
 import { hapticSuccess } from '@/lib/haptics'
@@ -7,12 +7,26 @@ import { useToast } from '@/hooks/useToast'
 import { useAuth } from '@/hooks/useAuth'
 import { supabase } from '@/lib/supabase'
 
+const SAFETY_CATEGORIES = [
+  'Child safety or exploitation',
+  'Harassment or bullying',
+  'Hate speech or discrimination',
+  'Threats or violence',
+  'Self-harm concern',
+  'Scam, fraud, or impersonation',
+  'Privacy or data concern',
+  'Inappropriate content',
+  'Other safety concern',
+] as const
+
 export default function ContactAdminScreen() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const { showToast } = useToast()
   const { user } = useAuth()
   const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [category, setCategory] = useState<string | null>(searchParams.get('category'))
   const [subject, setSubject] = useState('')
   const [message, setMessage] = useState('')
 
@@ -43,7 +57,7 @@ export default function ContactAdminScreen() {
         user_id: sessionData.session.user.id,
         name: user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Anonymous',
         email: user?.email || 'unknown',
-        subject: subject.trim(),
+        subject: category ? `[${category}] ${subject.trim()}` : subject.trim(),
         message: message.trim(),
       })
 
@@ -136,6 +150,28 @@ export default function ContactAdminScreen() {
 
       {/* Form */}
       <div className="space-y-4">
+        <div>
+          <label className="block text-xs font-medium text-charcoal-muted uppercase tracking-wider mb-1.5">
+            What kind of concern is this?
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {SAFETY_CATEGORIES.map((c) => (
+              <button
+                key={c}
+                type="button"
+                onClick={() => setCategory(category === c ? null : c)}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                  category === c
+                    ? 'bg-midnight text-cream border-midnight'
+                    : 'bg-cream-warm text-charcoal-light border-border-soft active:bg-wheat-pale'
+                }`}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div>
           <label className="block text-xs font-medium text-charcoal-muted uppercase tracking-wider mb-1.5">
             Subject

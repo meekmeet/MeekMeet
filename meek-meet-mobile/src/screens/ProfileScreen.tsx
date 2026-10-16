@@ -12,6 +12,7 @@ import {
   Church,
   FileText,
   BookOpen,
+  ShieldAlert,
 } from 'lucide-react'
 import { Camera as CapCamera, CameraResultType, CameraSource } from '@capacitor/camera'
 import { useAuth } from '@/hooks/useAuth'
@@ -405,6 +406,30 @@ export default function ProfileScreen() {
               'Save Profile'
             )}
           </button>
+        </div>
+
+        {/* Safety */}
+        <div className="pt-6">
+          <div className="bg-cream-warm rounded-xl border border-border-soft p-4">
+            <div className="flex items-start gap-3">
+              <div className="w-9 h-9 rounded-full bg-terracotta/10 flex items-center justify-center flex-shrink-0">
+                <ShieldAlert className="w-4 h-4 text-terracotta" strokeWidth={1.5} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-charcoal mb-1">See something concerning?</p>
+                <p className="text-xs text-charcoal-muted leading-relaxed mb-3">
+                  Report child safety issues, harassment, scams, threats, or any other
+                  safety concern. Our team reviews every report.
+                </p>
+                <button
+                  onClick={() => navigate('/contact-admin?category=Other%20safety%20concern')}
+                  className="px-4 py-2 bg-midnight text-cream rounded-full text-xs font-medium active:scale-95 transition-transform"
+                >
+                  Report a safety concern
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </motion.div>
     </div>
