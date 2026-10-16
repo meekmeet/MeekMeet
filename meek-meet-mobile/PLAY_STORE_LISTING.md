@@ -20,7 +20,7 @@ Meek Meet is where the quiet ones become a chorus. 🕊️
 Sacred texts from five faiths. New-moon community meetups. A safe way to turn shared concern into real change — 100% free, no ads, and no tracking of your reading. Ever.
 
 ⚠️ INDEPENDENT INITIATIVE
-Meek Meet is a private community app. It is not a government entity, is not affiliated with any government, council or public authority, and does not provide government services. Official government portal: https://www.australia.gov.au
+Meek Meet is a private community app. It is not a government entity, is not affiliated with any government, council or public authority, and does not provide government services. Official government portals: australia.gov.au · usa.gov · gov.uk · gov.il
 
 📖 THE SACRED LIBRARY — FREE FOREVER
 Read the Holy Bible, the Holy Quran, the Tanakh, the Dhammapada and the Book of Mormon in one warm, reverent reading space. Daily verses, weekly themes, bookmarks, highlights and journaling — every feature free. No subscriptions. No paywalls. No advertisement ever interrupting Scripture. Sacred words should never sit behind a price tag — so they never will here.
@@ -36,7 +36,7 @@ In each gathering, thoughtful questions arrive on your phone. Answer in your own
 
 📊 QUIET POWER, PROVEN
 "Blessed are the meek, for they shall inherit the earth." — Matthew 5:5
-The meek do not shout — they organise. When many small voices speak together, neighbourhoods change and leaders listen. Meek Meet turns circle conversations into anonymised, decision-ready reports — yours to share with local councils, MPs or community groups through their official channels (find them at https://www.australia.gov.au). The gentlest among us, gathered, are the strongest force in society. We build the world from the inside out. 🌍
+The meek do not shout — they organise. When many small voices speak together, neighbourhoods change and leaders listen. Meek Meet turns circle conversations into anonymised, decision-ready reports — yours to share with local councils, MPs or community groups through their official channels (see the official portals above). The gentlest among us, gathered, are the strongest force in society. We build the world from the inside out. 🌍
 
 🐑 BECOME A SHEPHERD
 Lead a circle in your area. Full shepherd tools: meeting scheduling, guided questions, live meeting flow, anonymised analytics and one-tap report generation — with identity and safeguarding verification for every leader. Lead your community the way it deserves.
