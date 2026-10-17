@@ -58,6 +58,7 @@ function createMockSupabase(responses: Record<string, { data?: any; error?: any 
     channel: vi.fn().mockReturnValue({
       on: vi.fn().mockReturnValue({ subscribe: vi.fn().mockReturnValue({ unsubscribe: vi.fn() }) }),
     }),
+    rpc: vi.fn().mockResolvedValue({ error: null }),
   }
 }
 
@@ -183,5 +184,130 @@ describe('ProfileScreen', () => {
     const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement
     expect(fileInput).toBeInTheDocument()
     expect(fileInput).toHaveAttribute('accept', 'image/jpeg,image/png,image/webp,image/jpg')
+  })
+
+  it('shows a delete account section', async () => {
+    ;(useAuth as any).mockReturnValue({
+      user: { id: 'user-1', email: 'test@example.com' },
+      signOut: vi.fn().mockResolvedValue(undefined),
+    })
+
+    const mockSb = createMockSupabase({
+      profiles: {
+        data: { full_name: 'John', location: '', role: 'member', avatar_url: null },
+        error: null,
+      },
+    })
+    vi.mocked(supabase).from = mockSb.from as any
+
+    renderScreen()
+
+    await waitFor(() => {
+      expect(screen.getByText('Your Profile')).toBeInTheDocument()
+    })
+
+    expect(screen.getByText(/Permanently delete your account/)).toBeInTheDocument()
+    fireEvent.click(screen.getAllByRole('button', { name: /Delete account/i })[0])
+    expect(screen.getByText('Delete your account?')).toBeInTheDocument()
+  })
+
+  it('requires typing "delete" before the confirm button enables', async () => {
+    ;(useAuth as any).mockReturnValue({
+      user: { id: 'user-1', email: 'test@example.com' },
+      signOut: vi.fn().mockResolvedValue(undefined),
+    })
+
+    const mockSb = createMockSupabase({
+      profiles: {
+        data: { full_name: 'John', location: '', role: 'member', avatar_url: null },
+        error: null,
+      },
+    })
+    vi.mocked(supabase).from = mockSb.from as any
+
+    renderScreen()
+
+    await waitFor(() => {
+      expect(screen.getByText('Your Profile')).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getAllByRole('button', { name: /Delete account/i })[0])
+
+    const confirmButton = screen.getByRole('button', { name: /Delete forever/i })
+    expect(confirmButton).toBeDisabled()
+
+    fireEvent.change(screen.getByPlaceholderText('delete'), { target: { value: 'delete' } })
+    expect(confirmButton).toBeEnabled()
+  })
+
+  it('deletes the account, signs out and returns to login', async () => {
+    const mockSignOut = vi.fn().mockResolvedValue(undefined)
+    ;(useAuth as any).mockReturnValue({
+      user: { id: 'user-1', email: 'test@example.com' },
+      signOut: mockSignOut,
+    })
+
+    const mockSb = createMockSupabase({
+      profiles: {
+        data: { full_name: 'John', location: '', role: 'member', avatar_url: null },
+        error: null,
+      },
+    })
+    vi.mocked(supabase).from = mockSb.from as any
+    const rpcMock = vi.fn().mockResolvedValue({ error: null })
+    vi.mocked(supabase).rpc = rpcMock as any
+
+    renderScreen()
+
+    await waitFor(() => {
+      expect(screen.getByText('Your Profile')).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getAllByRole('button', { name: /Delete account/i })[0])
+    fireEvent.change(screen.getByPlaceholderText('delete'), { target: { value: 'delete' } })
+    fireEvent.click(screen.getByRole('button', { name: /Delete forever/i }))
+
+    await waitFor(() => {
+      expect(rpcMock).toHaveBeenCalledWith('delete_own_account')
+    })
+    await waitFor(() => {
+      expect(mockSignOut).toHaveBeenCalled()
+    })
+    expect(mockNavigate).toHaveBeenCalledWith('/login')
+  })
+
+  it('shows an error toast when deletion fails', async () => {
+    ;(useAuth as any).mockReturnValue({
+      user: { id: 'user-1', email: 'test@example.com' },
+      signOut: vi.fn().mockResolvedValue(undefined),
+    })
+
+    const mockSb = createMockSupabase({
+      profiles: {
+        data: { full_name: 'John', location: '', role: 'member', avatar_url: null },
+        error: null,
+      },
+    })
+    vi.mocked(supabase).from = mockSb.from as any
+    const rpcMock = vi.fn().mockResolvedValue({ error: { message: 'Not authenticated' } })
+    vi.mocked(supabase).rpc = rpcMock as any
+
+    renderScreen()
+
+    await waitFor(() => {
+      expect(screen.getByText('Your Profile')).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getAllByRole('button', { name: /Delete account/i })[0])
+    fireEvent.change(screen.getByPlaceholderText('delete'), { target: { value: 'delete' } })
+    fireEvent.click(screen.getByRole('button', { name: /Delete forever/i }))
+
+    await waitFor(() => {
+      expect(mockShowToast).toHaveBeenCalledWith(
+        'Could not delete account: Not authenticated',
+        'error'
+      )
+    })
+    expect(mockNavigate).not.toHaveBeenCalledWith('/login')
   })
 })

@@ -14,12 +14,12 @@ export default function DeleteAccountPage() {
 
         <div className="prose prose-lg prose-stone max-w-none">
           <p>
-            You can request that we delete your Meek Meet account and the personal data
-            associated with it. To start the process, send an email from the address
-            registered to your account.
+            The quickest way to delete your account is in the app itself: go to{" "}
+            <strong>Profile → Delete account</strong>, confirm, and your account and
+            personal data are removed immediately.
           </p>
 
-          <h2>How to request account deletion</h2>
+          <h2>How to request account deletion by email</h2>
           <ol>
             <li>
               Email us at{" "}

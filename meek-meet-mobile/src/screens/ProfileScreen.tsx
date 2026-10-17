@@ -13,6 +13,8 @@ import {
   FileText,
   BookOpen,
   ShieldAlert,
+  Trash2,
+  AlertTriangle,
 } from 'lucide-react'
 import { Camera as CapCamera, CameraResultType, CameraSource } from '@capacitor/camera'
 import { useAuth } from '@/hooks/useAuth'
@@ -21,7 +23,7 @@ import { supabase } from '@/lib/supabase'
 
 export default function ProfileScreen() {
   const navigate = useNavigate()
-  const { user } = useAuth()
+  const { user, signOut } = useAuth()
   const { showToast } = useToast()
 
   const [fullName, setFullName] = useState('')
@@ -37,6 +39,10 @@ export default function ProfileScreen() {
   const [isSaving, setIsSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [deleteConfirmText, setDeleteConfirmText] = useState('')
+  const [isDeleting, setIsDeleting] = useState(false)
 
   // Track whether enhanced columns exist in the DB schema
   const [hasEnhancedSchema, setHasEnhancedSchema] = useState(false)
@@ -207,9 +213,28 @@ export default function ProfileScreen() {
       setAvatarUrl(null)
       showToast('Photo removed', 'success')
     } catch (err: any) {
-      showToast('Failed to remove photo: ' + (err.message || 'Unknown error'), 'error')
+      showToast('Failed to remove photo: ' + (err?.message || 'Unknown error'), 'error')
     }
     setUploadingAvatar(false)
+  }
+
+  const handleDeleteAccount = async () => {
+    if (!user || deleteConfirmText.trim().toLowerCase() !== 'delete') return
+    setIsDeleting(true)
+    const { error } = await supabase.rpc('delete_own_account')
+    if (error) {
+      showToast('Could not delete account: ' + error.message, 'error')
+      setIsDeleting(false)
+      return
+    }
+    // The auth user no longer exists - clear the local session silently
+    try {
+      await signOut()
+    } catch {
+      // session is already invalid; local sign-out still clears storage
+    }
+    showToast('Your account has been deleted', 'success')
+    navigate('/login')
   }
 
   if (isLoading) {
@@ -431,7 +456,86 @@ export default function ProfileScreen() {
             </div>
           </div>
         </div>
+
+        {/* Delete account */}
+        <div className="pt-2">
+          <div className="bg-cream-warm rounded-xl border border-border-soft p-4">
+            <div className="flex items-start gap-3">
+              <div className="w-9 h-9 rounded-full bg-terracotta/10 flex items-center justify-center flex-shrink-0">
+                <Trash2 className="w-4 h-4 text-terracotta" strokeWidth={1.5} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-charcoal mb-1">Delete account</p>
+                <p className="text-xs text-charcoal-muted leading-relaxed mb-3">
+                  Permanently delete your account, profile, responses and RSVPs.
+                  Anonymised community insights may be kept as statistical data.
+                </p>
+                <button
+                  onClick={() => setShowDeleteModal(true)}
+                  className="px-4 py-2 border border-terracotta text-terracotta rounded-full text-xs font-medium active:scale-95 transition-transform"
+                >
+                  Delete account
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </motion.div>
+
+      {/* Delete account confirmation modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-6">
+          <div
+            className="absolute inset-0 bg-midnight/60"
+            onClick={() => !isDeleting && setShowDeleteModal(false)}
+          />
+          <div className="relative bg-cream rounded-2xl p-6 w-full max-w-sm shadow-xl">
+            <div className="w-11 h-11 rounded-full bg-terracotta/10 flex items-center justify-center mb-4">
+              <AlertTriangle className="w-5 h-5 text-terracotta" strokeWidth={1.5} />
+            </div>
+            <h2 className="font-serif text-lg text-charcoal mb-2">Delete your account?</h2>
+            <p className="text-sm text-charcoal-muted leading-relaxed mb-4">
+              This permanently deletes your profile, responses, RSVPs and shepherd
+              application. Anonymised community insights may be kept as statistical
+              data. This cannot be undone.
+            </p>
+            <label className="text-xs text-charcoal-muted block mb-1.5">
+              Type <strong className="text-charcoal">delete</strong> to confirm
+            </label>
+            <input
+              type="text"
+              value={deleteConfirmText}
+              onChange={(e) => setDeleteConfirmText(e.target.value)}
+              placeholder="delete"
+              autoFocus
+              className="w-full px-4 py-3 bg-cream-warm border border-border-soft rounded-xl text-sm text-charcoal placeholder:text-charcoal-muted focus:outline-none focus:ring-1 focus:ring-terracotta mb-4"
+            />
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                disabled={isDeleting}
+                className="flex-1 py-3 border border-border-soft text-charcoal rounded-full text-sm font-medium active:scale-[0.98] transition-transform disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteAccount}
+                disabled={isDeleting || deleteConfirmText.trim().toLowerCase() !== 'delete'}
+                className="flex-1 py-3 bg-terracotta text-cream rounded-full text-sm font-medium active:scale-[0.98] transition-transform disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" strokeWidth={1.5} />
+                    Deleting...
+                  </>
+                ) : (
+                  'Delete forever'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

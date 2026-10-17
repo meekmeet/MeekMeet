@@ -20,6 +20,10 @@ const DEVICES = [
   { dir: 'tablet7', W: 1920, H: 1200, kind: 'tablet' },
   { dir: 'tablet10', W: 2560, H: 1600, kind: 'tablet10', s: 2560 / 1920 },
   { dir: 'chromebook', W: 1920, H: 1080, kind: 'chromebook' },
+  // Apple App Store sets
+  { dir: 'iphone67', W: 1290, H: 2796, kind: 'iphone' },
+  { dir: 'iphone65', W: 1242, H: 2688, kind: 'iphone' },
+  { dir: 'ipad129', W: 2048, H: 2732, kind: 'ipad' },
 ]
 
 // Uniform scale of the 1080-reference grid. The phone canvas is 1080×1920 so
@@ -60,6 +64,10 @@ function deviceGeometry(kind, availH, maxW, s) {
   let b, r, sr, ratio, deck = 0, deckExtra = 0
   if (kind === 'phone') {
     b = snap8(40 * s); r = snap8(64 * s); sr = Math.max(8, r - b); ratio = 9 / 19.5
+  } else if (kind === 'iphone') {
+    b = snap8(36 * s); r = snap8(72 * s); sr = Math.max(8, r - b); ratio = 1290 / 2796
+  } else if (kind === 'ipad') {
+    b = snap8(30 * s); r = snap8(36 * s); sr = Math.max(8, snap8(12 * s)); ratio = 2048 / 2732
   } else if (kind === 'tablet') {
     b = snap8(36 * s); r = snap8(28 * s) + snap8(16 * s); sr = Math.max(8, snap8(14 * s)); ratio = 16 / 10
   } else if (kind === 'tablet10') {
@@ -86,7 +94,7 @@ function deviceHTML(kind, geo, screenContent) {
   const bezelBg = kind === 'chromebook' ? 'linear-gradient(180deg,#e2e2e6,#c6c6cc)' : '#101219'
   const bezelShadow = kind === 'chromebook' ? 'inset 0 0 0 1px rgba(0,0,0,.18)' : 'inset 0 0 0 1px rgba(255,255,255,.06)'
   const island =
-    kind === 'phone'
+    kind === 'phone' || kind === 'iphone'
       ? `<div style="position:absolute;top:10px;left:50%;transform:translateX(-50%);width:${Math.round(geo.screenW * 0.3)}px;height:20px;border-radius:999px;background:#07080c;z-index:9"></div>`
       : ''
   const deck =
@@ -230,7 +238,7 @@ async function main() {
 
       // Pass 2 — final artboard with device sized to fit exactly
       const landscape = geo.screenW > geo.screenH
-      const screenContent = buildScreen(concept, geo.screenW, geo.screenH, landscape, device.kind === 'phone')
+      const screenContent = buildScreen(concept, geo.screenW, geo.screenH, landscape, device.kind === 'phone' || device.kind === 'iphone')
       const html = artboardHTML({ concept, device, geo, s, W: device.W, H: device.H, margin, screenContent })
       await page.setContent(html, { waitUntil: 'load', timeout: 60000 })
       await page.evaluate(() => document.fonts.ready)
