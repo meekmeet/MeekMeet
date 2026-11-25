@@ -5,6 +5,11 @@
   "language": "en",
   "note": "Jewish writings of the Second Temple period (c. 300 BCE - 100 CE) that were revered for centuries yet never entered the Bible of any major church. The Book of Enoch is quoted in the New Testament epistle of Jude and was sacred scripture in Ethiopia to this day.",
   "books": [
-    { "id": "1_enoch", "name": "The Book of Enoch (1 Enoch)", "chapters": 5 }
+    { "id": "1_enoch", "name": "The Book of Enoch (1 Enoch)", "chapters": 5 },
+    { "id": "4_ezra", "name": "Fourth Ezra — Selected Chapters", "chapters": 3 },
+    { "id": "2_baruch", "name": "Second Baruch — Selected Chapters", "chapters": 3 },
+    { "id": "psalms_of_solomon", "name": "Psalms of Solomon — Selected Psalms", "chapters": 3 },
+    { "id": "odes_of_solomon", "name": "Odes of Solomon — Selected Odes", "chapters": 3 },
+    { "id": "testaments_twelve", "name": "Testaments of the Twelve Patriarchs — Selected Testaments", "chapters": 3 }
   ]
 }

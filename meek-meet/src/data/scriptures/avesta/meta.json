@@ -1,0 +1,10 @@
+{
+  "tradition": "avesta",
+  "name": "The Gathas of Zarathustra",
+  "translation": "Selected excerpts adapted from public-domain translations (after Lawrence H. Mills, Sacred Books of the East, 1887)",
+  "language": "en",
+  "note": "The hymns of Zarathustra (Zoroaster), founder of the faith that taught the world about the struggle of light and darkness, the last judgement, and the renovation of the earth. Composed in an ancient Iranian tongue, they are among the oldest religious poems in any language.",
+  "books": [
+    { "id": "gathas", "name": "The Gathas — Selected Hymns", "chapters": 3 }
+  ]
+}

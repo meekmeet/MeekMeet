@@ -5,6 +5,8 @@
   "language": "en",
   "note": "Sayings of Confucius (Kongzi, 551-479 BCE) gathered by his disciples — the most influential book ever written in East Asia. For two thousand years it shaped how China, Korea, Japan, and Vietnam understood family, government, and the cultivated person.",
   "books": [
-    { "id": "analects", "name": "The Analects (Lun Yu) — Selected Books", "chapters": 7 }
+    { "id": "analects", "name": "The Analects (Lun Yu) — Selected Books", "chapters": 7 },
+    { "id": "great_learning", "name": "The Great Learning", "chapters": 3 },
+    { "id": "doctrine_of_mean", "name": "The Doctrine of the Mean", "chapters": 3 }
   ]
 }

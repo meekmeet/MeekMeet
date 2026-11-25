@@ -19,6 +19,20 @@ export const SACRED_LIBRARY_TRADITIONS = [
   'confucian',
   'sikh',
   'jain',
+  'jewish_wisdom',
+  'kabbalah',
+  'gnostic_codices',
+  'apostolic_fathers',
+  'desert_fathers',
+  'christian_mystics',
+  'celtic',
+  'gita',
+  'buddhist_sutras',
+  'sufi_wisdom',
+  'avesta',
+  'hermetica',
+  'egyptian_wisdom',
+  'mandaean',
 ] as const
 
 export const ALL_READING_TRADITIONS = [...CORE_TRADITIONS, ...SACRED_LIBRARY_TRADITIONS]

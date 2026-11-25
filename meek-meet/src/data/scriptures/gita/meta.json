@@ -1,0 +1,10 @@
+{
+  "tradition": "gita",
+  "name": "The Bhagavad Gita",
+  "translation": "Selected excerpts adapted from The Song Celestial, the public-domain verse translation of Sir Edwin Arnold (1885)",
+  "language": "en",
+  "note": "The song of the Lord — the dialogue between the warrior Arjuna and the charioteer Krishna on the field of Kurukshetra, on the eve of battle. Seven hundred verses that hold the whole of Hindu teaching: duty, devotion, and the Self that cannot be slain.",
+  "books": [
+    { "id": "bhagavad_gita", "name": "The Bhagavad Gita — Selected Verses", "chapters": 3 }
+  ]
+}

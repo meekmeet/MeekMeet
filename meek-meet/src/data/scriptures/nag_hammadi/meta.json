@@ -7,6 +7,9 @@
   "books": [
     { "id": "gospel_of_thomas", "name": "The Gospel of Thomas", "chapters": 5 },
     { "id": "gospel_of_truth", "name": "The Gospel of Truth", "chapters": 3 },
-    { "id": "gospel_of_philip", "name": "The Gospel of Philip", "chapters": 3 }
+    { "id": "gospel_of_philip", "name": "The Gospel of Philip", "chapters": 3 },
+    { "id": "thunder_perfect_mind", "name": "The Thunder, Perfect Mind", "chapters": 3 },
+    { "id": "apocryphon_of_john", "name": "The Apocryphon of John", "chapters": 3 },
+    { "id": "dialogue_of_saviour", "name": "The Dialogue of the Saviour", "chapters": 3 }
   ]
 }

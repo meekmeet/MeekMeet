@@ -1,0 +1,10 @@
+{
+  "tradition": "mandaean",
+  "name": "The Ginza Rabba",
+  "translation": "Selected excerpts adapted from the public-domain translation of E.S. Drower (1925)",
+  "language": "en",
+  "note": "The great treasure of the Mandaeans — the last surviving gnostic religion on earth, a small community of river-dwelling baptists in Iraq and Iran whose scripture was old when Islam arrived. Almost no one outside the community has heard of it.",
+  "books": [
+    { "id": "ginza_rabba", "name": "The Ginza Rabba — Selections", "chapters": 3 }
+  ]
+}

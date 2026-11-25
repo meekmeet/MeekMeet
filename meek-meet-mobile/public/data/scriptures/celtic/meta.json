@@ -1,0 +1,10 @@
+{
+  "tradition": "celtic",
+  "name": "The Celtic Christian Tradition",
+  "translation": "Selected excerpts adapted from the public-domain Carmina Gadelica of Alexander Carmichael (1900)",
+  "language": "en",
+  "note": "The prayers and blessings of the Gaelic West — gathered from the islands of Scotland where a Christianity of hearth, sea, and season survived in oral tradition for a thousand years after the world forgot it.",
+  "books": [
+    { "id": "carmina_gadelica", "name": "Carmina Gadelica — Hymns and Incantations", "chapters": 3 }
+  ]
+}

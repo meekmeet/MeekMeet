@@ -1,0 +1,11 @@
+{
+  "tradition": "kabbalah",
+  "name": "The Kabbalah",
+  "translation": "Selected excerpts adapted from public-domain translations (after Knut Stenring, 1923; Christian D. Ginsburg, 1863; S.L. MacGregor Mathers, 1887)",
+  "language": "en",
+  "note": "The mystical tradition of Judaism: the Book of Formation, which imagines creation as letters and numbers, and the Zohar, the 'Book of Splendour' that became the third pillar of Jewish learning.",
+  "books": [
+    { "id": "sefer_yetzirah", "name": "Sefer Yetzirah — The Book of Formation", "chapters": 3 },
+    { "id": "zohar", "name": "The Zohar — Book of Splendour, Selections", "chapters": 3 }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "tradition": "gnostic_codices",
+  "name": "The Other Gnostic Codices",
+  "translation": "Selected excerpts adapted from public-domain and early translations (after F.C. Burkitt, 1904; G.R.S. Mead, 1921; the Berlin Codex)",
+  "language": "en",
+  "note": "Gnostic works that survived outside the Nag Hammadi library: the Gospel of Mary from the Berlin Codex, the Hymn of the Pearl from the Acts of Thomas, and the great system of Pistis Sophia.",
+  "books": [
+    { "id": "gospel_of_mary", "name": "The Gospel of Mary", "chapters": 3 },
+    { "id": "hymn_of_pearl", "name": "The Hymn of the Pearl", "chapters": 3 },
+    { "id": "pistis_sophia", "name": "Pistis Sophia — Selections", "chapters": 3 }
+  ]
+}

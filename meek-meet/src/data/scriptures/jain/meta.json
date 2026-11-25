@@ -6,6 +6,7 @@
   "note": "Selections from the foundational texts of Jainism, a tradition of radical nonviolence older than Buddhism. The Tattvartha Sutra (c. 2nd-5th century CE) condenses Jain doctrine into a single page; the Acaranga Sutra, the oldest Jain text, teaches ahimsa — nonviolence toward every living being.",
   "books": [
     { "id": "tattvartha", "name": "The Tattvartha Sutra", "chapters": 2 },
-    { "id": "acaranga", "name": "The Acaranga Sutra", "chapters": 2 }
+    { "id": "acaranga", "name": "The Acaranga Sutra", "chapters": 2 },
+    { "id": "kalpasutra", "name": "The Kalpa Sutra — Lives of the Tirthankaras", "chapters": 3 }
   ]
 }

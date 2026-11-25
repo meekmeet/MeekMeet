@@ -1,0 +1,12 @@
+{
+  "tradition": "apostolic_fathers",
+  "name": "The Apostolic Fathers",
+  "translation": "Selected excerpts adapted from the Ante-Nicene Fathers translation (1885)",
+  "language": "en",
+  "note": "The earliest Christian writings outside the New Testament: the Didache, a church manual from the first century; the Shepherd of Hermas, the most widely read Christian book of the second century; and the letter of Clement of Rome, written while some apostles were likely still alive.",
+  "books": [
+    { "id": "didache", "name": "The Didache — The Teaching of the Twelve", "chapters": 3 },
+    { "id": "shepherd_of_hermas", "name": "The Shepherd of Hermas — Selections", "chapters": 3 },
+    { "id": "first_clement", "name": "1 Clement — Selections", "chapters": 3 }
+  ]
+}

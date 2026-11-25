@@ -1,0 +1,10 @@
+{
+  "tradition": "hermetica",
+  "name": "The Hermetica",
+  "translation": "Selected excerpts adapted from the public-domain translation of G.R.S. Mead (1906)",
+  "language": "en",
+  "note": "The philosophical revelation attributed to Hermes Trismegistus, thrice-great master of the ancient mystery schools. Buried with the fall of Alexandria, rediscovered in 1460, and credited with igniting the Renaissance.",
+  "books": [
+    { "id": "corpus_hermeticum", "name": "The Corpus Hermeticum — Selections", "chapters": 3 }
+  ]
+}

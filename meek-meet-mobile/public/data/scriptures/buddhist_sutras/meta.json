@@ -1,0 +1,16 @@
+{
+  "tradition": "buddhist_sutras",
+  "name": "The Buddhist Sutras",
+  "translation": "Selected excerpts adapted from the Pali canon and classical translations (after Wong Mou-lam, 1930; the Sacred Books of the Buddhists)",
+  "language": "en",
+  "note": "Beyond the Dhammapada: the perfection-of-wisdom Heart Sutra, the great Lotus Sutra, the Buddha's teachings on loving-kindness and free inquiry, Shantideva's Way of the Bodhisattva, the Zen Platform Sutra, and the verses of the earliest Buddhist nuns.",
+  "books": [
+    { "id": "heart_sutra", "name": "The Heart Sutra", "chapters": 1 },
+    { "id": "lotus_sutra", "name": "The Lotus Sutra — Selections", "chapters": 3 },
+    { "id": "metta_sutta", "name": "The Metta Sutta — Loving-Kindness", "chapters": 1 },
+    { "id": "kalama_sutta", "name": "The Kalama Sutta — The Charter of Free Inquiry", "chapters": 2 },
+    { "id": "bodhicaryavatara", "name": "The Way of the Bodhisattva — Selections", "chapters": 3 },
+    { "id": "platform_sutra", "name": "The Platform Sutra — Selections", "chapters": 3 },
+    { "id": "therigatha", "name": "Therigatha — Verses of the Elder Nuns", "chapters": 3 }
+  ]
+}

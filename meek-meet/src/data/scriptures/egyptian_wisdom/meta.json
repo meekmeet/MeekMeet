@@ -1,0 +1,11 @@
+{
+  "tradition": "egyptian_wisdom",
+  "name": "The Wisdom of Ancient Egypt",
+  "translation": "Selected excerpts adapted from public-domain translations (after Battiscombe Gunn, 1918; E.A. Wallis Budge, 1895)",
+  "language": "en",
+  "note": "The oldest wisdom literature on earth: the Maxims of Ptahhotep, written before Abraham, and the Book of the Dead, the Egyptian guide for the soul's journey through the hall of judgement.",
+  "books": [
+    { "id": "maxims_of_ptahhotep", "name": "The Maxims of Ptahhotep", "chapters": 3 },
+    { "id": "book_of_the_dead", "name": "The Book of the Dead — Selections", "chapters": 3 }
+  ]
+}

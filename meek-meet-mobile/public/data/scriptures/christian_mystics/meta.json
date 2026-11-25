@@ -1,0 +1,14 @@
+{
+  "tradition": "christian_mystics",
+  "name": "The Christian Mystics",
+  "translation": "Selected excerpts adapted from public-domain translations (after Grace Warrack, 1901; J. Parker, 1897; the 1858 London edition)",
+  "language": "en",
+  "note": "The contemplative stream of Christianity: Julian of Norwich's showings, the anonymous Cloud of Unknowing, Meister Eckhart's sermons, the mystical theology of Pseudo-Dionysius, and John Climacus's Ladder of Divine Ascent.",
+  "books": [
+    { "id": "julian_of_norwich", "name": "Julian of Norwich — Revelations of Divine Love", "chapters": 3 },
+    { "id": "cloud_of_unknowing", "name": "The Cloud of Unknowing", "chapters": 3 },
+    { "id": "meister_eckhart", "name": "Meister Eckhart — Sermons", "chapters": 3 },
+    { "id": "mystical_theology", "name": "The Mystical Theology — Pseudo-Dionysius", "chapters": 2 },
+    { "id": "ladder_of_ascent", "name": "The Ladder of Divine Ascent — Selections", "chapters": 3 }
+  ]
+}

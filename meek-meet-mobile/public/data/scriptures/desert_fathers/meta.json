@@ -1,0 +1,10 @@
+{
+  "tradition": "desert_fathers",
+  "name": "The Desert Fathers",
+  "translation": "Selected excerpts adapted from the Apophthegmata Patrum and early public-domain translations",
+  "language": "en",
+  "note": "The sayings of the monks who fled to the Egyptian desert in the fourth century — Anthony, Macarius, Moses the Black and their sisters and brothers. Christianity's first school of inner life, recorded as short answers to those who came asking: Abba, give me a word.",
+  "books": [
+    { "id": "sayings_of_the_desert", "name": "Sayings of the Desert Fathers — Selections", "chapters": 3 }
+  ]
+}

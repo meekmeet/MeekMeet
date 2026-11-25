@@ -1,0 +1,11 @@
+{
+  "tradition": "sufi_wisdom",
+  "name": "The Sufi Path",
+  "translation": "Selected excerpts adapted from public-domain translations (after E.H. Whinfield, 1887; the classics of the Persian tradition)",
+  "language": "en",
+  "note": "The mystical heart of Islam: Rumi's Masnavi, the 'Qur'an in Persian', and Attar's Conference of the Birds, the great allegory of the soul's journey to the divine King.",
+  "books": [
+    { "id": "masnavi", "name": "The Masnavi — Selections", "chapters": 3 },
+    { "id": "conference_of_the_birds", "name": "The Conference of the Birds — Selections", "chapters": 3 }
+  ]
+}

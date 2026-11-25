@@ -15,8 +15,8 @@ import {
 const DATA_DIR = path.join(process.cwd(), "src", "data", "scriptures");
 
 describe("Sacred Library data integrity", () => {
-  it("has ten curated collections", () => {
-    expect(SACRED_LIBRARY).toHaveLength(10);
+  it("has twenty-four curated collections", () => {
+    expect(SACRED_LIBRARY).toHaveLength(24);
   });
 
   it("every collection id is unique", () => {

@@ -8,6 +8,8 @@
     { "id": "isha", "name": "Isha Upanishad", "chapters": 2 },
     { "id": "katha", "name": "Katha Upanishad", "chapters": 3 },
     { "id": "chandogya", "name": "Chandogya Upanishad", "chapters": 2 },
-    { "id": "brihadaranyaka", "name": "Brihadaranyaka Upanishad", "chapters": 3 }
+    { "id": "brihadaranyaka", "name": "Brihadaranyaka Upanishad", "chapters": 3 },
+    { "id": "mundaka", "name": "Mundaka Upanishad", "chapters": 3 },
+    { "id": "taittiriya", "name": "Taittiriya Upanishad", "chapters": 3 }
   ]
 }

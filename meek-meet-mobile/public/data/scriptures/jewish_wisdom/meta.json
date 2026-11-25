@@ -1,0 +1,12 @@
+{
+  "tradition": "jewish_wisdom",
+  "name": "The Wisdom of the Sages",
+  "translation": "Selected excerpts adapted from public-domain translations (after Charles Taylor, 1897; F.H. Colson & G.H. Whitaker)",
+  "language": "en",
+  "note": "The rabbinic and Hellenistic-Jewish wisdom that grew alongside the Talmud: the Ethics of the Fathers, the storytelling of the Midrash, and the philosophy of Philo of Alexandria.",
+  "books": [
+    { "id": "pirkei_avot", "name": "Pirkei Avot — Ethics of the Fathers", "chapters": 3 },
+    { "id": "midrash", "name": "Selections from the Midrash", "chapters": 3 },
+    { "id": "philo", "name": "Philo of Alexandria — Selections", "chapters": 3 }
+  ]
+}

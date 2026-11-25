@@ -5,6 +5,7 @@
   "language": "en",
   "note": "Eighty-one short chapters attributed to Laozi (Lao-tzu), c. 4th century BCE — the founding text of Taoism and the most translated work in world literature after the Bible. Its teaching of wu wei (effortless action) has shaped East Asian thought for two and a half millennia.",
   "books": [
-    { "id": "tao_te_ching", "name": "Tao Te Ching — Selected Chapters", "chapters": 10 }
+    { "id": "tao_te_ching", "name": "Tao Te Ching — Selected Chapters", "chapters": 10 },
+    { "id": "chuang_tzu", "name": "The Chuang Tzu — Selected Chapters", "chapters": 3 }
   ]
 }
