@@ -1,18 +1,12 @@
-// Generates the two background bands for the circle summons emails:
+// Generates the background for the circle summons emails:
 //
-//   1. new-moon-bg.png — the top of the letter: a beautiful new moon (a
-//      dark disk with a thin gold crescent on its limb, a soft glow, and
-//      sparse stars) anchored to the top of the email.
-//   2. seed-bottom.png — the bottom of the letter: ONE large Seed of Life
-//      emerging from black just below the button and overflowing off the
-//      bottom edge of the email.
-//
-// Two separate bands (top-anchored and bottom-anchored) so the composition
-// holds at any email height.
+//   new-moon-bg.png — the whole letter's sky: a dark moon bearing the
+//   Seed of Life inscribed perfectly within its limb (the seed's outer
+//   ring IS the moon's edge), a soft gold glow, and sparse stars.
 //
 //   node store-assets/sacred-background.mjs
 //
-// Output: meek-meet/public/sacred/new-moon-bg.png + seed-bottom.png
+// Output: meek-meet/public/sacred/new-moon-bg.png
 
 import sharp from "sharp";
 import { mkdirSync } from "node:fs";
@@ -88,42 +82,14 @@ function newMoonSvg() {
       <stop offset="55%" stop-color="${GOLD}" stop-opacity="0.06"/>
       <stop offset="100%" stop-color="${GOLD}" stop-opacity="0"/>
     </radialGradient>
-    <linearGradient id="crescent" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="${GOLD}" stop-opacity="0.85"/>
-      <stop offset="100%" stop-color="${GOLD}" stop-opacity="0.25"/>
-    </linearGradient>
   </defs>
   <rect width="${W}" height="${H}" fill="${BLACK}"/>
   ${stars.join("")}
   <circle cx="${cx}" cy="${cy}" r="${r * 1.9}" fill="url(#glow)"/>
-  <!-- the dark disk of the new moon, barely lifted from the night -->
-  <circle cx="${cx}" cy="${cy}" r="${r}" fill="#0b0b11" stroke="${GOLD}" stroke-width="1" stroke-opacity="0.35"/>
-  <!-- the thin crescent on the left limb -->
-  <path d="M ${cx} ${cy - r}
-           A ${r} ${r} 0 1 0 ${cx} ${cy + r}
-           A ${r * 0.86} ${r * 0.98} 0 1 1 ${cx} ${cy - r} Z"
-        fill="url(#crescent)" opacity="0.9"/>
-</svg>`;
-}
-
-// ── 2. The seed, blooming from the bottom ──────────────────────
-// A single short band (240px, the exact display height): the top ~45% is
-// kept near-black so the scripture footer sits on clean ground, then the
-// Seed of Life emerges and blooms off the bottom edge. The whole letter —
-// moon, copy, seed — fits on one screen; nothing scrolls.
-function seedBottomSvg() {
-  const H = 240;
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
-  <defs>
-    <linearGradient id="emerge" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="${BLACK}" stop-opacity="1"/>
-      <stop offset="45%" stop-color="${BLACK}" stop-opacity="0.72"/>
-      <stop offset="80%" stop-color="${BLACK}" stop-opacity="0"/>
-    </linearGradient>
-  </defs>
-  <rect width="${W}" height="${H}" fill="${BLACK}"/>
-  ${seedOfLife(W / 2, H + 10, 140, 0.95)}
-  <rect width="${W}" height="${H}" fill="url(#emerge)"/>
+  <!-- the dark disk of the moon, barely lifted from the night -->
+  <circle cx="${cx}" cy="${cy}" r="${r}" fill="#0b0b11"/>
+  <!-- the Seed of Life, inscribed so its outer ring IS the moon's limb -->
+  ${seedOfLife(cx, cy, r / 1.98, 0.9)}
 </svg>`;
 }
 
@@ -136,12 +102,6 @@ async function main() {
     .png({ compressionLevel: 9 })
     .toFile(resolve(outDir, "new-moon-bg.png"));
   console.log("✓ new-moon-bg.png");
-
-  await sharp(Buffer.from(seedBottomSvg()), { density: 120 })
-    .resize(W, 240)
-    .png({ compressionLevel: 9 })
-    .toFile(resolve(outDir, "seed-bottom.png"));
-  console.log("✓ seed-bottom.png");
 }
 
 main().catch((err) => {

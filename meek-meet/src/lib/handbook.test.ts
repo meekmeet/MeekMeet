@@ -271,10 +271,10 @@ describe("buildHandbookEmail — the summons", () => {
     expect(html).not.toContain("zoom.us");
   });
 
-  it("wears the sacred geometry: one pattern fills the whole black letter", () => {
+  it("wears the sacred geometry: the moon bears the seed, one screen, no second band", () => {
     const { html } = buildHandbookEmail({ ...base, variant: "returning" });
     expect(html).toContain(SANCTUM_MOON_BG_URL);
-    expect(html).toContain(SANCTUM_SEED_BG_URL);
+    expect(html).not.toContain("seed-bottom"); // no bottom band: nothing to expand
     expect(html).toContain("background-image");
     expect(html).toContain("logo.png"); // the mark still crowns the letter
     expect(html).toContain("#060608"); // true black
@@ -382,7 +382,7 @@ describe("buildLeaderPackEmail — the leader's summons", () => {
   it("wears the sacred geometry in gold on true black", () => {
     const { html } = buildLeaderPackEmail(base);
     expect(html).toContain(SANCTUM_MOON_BG_URL);
-    expect(html).toContain(SANCTUM_SEED_BG_URL);
+    expect(html).not.toContain("seed-bottom"); // one screen, no second band
     expect(html).toContain("#060608");
     expect(html).toContain("#c9a45c");
     expect(html).not.toContain("—");
