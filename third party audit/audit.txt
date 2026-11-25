@@ -1,0 +1,631 @@
+F U L L S I T E A U D I T - M E E K M E E T. C O M
+
+MeekMeet Audit Report
+
+Blessed are the meek - audited as a participant, a shepherd applicant, a search engine and a
+regulator would each see it.
+
+Audit date: 21 November 2026 (Sydney time)
+Domain: https://meekmeet.com
+Method: Text-fetch crawl of every sitemap URL and every linked route, corrected by a live-browser crawl of the same
+site on the same day (21 Nov 2026, 4:31-4:37pm AEDT). No account was created, no sign-in completed, no
+application submitted, no mailbox tested.
+Pages verified: 13 of 13 live - 12 in sitemap.xml plus /circles/global-new-moon, which is not in the sitemap.
+
+    Verdict. MeekMeet is the warmest site in this audit series and, technically, one of the cleanest: all 13
+    pages load, there are no dead links, the 404 page is a clean custom page, and the service is
+    genuinely free. Its problem is not engineering. It is that the site asks for the most sensitive
+    documents in the entire series - government photo ID, a Working With Children Check, a police
+    check and a first aid certificate - while naming no legal operator anywhere: no entity, no ABN or
+    ACN, no address, no named person. The Privacy Policy's own collection list then omits the photo ID
+    entirely. Layered under that are a promise of "anonymised" summaries that the Privacy Policy itself
+    contradicts, a Qur'an verse labelled as the Psalms, and a circles page that lists a circle and reports
+    "No circles found" on the same screen.
+
+Prices, counts and quotations in this report are taken verbatim from the live site on 21 November 2026.
+Where the text crawl and the live browser disagreed, the live browser governs and the disagreement is
+disclosed in the corrections addendum overleaf. Every finding is labelled with the method that established
+it.
+
+MeekMeet Audit Report - 21 November 2026                                                                             1
+READ THIS FIRST
+
+Corrections first: what the live browser changed
+
+The first pass over this site used text fetching alone. As in the earlier audits in this series, several of its
+findings did not survive a live-browser visit. They are corrected here, at the front, and the body of this report
+uses the corrected facts throughout. Findings are labelled [text-fetch], [live] or [both] so the reader can
+see which method carries each claim.
+
+Withdrawn - the inventory is 13 pages, and all of them load [live]
+Four pages that appear only in the sitemap do exist live: /circles (Find Your Circle), /voice, /child-safety and
+/delete-account. A 13th page, /circles/global-new-moon, loads live but is not in sitemap.xml at all. No dead
+links were found anywhere on the site. /dashboard redirects to /login - it is not a 404 - and an invented URL
+returns a clean custom 404 page.
+
+Withdrawn - Privacy and Terms do carry dates [live]
+Both policies are dated "Last updated 16 June 2026" live. The text-fetch pass did not surface those dates;
+the "undated policies" finding is withdrawn in full.
+
+Downgraded - cookies are covered live [live]
+The live Privacy Policy covers cookies among its sections, which span the data collected, its use, sharing,
+retention and cookies, user rights, security, children and international transfers, and name Supabase,
+Resend and Groq as third parties. The text-fetch extraction showed a differently structured 10-section
+policy with no cookies heading. The live version governs; the earlier "no cookies disclosure" finding is
+withdrawn and replaced by a note on the divergence itself in the privacy chapter.
+
+Withdrawn - the countdown works [live]
+The homepage countdown resolves live to a real date: the next New Moon Gathering is Thursday 10
+December 2026, 01:22 am AEDT. The text fetch saw only a "Loading..." placeholder. The "no verifiable
+next-new-moon date" finding is withdrawn.
+
+MeekMeet Audit Report - Corrections  2
+CORRECTIONS - 2 OF 2
+
+What the live browser added
+
+New - the circles page contradicts itself [live]
+On /circles, the Global New Moon Circle card is listed - and directly below it the page shows a "No circles
+found" empty state ("Try adjusting your filters") with no filters applied. The text fetch saw only the empty
+state. This is added as Finding F-06 and ranked P1.
+
+New - the two safety pages are orphaned [live]
+/child-safety (last updated 16 October 2026, seven sections, contact safety@meekmeet.com) and /delete-
+account (last updated 16 June 2026; deletion confirmed within 48 hours and completed within 30 days) are
+not linked from any menu or footer. Both were found only via the sitemap, and both are bare pages with no
+header or footer navigation.
+
+Corrected - the /media pipeline, live wording [live]
+Live, the four steps are: (1) Monthly Circle Questions - Live, (2) The Voice - Live, (3) Meek Meet Journal -
+In Development, (4) Meek Meet Media - In Development. The text-fetch version of the same page carried
+different step names and "In progress" labels. The report's overstatement finding is reframed accordingly:
+steps 3 and 4 are honestly labelled on /media itself, so the overstatement sits on the homepage and About
+page, which present finished reports as a current capability.
+
+Confirmed - the service is free [live]
+There are no prices, subscriptions, shop or payment flow anywhere on the site; joining is "Join Now (free)".
+The earlier payment finding is downgraded to a closed item: the only remaining gap is that the Terms
+contain no payment or refund provisions should a paid tier ever appear.
+
+New - login details and an unexplained button [live]
+Sign-in is passwordless: an email magic link ("No password needed - we'll email you a secure link") plus
+"Continue with Google". The live login also shows a "Reviewer access" button. It was viewed, not clicked,
+and nothing on the page explains it. It is flagged as an unexplained control (Finding F-11) and this report
+does not speculate on what it does.
+
+Confirmed - "Code of Love" goes nowhere [live]
+The footer "Code of Love" link points to /terms, and the Terms contain no "Code of Love" heading or
+content. There is no separate Code of Love page. The finding stands as an error (Finding F-10).
+
+MeekMeet Audit Report - Corrections  3
+EXECUTIVE SUMMARY
+
+A gentle front door in front of an unnamed operator
+
+  13 / 13                      0                      4                      $0
+
+pages load live, no dead  legal entities, ABNs,  verification documents  price of joining - free,
+         links found      addresses or named       demanded of every         confirmed live
+                                                         shepherd
+                            people, site-wide
+
+What Meek Meet is. A community listening platform built around a monthly rhythm: local circles, led by
+verified "shepherds", gather at each new moon, answer gentle questions about community, housing,
+environment and daily life, and turn the answers into reports intended for councils and decision-makers. It
+begins from Matthew 5:5 - "Blessed are the meek, for they shall inherit the earth" - and explicitly sets its
+table for every faith and none. It is Australia-first and, live, has exactly one circle: the Global New Moon
+Circle, online, open to all faiths.
+
+What is genuinely good. The child-safety page is the strongest safety document in this audit series: seven
+sections, a zero-tolerance CSAE policy, named reporting channels in four countries, and a named contact,
+safety@meekmeet.com. The shepherd bar itself - photo ID, Working With Children Check, police check
+within 12 months, current first aid - is set high and stated without hedging: "No exceptions. No shortcuts."
+Sign-in is passwordless, the account-deletion page gives real timelines (confirmation within 48 hours,
+deletion within 30 days), and the /media page honestly labels what is live and what is still in development.
+
+Where it fails. Every one of those strengths is undermined by a single absence: nobody is legally home.
+The About page says "Meek Meet is not an organisation. It is a movement of gentle hearts." The Terms of
+Service, in the same breath, take a licence over user content, reserve a right to terminate accounts, and
+choose the courts of New South Wales - acts only an operator can perform - without ever naming one. A
+shepherd applicant is asked to hand identity documents to that unnamed operator, and the Privacy Policy
+that should explain the photo ID does not list it among the documents collected. The fixes are short and
+cheap; they are ranked in the final chapter.
+
+MeekMeet Audit Report - Executive Summary                                                          4
+RANKED FINDINGS
+
+Every finding, ranked
+
+ID    Level  Finding                                                                   Method
+F-01  P0
+F-02  P0     No legal entity, ABN/ACN, address or named person anywhere on the         Both
+F-03  P1     site
+F-04  P1
+F-05  P1     Government photo ID is required of shepherds but missing from the         Text-fetch
+F-06  P1     Privacy Policy's collection list
+F-07  P1
+             "Not an organisation" (About) vs a Terms contract that licenses content, Text-fetch
+F-08  P1     terminates accounts and chooses NSW courts
+F-09  P2
+F-10  P2     "Anonymised" summaries promised on product pages; Privacy says            Text-fetch
+F-11  P2     shepherds see individual circle responses
+F-12  P2
+F-13  P2     Qur'an 21:105 labelled "written in the Psalms"; "all faiths and none" vs  Text-fetch
+F-14  P2     a Christian-only "We Unite"
+
+             /circles lists the Global New Moon Circle and shows "No circles found" Live
+             directly below it
+
+             Homepage and About present finished reports to councils as current;       Both
+             /voice is an empty placeholder and /media steps 3-4 are In
+             Development
+
+             /child-safety and /delete-account are linked from no menu or footer -     Live
+
+             sitemap-only, bare pages
+
+             /circles/global-new-moon is missing from sitemap.xml; all 12 sitemap      Both
+             entries share one identical lastmod timestamp
+
+             "Code of Love" links to /terms, which contains no Code of Love            Both
+             content; no separate page exists
+
+             Unexplained "Reviewer access" button on the public login page             Live
+
+             Generic page title ("Meek Meet | Blessed Are The Meek") on /voice,        Live
+
+             /shepherd/apply, /circles/global-new-moon and the 404 page
+
+             AI synthesis of community responses (Groq) is disclosed, but no opt-      Text-fetch
+             out or human-review step is described anywhere
+
+             Deletion described as "immediate" in-app on /delete-account, but          Both
+             Privacy routes deletion through contacting the operator
+
+Closed during the audit, not counted above: payment and refund terms - the service is free, confirmed live, so there is
+nothing to refund; the Terms simply carry no payment provisions if that ever changes. The next-new-moon countdown, the
+policy dates and the cookies disclosure were all resolved by the live corrections at the front of this report.
+
+MeekMeet Audit Report - Ranked Findings                                                                                  5
+INVENTORY AND METHOD
+
+Thirteen pages, two methods, one site
+
+Route                              Page                                                 In sitemap?
+/
+/about                             Homepage - tools, One Promise table, new-moon        Yes
+/circles
+/circles/global-new-moon           countdown
+/shepherd
+/shepherd/apply                    Who We Are - foundation, journey, Duty of Care       Yes
+/voice
+/media                             verification
+/login
+/privacy                           Find Your Circle - see Finding F-06                  Yes
+/terms
+/child-safety                      Global New Moon Circle - online, all faiths; no dates, No
+/delete-account                    times or member counts shown
+
+                                   Become a Shepherd - offer and application pitch      Yes
+
+                                   Application gate - "Please sign in to submit your    Yes
+
+                                   shepherd application"
+
+                                   The Voice - live placeholder: "Global insights will  Yes
+
+                                   appear once circles begin sharing their voices"
+
+                                   Media & Mission - four-step pipeline, live vs in-    Yes
+
+                                   development labels
+
+                                   Sign In - magic link and Google, live                Yes
+
+                                   Privacy Policy - last updated 16 June 2026 (live)    Yes
+
+                                   Terms of Service - 12 sections, last updated 16 June Yes
+                                   2026 (live)
+
+                                   Child Safety Standards - 7 sections, last updated 16 Yes
+                                   October 2026 (live)
+
+                                   Delete Your Account - last updated 16 June 2026      Yes
+
+Redirects and errors [live]. /dashboard redirects to /login. An invented URL returns a clean custom 404.
+No dead links were found in navigation, footers or body copy.
+
+Robots and sitemap [text-fetch]. robots.txt allows everything except /dashboard and /api, and declares
+the sitemap - correct for a site with a signed-in app behind it. sitemap.xml lists 12 URLs, every one
+stamped with the identical lastmod 2026-11-08T00:45:07.363Z, which reads as a build timestamp rather
+than a real modification date, and it omits /circles/global-new-moon (Finding F-09).
+
+Why the method labels matter. On six pages the two methods returned materially different content - the
+/media pipeline wording, the Privacy structure, the /circles listing, the countdown, the login controls and the
+policy dates all differ between extraction and the live browser. That is normal for a JavaScript-heavy Next.js
+site, but it is exactly why this series never publishes a text-fetch finding about a page's live state without a
+browser check.
+
+MeekMeet Audit Report - Inventory                                                                    6
+FINDING F-01 - P0
+
+No legal operator is named anywhere
+
+The Terms of Service run to 12 sections. They set eligibility, take a licence over submitted content (section
+6), reserve termination rights (section 8), disclaim liability (section 9) and choose governing law: "These
+Terms are governed by the laws of Australia. Any disputes will be resolved in the courts of New South
+Wales" (section 11). The Privacy Policy commits "Meek Meet ('we', 'us', or 'our')" to protecting its
+communities. Neither document - nor any other page on the site - ever says who "we" is.
+
+    No company, trust, incorporated association or sole-trader name appears on any of the 13 pages [both].
+    No ABN or ACN appears anywhere [both].
+    No postal or street address appears anywhere; contact is by email only - privacy@meekmeet.com,
+    legal@meekmeet.com and safety@meekmeet.com [text-fetch]. None of the three mailboxes was tested.
+    No founder, director or responsible person is named anywhere [both].
+
+Why this is the headline. Every other site in this series names somebody, even when the naming
+contradicts itself. MeekMeet is the only one that contracts, disclaims and takes licences in the name of a
+brand with no legal person behind it on the page. That matters most here because of what the site collects:
+the next finding. A shepherd who uploads a passport-grade identity document, a police check and a
+children's-worker clearance is entitled to know - on the page, before uploading - which legal person
+receives it, under which privacy regime, and against whom a complaint could be made. At present the
+answer, from the site's own documents, is: nobody who is named.
+
+   The fix is one paragraph. Name the operator once, in the Terms and the Privacy Policy: legal name,
+   ABN or ACN if any, a contact address, and the jurisdiction already chosen (New South Wales). Every
+   other finding in this chapter gets easier the moment that paragraph exists.
+
+MeekMeet Audit Report - F-01  7
+FINDINGS F-02 AND F-03
+
+The photo ID the Privacy Policy forgot, and the movement that signs
+contracts
+
+F-02 - P0: Government photo ID is collected but absent from the Privacy Policy [text-fetch]
+The About page's Duty of Care section sets four mandatory verifications, and is explicit that all four are
+required: "If a leader cannot provide all four verifications, they cannot lead a Meek Meet." The first is
+identity:
+
+   "Every leader submits government-issued photo ID. We confirm name, address, and identity before anyone is
+   approved." - /about, Identity Verified
+
+The other three - a Working With Children Check, a national police check issued within the last 12 months,
+and a current first aid certificate (HLTAID011 or equivalent) - are all faithfully listed in the Privacy Policy's
+collection section, which names "Working With Children Check, police check, and first aid documentation".
+The photo ID is not there. Section 1 lists account information, community responses, circle information,
+those three verification documents, and usage data - and stops. The single most sensitive document in the
+set, the one that confirms "name, address, and identity", is the one the collection notice omits.
+
+The Terms make the gap wider: section 5 has applicants "consent to verification of your identity and
+safeguarding credentials" without naming the document either. An applicant reading the two legal
+documents before applying would not learn that a government photo ID is required, how long it is kept, or
+when it is destroyed. The /delete-account page does confirm that "your shepherd application and
+verification documents, if any" are deleted on account deletion - the only retention statement that covers
+the ID at all, and it sits on a page nobody links to (Finding F-08).
+
+F-03 - P1: "Not an organisation" vs a contracting operator [text-fetch]
+
+   "Meek Meet is not an organisation. It is a movement of gentle hearts." - /about, Who We Are
+
+As positioning, the line is lovely. As law, the rest of the site disagrees with it. A movement cannot grant itself
+a licence over user content, terminate accounts, verify police checks "directly", or submit to the courts of
+New South Wales - an operator does those things, and the Terms repeatedly act as one. The contradiction
+is not pedantry: the same documents that disclaim being an organisation are the documents a user, a
+shepherd or a regulator would rely on when something goes wrong. Pick one account and make both
+pages tell it.
+
+MeekMeet Audit Report - F-02, F-03  8
+FINDING F-04 - P1
+
+"Anonymised" on the sales page, individual in the policy
+
+The promise a prospective shepherd reads is consistent and repeated. The /shepherd page offers
+"Beautiful, anonymised response summaries" and "Anonymised community reports". The Privacy Policy's
+section 3 reinforces it: "Individual responses are never exposed publicly", and reports shared with "councils,
+MPs, or other authorities contain only anonymised summaries". The Terms say shepherds work with
+"anonymised, aggregated community insights".
+
+Section 4 of the same Privacy Policy then says the opposite about the person who runs the circle:
+
+   "Circle shepherds can see responses submitted within their circle." - Privacy Policy, section 4, Who Can See
+   Your Data
+
+That is individual, attributed visibility - a shepherd seeing what each member of a small local circle actually
+wrote - not an anonymised summary. The Child Safety Standards confirm the same design from the other
+direction: "Community responses within circles are visible to shepherds and administrators for
+accountability." There are honest reasons for that design: safeguarding, moderation and accountability all
+argue for it. What there is not is a way for both descriptions to be true at once.
+
+Why it ranks P1. The people Meek Meet exists for - "the quiet, the overlooked, the vulnerable", in its own
+words - are being invited to share concerns about housing, safety, money and spiritual well-being. A
+participant who reads the marketing will reasonably believe their shepherd receives aggregates. A
+participant who reads section 4 learns their shepherd reads their answers. In a circle of eight neighbours,
+even a genuinely aggregated summary is often attributable in practice, which makes precision here more
+important, not less.
+
+   The fix is wording, not engineering. Say, on /shepherd and in section 3, what section 4 already
+   says: your shepherd can see your responses within your circle; what leaves the circle - to councils,
+   MPs and the public Voice dashboard - is anonymised and aggregated. That sentence costs nothing
+   and converts a contradiction into a trust feature.
+
+MeekMeet Audit Report - F-04  9
+FINDING F-05 - P1
+
+One promise, nine traditions - and two of the labels are wrong
+
+The "One Promise, Many Names" table is the best idea on the site: nine traditions, each arriving at the
+meek inheriting the earth in its own words, closing with "Different words. One promise. Every street." It
+appears on both the homepage and /about. It is also where the site's fact-checking is weakest - on the
+page whose entire purpose is accuracy across faiths.
+
+The Qur'an verse labelled as the Psalms [text-fetch]
+
+   "Islam - written in the Psalms: 'Indeed, My righteous servants shall inherit the earth.' - Qur'an 21:105"
+
+The quotation and its citation are the Qur'an's. The label above it calls the entry "written in the Psalms".
+Qur'an 21:105 itself refers back to what was written in the Psalms, which is presumably how the label went
+wrong - but as published, the table files an Islamic scripture under a Jewish and Christian book, in the one
+section of the site a Muslim visitor is most likely to read first. In a table built to honour every tradition's own
+words, each entry's label has to be beyond argument. This one is not.
+
+"All faiths and none" vs "We Unite" [text-fetch]
+/media states the inclusion promise in its strongest form: "All Faiths and None - Christians, Muslims,
+Buddhists, Hindus, Jews, Sikhs, secular humanists, the searching and the certain - every seat at the circle
+is equal." The Global New Moon Circle repeats it: "people of all faiths, cultures and backgrounds... whoever
+you are, wherever you are, you are welcome here."
+
+The About page's own "We Unite" section defines the same unity very differently: "Catholic, Protestant,
+Jehovah's Witness, Orthodox - all who hold the Bible dear find common ground in loving their neighbour."
+Four Christian traditions, a Bible test, and nobody else. A Muslim, Jewish or secular reader who lands on
+/about meets a narrower door than the one /media promised them. The homepage's framing compounds it:
+nine traditions are quoted, but every structural section around the table - the tools, the rhythm, the call - is
+carried by Christian scripture alone. That may be an honest reflection of the project's origins ("Christian is
+the spark", as the site itself puts it, well). "We Unite" should then say what the spark page says, instead of
+quietly redefining the table.
+
+MeekMeet Audit Report - F-05  10
+FINDINGS F-06 AND F-07
+
+A circle that is there and not there, and reports that do not exist yet
+
+F-06 - P1: /circles lists a circle and reports none [live]
+
+Live, /circles does two contradictory things in one viewport sequence. It lists the site's one circle - the
+Global New Moon Circle, online, all faiths - and directly below the card it renders the empty state: "No
+circles found. Try adjusting your filters", with no search term entered and no filters applied. The text fetch,
+which saw only the empty state, would have reported the page as simply empty; the live browser shows the
+real defect, which is worse and stranger: the data is present, and the page denies it underneath. For a first-
+time visitor this is the whole product - find a circle, join it - failing at step one while the evidence that it works
+sits on the same screen. It is also, in fairness, almost certainly a small front-end state bug: the empty state
+is not being suppressed when results render. Small cause, first-impression cost.
+
+The circle's own page, /circles/global-new-moon [both], is welcoming but bare: no gathering dates or times,
+no member count, no next-meet information - just the description, "Online - Zoom", and a sign-in prompt to
+RSVP. The one concrete, joinable thing on the site gives a visitor no date to put in a calendar.
+
+F-07 - P1: Reports presented as present tense; the pipeline says otherwise [both]
+
+The homepage promises outcomes in the present tense: "Meet data becomes beautiful reports. Trends
+emerge. Patterns speak." About step 06 completes the arc: "Reports reach councils, leaders, and decision-
+makers. The meek do not shout - they prove." Against that, the live evidence: /voice, the public face of the
+reporting engine, is an empty placeholder - "Global insights will appear once circles begin sharing their
+voices" [live]. And /media, to its credit, labels its own pipeline honestly: live, steps 1 (Monthly Circle
+Questions) and 2 (The Voice) are Live, while step 3 (Meek Meet Journal) and step 4 (Meek Meet Media)
+are In Development [live].
+
+So the overstatement is specific and fixable: it lives on the homepage and /about, not on /media. One circle
+exists, no circle has yet shared a voice publicly, and no report output could be found anywhere on the site.
+The honest labels already written for /media should be promoted to the two pages that currently skip them.
+
+MeekMeet Audit Report - F-06, F-07  11
+CHILD SAFETY AND ACCOUNT DELETION
+
+The best safety page in the series - that nobody can find
+
+The Child Safety Standards [text-fetch] deserve the praise first. Seven sections cover a zero-tolerance
+policy on child sexual abuse and exploitation - naming CSAM, grooming and sexualised depictions of
+minors including AI-generated imagery - age restrictions, prevention, in-app reporting, escalation, a contact
+point and review. The escalation section names the National Center for Missing & Exploited Children, the
+Australian Centre to Counter Child Exploitation, the eSafety Commissioner, the Internet Watch Foundation
+and Israeli authorities. The prevention section states the platform design plainly: no open public chat
+rooms, no stranger direct messaging, no anonymous photo sharing. The designated contact is
+safety@meekmeet.com, and the page is dated - last updated 16 October 2026 [live].
+
+Two tensions sit inside it. First, the age story: the platform is "not directed at children under 13" and is rated
+13+, yet the standards describe a design in which "no adult can privately message a minor outside
+supervised, recorded circle spaces" - which contemplates minors aged 13 to 17 participating in circles, in
+person, under shepherds whose defining checks are children's-worker clearances. That is coherent, but no
+page aimed at parents explains it in one place. Second, the app claims on this page - an in-app Contact
+Admin reporting screen, recorded circle spaces - describe a mobile app that this web audit could not
+inspect; they are recorded here as claims, not verified features.
+
+F-08 - P1: Both safety pages are orphaned [live]
+
+Neither /child-safety nor /delete-account is linked from any menu or footer on the site. Both were found only
+through sitemap.xml, and both render as bare pages with no header or footer navigation - a reader who
+lands on one has no onward path but the back button. These are the two pages a worried parent, a
+safeguarding auditor or a platform reviewer (the child-safety page states it is published to meet Google
+Play's policy requirements) is most likely to be sent to, and the two pages a user exercising a deletion right
+most needs. The Privacy Policy does not link to the deletion page either, despite describing deletion as a
+right. One footer link each closes this finding.
+
+/delete-account itself is good [both]. It offers in-app deletion, an email route via
+privacy@meekmeet.com, a 48-hour confirmation and a 30-day completion commitment [live], an itemised
+list of what is deleted - including shepherd verification documents - and an honest statement of what is
+kept: anonymised aggregates and legally required records. Finding F-14 is minor by comparison: the page
+says in-app deletion removes data "immediately", while the Privacy Policy routes the same right through
+contacting the operator; the two descriptions should be reconciled.
+
+MeekMeet Audit Report - Child Safety  12
+LOGIN, CODE OF LOVE AND AI
+
+Good sign-in, one phantom document, one unexplained button
+
+Sign-in is done properly [live]
+
+Live, /login is passwordless: enter an email address and "we'll email you a secure link" - "No password
+needed" - with "Continue with Google" as the alternative. For this audience, that is the right call: no
+passwords to forget, reuse or leak, and nothing sensitive stored server-side beyond the account itself. The
+text fetch showed only the email field and the consent line, which is a reminder of how much of this page is
+script-rendered. The consent line itself reads: "By signing in, you agree to our Terms and Code of Love" -
+which leads directly to the next finding.
+
+F-10 - P2: The Code of Love does not exist [both]
+The "Code of Love" is referenced at the moment of consent - the login page, and the footer link of the same
+name [live]. Both point to /terms. The Terms of Service contain 12 sections - About, Eligibility, Account
+Responsibilities, Community Conduct, Shepherd Verification, Content and Data, Reports, Termination,
+Disclaimers, Changes, Governing Law, Contact - and no "Code of Love" heading or content of any kind
+[text-fetch]. The live check confirms there is no separate Code of Love page [live]. So the one document a
+new user is told they are agreeing to, alongside the Terms, at the exact moment they sign in, is a document
+that does not exist. Either publish it - the site's tone suggests it would take an afternoon and be genuinely
+on-brand - or remove the reference from the consent line and the footer. Agreeing to a phantom document
+is worse than not mentioning one.
+
+F-11 - P2: "Reviewer access" [live]
+
+The live login page also displays a "Reviewer access" button. Nothing on the page labels, explains or
+contextualises it. It was viewed and not clicked, and this report makes no claim about what it does or why it
+is there. An unexplained privileged-looking control on a public sign-in page invites exactly the curiosity and
+probing it presumably exists to serve quietly. Label it, gate it, or move it.
+
+F-13 - P2: AI synthesis, disclosed but unbounded [text-fetch]
+The Privacy Policy discloses that responses are processed by AI: "We use AI to synthesise themes,
+sentiment, and consensus from aggregated community input", and names Groq among its processors
+alongside Supabase, Resend and Google Cloud. Disclosure itself puts MeekMeet ahead of most sites in
+this series. What is missing is any boundary around it: no opt-out, no statement of whether a human
+reviews a synthesis before it goes to a council or an MP, and no retention statement for data sent to the AI
+processor. For reflections that may touch faith, health, housing stress and safety, one sentence each on
+review and retention would close it.
+
+MeekMeet Audit Report - Login and AI  13
+TECHNICAL AND SEO
+
+Clean plumbing, lazy titles
+
+What is right [both]. All 13 pages load. There are no dead links. The 404 is a clean custom page, not a
+soft-404 or a stack trace [live]. /dashboard redirects to /login rather than erroring [live]. robots.txt allows
+crawling, disallows /dashboard and /api, and declares the sitemap [text-fetch]. Most pages carry distinct,
+descriptive titles: "Who We Are", "Find Your Circle", "Become a Shepherd", "Media & Mission", "Sign In",
+"Privacy Policy" and "Child Safety Standards" [text-fetch]. The countdown is real and specific - Thursday 10
+December 2026, 01:22 am AEDT [live] - and the shepherd application is correctly gated behind sign-in
+rather than exposed as a public form collecting identity documents [text-fetch].
+
+F-12 - P2: Four pages share the generic title [live]
+
+/voice, /shepherd/apply, /circles/global-new-moon and the 404 page all carry the site's default title, "Meek
+Meet | Blessed Are The Meek", instead of their own. Three of the four are pages a user is likely to share or
+bookmark - the public insights page, the application gate and the one circle's page - and the 404's generic
+title makes a broken external link harder to diagnose. Unique titles are a ten-minute fix with outsized search
+and sharing value.
+
+F-09 - P2: The sitemap omits the only circle [both]
+sitemap.xml lists 12 URLs and omits /circles/global-new-moon - the single most joinable page on the site,
+and the page the whole homepage funnel points towards. All 12 entries also share one identical lastmod
+timestamp (2026-11-08T00:45:07.363Z), which tells a search engine nothing about what actually changed.
+Add the circle page, and let lastmod reflect real edits on the policy pages at least: the policies carry genuine
+"last updated" dates (16 June and 16 October 2026) that the sitemap could agree with.
+
+Consistency notes [text-fetch]
+
+    The expansion line shifts wording between pages: "Australia-First - Expanding As Demand Grows"
+    (homepage), "Born in Australia - Expanding as communities form" (/media), "opening across Australia...
+    As demand grows, new circles form" (/circles). Same claim, three phrasings, no contradiction - but one
+    canonical line would read as more deliberate.
+    /circles describes gatherings as "warm gatherings of faith", a narrower frame than the "all faiths and
+    none" language used elsewhere - the F-05 tension surfacing in a third place.
+    The shepherd offer repeats its feature list twice on one short page (dashboard, scheduling, question
+    library, anonymised reports appear in both the bullet list and the application panel) - harmless
+    duplication, worth a tidy.
+
+MeekMeet Audit Report - Technical  14
+WHAT COULD NOT BE VERIFIED
+
+Behind the sign-in, or not yet built
+
+An honest audit ends with its own limits. The following were not verified, and no finding in this report
+depends on them:
+
+    The shepherd application form itself. /shepherd/apply requires sign-in ("Please sign in to submit your
+    shepherd application"). The form's fields, its document-upload mechanics, its storage and its consent
+    wording were not seen. Findings F-01 and F-02 are about what the public documents say and omit, not
+    about the form.
+    The leader dashboard. Promised on the homepage and /shepherd ("a warm dashboard to manage
+    their community, select questions, adjust timelines, and review responses"). It sits behind /login;
+    /dashboard redirects there. Not entered.
+    The question library. Described as "a growing library of thoughtful questions" across community,
+    environment, housing and daily life. No public sample of a single question exists anywhere on the site,
+    so its size, authorship and quality are unverified.
+    Any actual report output. No sample report, council submission or Voice insight exists publicly; /voice
+    is a placeholder [live]. Whether the reporting engine produces anything today is unverified - Finding F-
+    07 is about the present-tense claims, not the engine.
+    The mobile app. The Child Safety Standards describe an app with in-app reporting and a Contact
+    Admin screen, and /delete-account describes in-app deletion. No app was installed or tested in this
+    audit.
+    The mailboxes. privacy@meekmeet.com, legal@meekmeet.com and safety@meekmeet.com are
+    published; none was emailed, so deliverability is unverified.
+    The "Reviewer access" control. Viewed on /login, not clicked [live]. Its function is unverified by design.
+    Security headers and response codes. This audit's live-browser method does not expose HTTP
+    status codes or response headers, so no claim is made about HSTS, content-security policy or cookie
+    flags - a gap worth a dedicated technical pass, given the sensitivity of the documents the shepherd flow
+    collects.
+
+Method note: text-fetch extraction of this Next.js site repeatedly returned partial or differently structured
+content (most visibly on /privacy, /media, /circles and the homepage countdown). Every material divergence
+was resolved in favour of the live browser and disclosed in the corrections addendum. Quotations are
+verbatim from the method named beside them.
+
+MeekMeet Audit Report - Unverified  15
+FIX ORDER
+
+Do these, in this order
+
+#   Finding     Fix
+
+1   F-01        Name the operator in the Terms and Privacy Policy: legal name, ABN/ACN if any, contact
+                address. One paragraph, two pages.
+
+2   F-02        Add government photo ID to Privacy section 1, with retention and destruction terms for all
+                four verification documents.
+
+3   F-03        Reconcile "not an organisation" with the contracting Terms - either the operator is named
+                and acts, or the legal documents are rewritten to match the movement framing.
+
+4   F-04        Align the anonymisation language: shepherds see circle responses; only what leaves the
+                circle is anonymised. Say so on /shepherd and in Privacy section 3.
+
+5   F-06        Suppress the "No circles found" empty state on /circles when a circle is listed; add the
+                next gathering date and time to /circles/global-new-moon.
+
+6   F-08        Link /child-safety and /delete-account from the footer (and the deletion page from
+                Privacy), and give both pages the standard header and footer.
+
+7   F-05        Relabel the Islam entry in One Promise (it is Qur'an 21:105, referring to the Psalms - not
+                "written in the Psalms"), and rewrite "We Unite" to match the all-faiths-and-none promise
+                or narrow the promise.
+
+8   F-07        Carry /media's Live / In Development labels onto the homepage and /about report claims
+                until a first report actually exists.
+
+9   F-10        Publish the Code of Love or remove its name from the login consent line and the footer
+                link.
+
+10  F-09, F-12  Add /circles/global-new-moon to the sitemap, give the four generic-titled pages their own
+
+                titles, and let sitemap lastmod track the policy dates.
+
+11  F-11, F-13, Label or move "Reviewer access"; add AI review and retention sentences to Privacy;
+
+    F-14        reconcile the two deletion descriptions.
+
+Closing assessment. MeekMeet's faults are the cheapest kind to fix in this entire audit series: one
+paragraph of legal identity, one missing line in a privacy list, one suppressed empty state, two footer links
+and a handful of honest labels - several of which the site has already written for itself on /media and then
+failed to carry to its own front door. The warmth is real, the safety bar is real, and the engineering is sound.
+What is missing is a named somebody standing behind all three. Name them, and this becomes the easiest
+site in the series to defend.
+
+Report ends. Audit performed 21 November 2026. Sites change; findings describe meekmeet.com as crawled on that date,
+by the methods labelled throughout.
+
+MeekMeet Audit Report - Fix Order                                                                           16
+

@@ -232,7 +232,7 @@ function sanctumShell(options: { preheader: string; contentHtml: string }): stri
           </table>
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
             <tr>
-              <td align="center" valign="top" height="460" background="${SANCTUM_SEED_BG_URL}" style="background-image:url('${SANCTUM_SEED_BG_URL}'); background-position:center bottom; background-repeat:no-repeat; padding-top:24px;">
+              <td align="center" valign="top" height="240" background="${SANCTUM_SEED_BG_URL}" style="background-image:url('${SANCTUM_SEED_BG_URL}'); background-position:center bottom; background-repeat:no-repeat; padding-top:26px;">
                 <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px; width:100%;">
                   <tr>
                     <td align="center" style="padding:0 40px; font-family:${t.bodyFont}; font-size:11.5px; color:${t.faint}; line-height:2;">

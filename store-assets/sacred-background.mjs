@@ -107,18 +107,22 @@ function newMoonSvg() {
 }
 
 // ── 2. The seed, blooming from the bottom ──────────────────────
+// A single short band (240px, the exact display height): the top ~45% is
+// kept near-black so the scripture footer sits on clean ground, then the
+// Seed of Life emerges and blooms off the bottom edge. The whole letter —
+// moon, copy, seed — fits on one screen; nothing scrolls.
 function seedBottomSvg() {
-  const H = 820;
+  const H = 240;
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
   <defs>
     <linearGradient id="emerge" x1="0%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" stop-color="${BLACK}" stop-opacity="1"/>
-      <stop offset="38%" stop-color="${BLACK}" stop-opacity="0.55"/>
-      <stop offset="70%" stop-color="${BLACK}" stop-opacity="0"/>
+      <stop offset="45%" stop-color="${BLACK}" stop-opacity="0.72"/>
+      <stop offset="80%" stop-color="${BLACK}" stop-opacity="0"/>
     </linearGradient>
   </defs>
   <rect width="${W}" height="${H}" fill="${BLACK}"/>
-  ${seedOfLife(W / 2, H + 60, 300, 0.95)}
+  ${seedOfLife(W / 2, H + 10, 140, 0.95)}
   <rect width="${W}" height="${H}" fill="url(#emerge)"/>
 </svg>`;
 }
@@ -134,7 +138,7 @@ async function main() {
   console.log("✓ new-moon-bg.png");
 
   await sharp(Buffer.from(seedBottomSvg()), { density: 120 })
-    .resize(W, 820)
+    .resize(W, 240)
     .png({ compressionLevel: 9 })
     .toFile(resolve(outDir, "seed-bottom.png"));
   console.log("✓ seed-bottom.png");
