@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { rateLimit, rateLimitResponse, limiters } from "@/lib/rate-limit";
 
 // Only allow relative redirects to prevent open redirect attacks
 function sanitizeRedirect(next: string | null): string {
@@ -24,6 +25,9 @@ function sanitizeRedirect(next: string | null): string {
 }
 
 export async function GET(request: NextRequest) {
+  const limit = rateLimit(request, "auth-callback", limiters.authCallback());
+  if (!limit.ok) return rateLimitResponse(limit);
+
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
   const next = sanitizeRedirect(searchParams.get("next"));

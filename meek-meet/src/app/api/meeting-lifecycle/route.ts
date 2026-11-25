@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { isAuthorizedCron } from "@/lib/cron-auth";
+import { rateLimit, rateLimitResponse, limiters } from "@/lib/rate-limit";
 
 // This endpoint runs daily via Vercel Cron to advance the meeting lifecycle:
 // 1. Mark past meetings as completed (which triggers synthesis).
@@ -8,6 +9,9 @@ import { isAuthorizedCron } from "@/lib/cron-auth";
 // 3. Generate next-questions for circles with fresh insights.
 // 4. Generate draft circle reports once per calendar month.
 export async function GET(request: NextRequest) {
+  const limit = rateLimit(request, "meeting-lifecycle", limiters.cron());
+  if (!limit.ok) return rateLimitResponse(limit);
+
   if (!isAuthorizedCron(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { rateLimit, rateLimitResponse, limiters } from "@/lib/rate-limit";
 
 const ALLOWED_TYPES = [
   "application/pdf",
@@ -10,6 +11,9 @@ const ALLOWED_TYPES = [
 const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
 
 export async function POST(request: NextRequest) {
+  const limit = rateLimit(request, "upload-document", limiters.uploadDocument());
+  if (!limit.ok) return rateLimitResponse(limit);
+
   const supabase = await createClient();
   const {
     data: { user },

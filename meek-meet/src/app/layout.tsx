@@ -1,27 +1,51 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Source_Sans_3, Caveat } from "next/font/google";
+import localFont from "next/font/local";
 import { AuthProvider } from "@/components/auth-provider";
 import "./globals.css";
 
-const cormorant = Cormorant_Garamond({
+// Self-hosted fonts (src/app/fonts/, downloaded by scripts/download-fonts.mjs)
+// — the build never depends on a live Google Fonts fetch.
+const cormorant = localFont({
   variable: "--font-cormorant",
-  subsets: ["latin"],
   display: "swap",
-  weight: ["400", "500", "600", "700"],
+  src: [
+    { path: "./fonts/cormorant-400.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/cormorant-400-italic.woff2", weight: "400", style: "italic" },
+    { path: "./fonts/cormorant-500.woff2", weight: "500", style: "normal" },
+    { path: "./fonts/cormorant-500-italic.woff2", weight: "500", style: "italic" },
+    { path: "./fonts/cormorant-600.woff2", weight: "600", style: "normal" },
+    { path: "./fonts/cormorant-600-italic.woff2", weight: "600", style: "italic" },
+    { path: "./fonts/cormorant-700.woff2", weight: "700", style: "normal" },
+    { path: "./fonts/cormorant-700-italic.woff2", weight: "700", style: "italic" },
+  ],
 });
 
-const sourceSans = Source_Sans_3({
+const sourceSans = localFont({
   variable: "--font-source",
-  subsets: ["latin"],
   display: "swap",
-  weight: ["300", "400", "500", "600", "700"],
+  src: [
+    { path: "./fonts/source-300.woff2", weight: "300", style: "normal" },
+    { path: "./fonts/source-300-italic.woff2", weight: "300", style: "italic" },
+    { path: "./fonts/source-400.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/source-400-italic.woff2", weight: "400", style: "italic" },
+    { path: "./fonts/source-500.woff2", weight: "500", style: "normal" },
+    { path: "./fonts/source-500-italic.woff2", weight: "500", style: "italic" },
+    { path: "./fonts/source-600.woff2", weight: "600", style: "normal" },
+    { path: "./fonts/source-600-italic.woff2", weight: "600", style: "italic" },
+    { path: "./fonts/source-700.woff2", weight: "700", style: "normal" },
+    { path: "./fonts/source-700-italic.woff2", weight: "700", style: "italic" },
+  ],
 });
 
-const caveat = Caveat({
+const caveat = localFont({
   variable: "--font-caveat",
-  subsets: ["latin"],
   display: "swap",
-  weight: ["400", "500", "600", "700"],
+  src: [
+    { path: "./fonts/caveat-400.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/caveat-500.woff2", weight: "500", style: "normal" },
+    { path: "./fonts/caveat-600.woff2", weight: "600", style: "normal" },
+    { path: "./fonts/caveat-700.woff2", weight: "700", style: "normal" },
+  ],
 });
 
 export const metadata: Metadata = {

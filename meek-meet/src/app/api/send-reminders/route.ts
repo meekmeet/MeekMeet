@@ -3,6 +3,7 @@ import { createServiceClient } from "@/lib/supabase/service";
 import { getResend } from "@/lib/resend";
 import { escapeHtml } from "@/lib/validation";
 import { isAuthorizedCron } from "@/lib/cron-auth";
+import { rateLimit, rateLimitResponse, limiters } from "@/lib/rate-limit";
 
 // This endpoint sends reminder emails for meetings happening tomorrow.
 // It runs with the Supabase service role so it can read across RLS boundaries.
@@ -31,8 +32,10 @@ function first<T>(rel: T | T[] | null | undefined): T | null {
   return Array.isArray(rel) ? (rel[0] ?? null) : (rel ?? null);
 }
 export async function GET(request: NextRequest) {
+  const limit = rateLimit(request, "send-reminders", limiters.cron());
+  if (!limit.ok) return rateLimitResponse(limit);
+
   // Authorize via CRON_SECRET Bearer header (sent automatically by Vercel Cron).
-  // The endpoint is idempotent; additional rate limiting can be added later.
   if (!isAuthorizedCron(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -66,7 +69,7 @@ export async function GET(request: NextRequest) {
 
     for (const rsvp of goingRsvps) {
       const profile = first(rsvp.profiles);
-      const email = profile?.email;
+      const email = profile?.email?.trim();
       const name = profile?.full_name ?? "Friend";
       if (!email) continue;
 

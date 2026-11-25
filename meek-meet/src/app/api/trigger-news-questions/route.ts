@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isAuthorizedCron } from "@/lib/cron-auth";
+import { rateLimit, rateLimitResponse, limiters } from "@/lib/rate-limit";
+import { captureMonitoringMessage } from "@/lib/monitor";
 
 // This endpoint is called by Vercel Cron to trigger the
 // generate-news-questions Supabase Edge Function daily.
 export async function GET(request: NextRequest) {
+  const limit = rateLimit(request, "trigger-news-questions", limiters.cron());
+  if (!limit.ok) return rateLimitResponse(limit);
+
   // Authorize via CRON_SECRET Bearer header (sent automatically by Vercel Cron).
   if (!isAuthorizedCron(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -36,6 +41,10 @@ export async function GET(request: NextRequest) {
 
     if (!res.ok) {
       console.error("Edge function error:", payload);
+      captureMonitoringMessage("generate-news-questions edge function failed", {
+        status: res.status,
+        payload,
+      });
       return NextResponse.json(
         { error: "Edge function failed", details: payload },
         { status: 502 }

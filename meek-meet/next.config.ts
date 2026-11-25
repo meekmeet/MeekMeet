@@ -1,5 +1,11 @@
 import type { NextConfig } from "next";
 
+// When Sentry is configured, its ingest endpoints must be reachable from the
+// browser for error reporting (see src/instrumentation-client.ts).
+const sentryConnectOrigins = process.env.NEXT_PUBLIC_SENTRY_DSN
+  ? " https://*.ingest.sentry.io https://*.ingest.us.sentry.io"
+  : "";
+
 const nextConfig: NextConfig = {
   transpilePackages: ["@meekmeet/core"],
   images: {
@@ -40,7 +46,7 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' blob: data: https:",
               "font-src 'self'",
-              "connect-src 'self' https://*.supabase.co",
+              "connect-src 'self' https://*.supabase.co" + sentryConnectOrigins,
               "frame-ancestors 'none'",
               "base-uri 'self'",
               "form-action 'self'",

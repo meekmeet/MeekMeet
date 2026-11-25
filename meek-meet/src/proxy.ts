@@ -3,6 +3,21 @@ import { updateSession } from "@/lib/supabase/middleware";
 
 // Next.js 16 renamed the `middleware` file convention to `proxy`.
 export async function proxy(request: NextRequest) {
+  // Anonymous visitors (no Supabase auth cookie): skip the auth round-trip
+  // entirely. updateSession calls supabase.auth.getUser() — a full HTTP call
+  // to Supabase on EVERY page load — and public pages need no identity. This
+  // was hundreds of ms of fixed latency on every marketing page.
+  const hasAuthCookie = request.cookies
+    .getAll()
+    .some((c) => c.name.includes("-auth-token"));
+
+  if (!hasAuthCookie) {
+    if (request.nextUrl.pathname.startsWith("/dashboard")) {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
+    return NextResponse.next({ request });
+  }
+
   const { supabaseResponse, user } = await updateSession(request);
 
   // Protect dashboard routes

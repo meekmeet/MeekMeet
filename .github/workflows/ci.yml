@@ -22,6 +22,12 @@ jobs:
       - name: Build core package
         run: npm run build --workspace=@meekmeet/core
 
+      - name: Test core package
+        run: npm run test --workspace=@meekmeet/core
+
+      - name: Test website
+        run: npm run test:run --workspace=meek-meet
+
       - name: Lint website
         run: npm run lint --workspace=meek-meet
 

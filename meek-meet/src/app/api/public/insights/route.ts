@@ -1,12 +1,15 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-
+import { rateLimit, rateLimitResponse, limiters } from "@/lib/rate-limit";
 // Statically cacheable: this handler takes no request input, so `revalidate`
 // gives it true ISR. The only caller is /voice, which reads global + regional
 // aggregates for the all_time window.
 export const revalidate = 300;
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const limit = rateLimit(request, "public-insights", limiters.publicInsights());
+  if (!limit.ok) return rateLimitResponse(limit);
+
   // These aggregate tables have public SELECT policies, so an anon client is
   // sufficient — no need for the service role on a public endpoint.
   const supabase = createClient(

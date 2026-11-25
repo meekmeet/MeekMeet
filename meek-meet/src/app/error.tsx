@@ -1,11 +1,19 @@
 "use client";
 
+import { useEffect } from "react";
+import { captureError } from "@/lib/monitor";
+
 export default function Error({
+  error,
   reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  useEffect(() => {
+    captureError(error, { digest: error.digest, boundary: "app/error" });
+  }, [error]);
+
   return (
     <section className="min-h-screen flex items-center justify-center bg-cream grain-texture">
       <div className="text-center px-6">

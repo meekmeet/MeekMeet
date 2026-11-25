@@ -1,11 +1,19 @@
 "use client";
 
+import { useEffect } from "react";
+import { captureError } from "@/lib/monitor";
+
 export default function GlobalError({
+  error,
   reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  useEffect(() => {
+    captureError(error, { digest: error.digest, boundary: "app/global-error" });
+  }, [error]);
+
   return (
     <html lang="en">
       <body

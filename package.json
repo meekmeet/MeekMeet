@@ -13,6 +13,9 @@
     "build": "npm run build --workspace=@meekmeet/core && npm run build --workspace=meek-meet",
     "build:web": "npm run build --workspace=meek-meet",
     "build:mobile": "npm run build --workspace=meek-meet-mobile",
+    "test": "npm run test --workspace=@meekmeet/core && npm run test:run --workspace=meek-meet && npm run test:run --workspace=meek-meet-mobile",
+    "test:core": "npm run test --workspace=@meekmeet/core",
+    "test:web": "npm run test:run --workspace=meek-meet",
     "test:mobile": "npm test --workspace=meek-meet-mobile"
   },
   "devDependencies": {
