@@ -187,75 +187,74 @@ describe("buildHandbookEmail — the summons", () => {
     recipientName: "Miriam",
     circleName: "Gosford Circle",
     scheduledAt: "2026-12-01T09:00:00.000Z",
-    topic: TOPIC,
     handbookUrl: "https://meekmeet.com/dashboard/handbook/abc",
   };
 
-  it("greets the member, names the circle, and states the law of the circle", () => {
-    const { html, subject } = buildHandbookEmail({ ...base, variant: "first_circle" });
-    expect(html).toContain("Dear Miriam");
-    expect(html).toContain("Gosford Circle");
-    expect(html).toContain("answer in writing before you arrive");
-    expect(subject).toContain("expected");
+  it("is addressed to one person, and no one else", () => {
+    const { html } = buildHandbookEmail({ ...base, variant: "first_circle" });
+    expect(html).toContain("For Miriam");
+    expect(html).toContain("and no one else");
   });
 
-  it("seals the questions — the email never shows them", () => {
+  it("speaks in headlines, not paragraphs", () => {
+    const first = buildHandbookEmail({ ...base, variant: "first_circle" });
+    expect(first.html).toContain("You are expected.");
+    expect(first.subject).toBe("You are expected");
+    const returning = buildHandbookEmail({ ...base, variant: "returning" });
+    expect(returning.html).toContain("The circle turns.");
+    expect(returning.subject).toContain("four nights");
+  });
+
+  it("inscribes the night and nothing else about the gathering", () => {
     const { html } = buildHandbookEmail({ ...base, variant: "returning" });
-    expect(html).toContain("Sealed until you enter");
-    // No question from any bank may appear in the summons.
+    expect(html).toContain("Tuesday 1 December");
+    expect(html).toContain("gathers in four nights");
+    expect(html).toContain("one theme, every circle, the whole country");
+  });
+
+  it("seals everything: no theme, no questions, no place, no link", () => {
+    const { html } = buildHandbookEmail({ ...base, variant: "returning" });
+    expect(html).toContain("Sealed");
+    expect(html).toContain("BREAK THE SEAL");
+    expect(html).not.toContain("Home &amp; Street"); // the theme stays inside
+    expect(html).not.toContain(TOPIC.epithet);
+    expect(html).not.toContain(TOPIC.symbolism.slice(0, 40));
     for (const q of TOPIC.questions) {
       expect(html).not.toContain(q.text.slice(0, 30));
     }
-    expect(html).not.toContain("What does &quot;home&quot; mean to you?");
+    expect(html).not.toContain("zoom.us");
+    expect(html).not.toContain("Gosford Library");
+    expect(html).toContain("inside, never here");
   });
 
-  it("reveals the shape of the seal in Roman numerals — III questions, I threshold", () => {
+  it("shows the shape of the seal in Roman numerals", () => {
     const { html } = buildHandbookEmail({ ...base, variant: "returning" });
     expect(html).toContain("III");
-    expect(html).toContain("drawn for you by lot");
-    expect(html).toContain("threshold question");
-    expect(html).toContain("crosses every circle, every day");
+    expect(html).toContain("border-radius:999px"); // the wax seal
   });
 
-  it("names the night's theme and its nationwide thread", () => {
+  it("keeps the law of the circle to one breath", () => {
     const { html } = buildHandbookEmail({ ...base, variant: "returning" });
-    expect(html).toContain("Home &amp; Street");
-    expect(html).toContain(TOPIC.epithet);
-    expect(html).toContain("across the country");
-  });
-
-  it("keeps the redraw right without revealing the mechanism's details", () => {
-    const { html } = buildHandbookEmail({ ...base, variant: "returning" });
-    expect(html).toContain("draw another");
-    expect(html).toContain("The theme stays; the question changes");
+    expect(html).toContain("Answer in writing before you arrive. Read what you wrote when you are called.");
   });
 
   it("carries the member to the handbook behind sign-in", () => {
     const { html } = buildHandbookEmail({ ...base, variant: "first_circle" });
     expect(html).toContain("https://meekmeet.com/dashboard/handbook/abc");
-    expect(html).toContain("BREAK THE SEAL");
-    expect(html).toContain("sign in");
+    expect(html).toContain("Sign in");
   });
 
-  it("never carries a place or a join link — the way in lives behind sign-in", () => {
-    const { html } = buildHandbookEmail({ ...base, variant: "returning" });
-    expect(html).not.toContain("Gosford Library");
-    expect(html).not.toContain("zoom.us");
-    expect(html).toContain("never travels by email");
-  });
-
-  it("uses the newcomer framing and the shepherd doctrine in the PS", () => {
+  it("ends with a whisper, different for the first night", () => {
     const first = buildHandbookEmail({ ...base, variant: "first_circle" });
-    expect(first.html).toContain("The first summons");
-    expect(first.html).toContain("Every soul in that room is a shepherd");
+    expect(first.html).toContain("called by name");
     const returning = buildHandbookEmail({ ...base, variant: "returning" });
-    expect(returning.html).toContain("your work as a shepherd");
+    expect(returning.html).toContain("never heard of us");
   });
 
   it("renders in the sanctum theme — near-black and old gold", () => {
     const { html } = buildHandbookEmail({ ...base, variant: "returning" });
-    expect(html).toContain("#0d111f"); // sanctum card
-    expect(html).toContain("#c9a45c"); // old gold accent
+    expect(html).toContain("#0d111f");
+    expect(html).toContain("#c9a45c");
   });
 
   it("escapes HTML in member-controlled fields", () => {
@@ -292,48 +291,34 @@ describe("buildLeaderPackEmail — the leader's summons", () => {
     leaderName: "Leah",
     circleName: "Gosford Circle",
     scheduledAt: "2026-12-01T09:00:00.000Z",
-    topic: TOPIC,
-    roster: [
-      { name: "Miriam", variant: "first_circle" as const },
-      { name: "Sam", variant: "returning" as const },
-    ],
+    expectedCount: 7,
     leaderRoomUrl: "https://meekmeet.com/dashboard/shepherd/c1/meetings/m1",
   };
 
-  it("greets the leader and frames their work as order, never the clock", () => {
+  it("speaks in a headline, not a briefing", () => {
     const { html, subject } = buildLeaderPackEmail(base);
-    expect(html).toContain("Dear Leah");
-    expect(html).toContain("the order of the room — never the clock");
-    expect(subject).toContain("Gosford Circle");
+    expect(html).toContain("For Leah");
+    expect(html).toContain("The room is yours.");
     expect(subject).toContain("the room is yours");
   });
 
-  it("names the theme, the per-member draw, and the threshold", () => {
+  it("gives the count of souls, never their names", () => {
     const { html } = buildLeaderPackEmail(base);
-    expect(html).toContain("Home &amp; Street");
-    expect(html).toContain("drew their own questions by lot");
-    expect(html).toContain("no two handbooks in your room are the same");
-    expect(html).toContain("threshold question");
-    expect(html).toContain("the whole country is sitting with together");
+    expect(html).toContain("7 souls are expected");
+    const one = buildLeaderPackEmail({ ...base, expectedCount: 1 });
+    expect(one.html).toContain("1 soul is expected");
   });
 
-  it("names who is expected, marking first-circle members", () => {
+  it("keeps the charge to one breath and seals the rest", () => {
     const { html } = buildLeaderPackEmail(base);
-    expect(html).toContain("Miriam");
-    expect(html).toContain("FIRST CIRCLE");
-    expect(html).toContain("Sam");
-  });
-
-  it("gives the charge but seals the liturgies and the run sheet inside the room", () => {
-    const { html } = buildLeaderPackEmail(base);
-    expect(html).toContain("The charge");
-    expect(html).toContain("Open with the words kept in your leader room");
-    expect(html).toContain("mark who came and who did not");
-    // The actual words and the full run sheet are NOT in the email.
+    expect(html).toContain("the order of the room — never the clock");
+    expect(html).toContain("behind your sign-in");
+    // Names, liturgies, run sheet, theme — none of it travels by email.
+    expect(html).not.toContain("Miriam");
     expect(html).not.toContain(LEADER_OPENING_WORDS.slice(0, 40));
     expect(html).not.toContain(LEADER_CLOSING_WORDS.slice(0, 40));
-    expect(html).not.toContain("Intentions & notes for the leader");
-    expect(html).toContain("behind your sign-in");
+    expect(html).not.toContain("Home &amp; Street");
+    expect(html).not.toContain("zoom.us");
   });
 
   it("carries the leader to the leader room", () => {
@@ -342,31 +327,21 @@ describe("buildLeaderPackEmail — the leader's summons", () => {
     expect(html).toContain("OPEN YOUR LEADER ROOM");
   });
 
-  it("never carries a place or a join link", () => {
-    const { html } = buildLeaderPackEmail(base);
-    expect(html).not.toContain("zoom.us");
-    expect(html).not.toContain("Gosford Library");
-  });
-
-  it("renders in the sanctum theme", () => {
+  it("renders in the sanctum theme and ends with the doctrine whisper", () => {
     const { html } = buildLeaderPackEmail(base);
     expect(html).toContain("#0d111f");
     expect(html).toContain("#c9a45c");
+    expect(html).toContain("First among shepherds");
   });
 
   it("escapes HTML in leader-controlled fields", () => {
     const { html } = buildLeaderPackEmail({
       ...base,
       leaderName: "<b>bold</b>",
-      roster: [{ name: "<script>x</script>", variant: "returning" }],
+      circleName: "<script>x</script>",
     });
     expect(html).not.toContain("<b>bold</b>");
     expect(html).not.toContain("<script>x</script>");
-  });
-
-  it("carries the first-among-shepherds doctrine in the PS", () => {
-    const { html } = buildLeaderPackEmail(base);
-    expect(html).toContain("first among shepherds");
   });
 });
 

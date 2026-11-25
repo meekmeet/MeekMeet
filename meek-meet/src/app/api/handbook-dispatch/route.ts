@@ -11,7 +11,6 @@ import {
   drawHandbookQuestions,
   drawThresholdQuestions,
   handbookVariant,
-  type HandbookVariant,
 } from "@/lib/handbook";
 import { getTopicForDate, type CircleTopic } from "@meekmeet/core/questions";
 
@@ -51,12 +50,6 @@ interface MeetingQuestionRow {
   question_id: string;
   content: string;
   order_index: number | null;
-}
-
-interface HandbookRosterRow {
-  profile_id: string;
-  variant: HandbookVariant;
-  profiles?: { full_name: string | null } | { full_name: string | null }[] | null;
 }
 
 function first<T>(rel: T | T[] | null | undefined): T | null {
@@ -182,7 +175,6 @@ export async function GET(request: NextRequest) {
         circleName,
         scheduledAt: meeting.scheduled_at,
         variant,
-        topic,
         handbookUrl: `https://meekmeet.com/dashboard/handbook/${meeting.id}`,
       });
 
@@ -214,13 +206,10 @@ export async function GET(request: NextRequest) {
 
         const { data: rosterRows } = await supabase
           .from("session_handbooks")
-          .select("profile_id, variant, profiles(full_name)")
+          .select("profile_id")
           .eq("meeting_id", meeting.id);
 
-        const roster = ((rosterRows ?? []) as HandbookRosterRow[]).map((r) => ({
-          name: first(r.profiles)?.full_name ?? "A member",
-          variant: r.variant,
-        }));
+        const expectedCount = (rosterRows ?? []).length;
 
         for (const leader of (leaders ?? []) as { user_id: string; profiles?: ProfileRel | ProfileRel[] | null }[]) {
           const leaderProfile = first(leader.profiles);
@@ -231,8 +220,7 @@ export async function GET(request: NextRequest) {
             leaderName: leaderProfile?.full_name ?? "Leader",
             circleName,
             scheduledAt: meeting.scheduled_at,
-            topic,
-            roster,
+            expectedCount,
             leaderRoomUrl: `https://meekmeet.com/dashboard/shepherd/${meeting.circle_id}/meetings/${meeting.id}`,
           });
 

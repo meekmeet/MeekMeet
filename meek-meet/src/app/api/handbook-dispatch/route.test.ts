@@ -168,16 +168,16 @@ describe("GET /api/handbook-dispatch", () => {
 
     const memberEmail = sendMock.mock.calls.find((c) => c[0].to === "miriam@example.com")?.[0];
     expect(memberEmail).toBeDefined();
-    expect(memberEmail.subject).toContain("expected");
+    expect(memberEmail.subject).toBe("You are expected");
     expect(memberEmail.html).toContain("BREAK THE SEAL");
-    expect(memberEmail.html).toContain("threshold question");
-    expect(memberEmail.html).toContain(
+    expect(memberEmail.html).toContain(`/dashboard/handbook/${MEETING.id}`);
+    // Sealed means sealed: no theme, no questions — not even the leader's
+    // custom question — and no join link may appear in the email.
+    expect(memberEmail.html).not.toContain(
       getTopicForDate(new Date(MEETING.scheduled_at)).name.replace(/&/g, "&amp;")
     );
-    expect(memberEmail.html).toContain(`/dashboard/handbook/${MEETING.id}`);
-    // The questions themselves are sealed — not even the leader's custom
-    // question appears in the email.
     expect(memberEmail.html).not.toContain("What would make your street safer?");
+    expect(memberEmail.html).not.toContain("zoom.us");
   });
 
   it("sends the leader their summons with roster, charge and room link", async () => {
@@ -195,8 +195,9 @@ describe("GET /api/handbook-dispatch", () => {
 
     const leaderEmail = sendMock.mock.calls.find((c) => c[0].to === "leah@example.com")?.[0];
     expect(leaderEmail).toBeDefined();
-    expect(leaderEmail.html).toContain("Miriam"); // roster
-    expect(leaderEmail.html).toContain("The charge");
+    expect(leaderEmail.html).toContain("The room is yours.");
+    expect(leaderEmail.html).toContain("1 soul is expected"); // the count, never the names
+    expect(leaderEmail.html).not.toContain("Miriam");
     expect(leaderEmail.html).toContain(
       `/dashboard/shepherd/${MEETING.circle_id}/meetings/${MEETING.id}`
     );
@@ -254,7 +255,7 @@ describe("GET /api/handbook-dispatch", () => {
     const insert = mockSupa.inserts[0] as { variant: string };
     expect(insert.variant).toBe("returning");
     const memberEmail = sendMock.mock.calls.find((c) => c[0].to === "miriam@example.com")?.[0];
-    expect(memberEmail.subject).toContain("turns in four nights");
+    expect(memberEmail.subject).toContain("four nights");
     expect(memberEmail.html).toContain("The summons");
   });
 

@@ -26,7 +26,6 @@ for (const line of readFileSync(envPath, "utf-8").split(/\r?\n/)) {
 const { Resend } = await jiti.import("resend");
 const { buildHandbookEmail, buildLeaderPackEmail } =
   await jiti.import(resolve(here, "../src/lib/handbook.ts"));
-const { getTopicForDate } = await jiti.import("@meekmeet/core/questions");
 
 const to = process.argv[2] ?? "meekmeets@gmail.com";
 const apiKey = process.env.RESEND_API_KEY;
@@ -38,9 +37,6 @@ const resend = new Resend(apiKey);
 const meeting = new Date();
 meeting.setDate(meeting.getDate() + 4);
 meeting.setHours(18, 30, 0, 0);
-
-// The theme the sample circle would actually sit with that evening.
-const topic = getTopicForDate(meeting);
 
 async function send(label, subject, html) {
   const { data, error } = await resend.emails.send({
@@ -63,7 +59,6 @@ for (const variant of ["first_circle", "returning"]) {
     circleName: "Gosford Circle (sample)",
     scheduledAt: meeting.toISOString(),
     variant,
-    topic,
     handbookUrl: "https://meekmeet.com/dashboard",
   });
   await send(variant, subject, html);
@@ -73,12 +68,7 @@ const pack = buildLeaderPackEmail({
   leaderName: "Martin",
   circleName: "Gosford Circle (sample)",
   scheduledAt: meeting.toISOString(),
-  topic,
-  roster: [
-    { name: "Miriam", variant: "first_circle" },
-    { name: "Sam", variant: "returning" },
-    { name: "Grace", variant: "returning" },
-  ],
+  expectedCount: 7,
   leaderRoomUrl: "https://meekmeet.com/dashboard",
 });
 await send("leader pack", pack.subject, pack.html);
