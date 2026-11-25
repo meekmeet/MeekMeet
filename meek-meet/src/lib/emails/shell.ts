@@ -24,7 +24,7 @@ export function trackedUrl(
 // one ignored. Email-client-safe: webfont-free stacks, table layout, inline
 // styles only.
 
-export type EmailThemeKey = "parchment" | "midnight" | "terracotta";
+export type EmailThemeKey = "parchment" | "midnight" | "terracotta" | "sanctum";
 
 export interface EmailTheme {
   key: EmailThemeKey;
@@ -47,6 +47,8 @@ export interface EmailTheme {
   rule: string;
   headingFont: string;
   bodyFont: string;
+  /** Dark card — the wordmark header renders in light ink. */
+  dark?: boolean;
 }
 
 export const EMAIL_THEMES: Record<EmailThemeKey, EmailTheme> = {
@@ -93,6 +95,7 @@ export const EMAIL_THEMES: Record<EmailThemeKey, EmailTheme> = {
     rule: "#2a3350",
     headingFont: "Georgia,'Palatino Linotype','Book Antiqua',serif",
     bodyFont: "Georgia,'Palatino Linotype','Book Antiqua',serif",
+    dark: true,
   },
   terracotta: {
     key: "terracotta",
@@ -115,6 +118,29 @@ export const EMAIL_THEMES: Record<EmailThemeKey, EmailTheme> = {
     rule: "#e9c9b6",
     headingFont: "Georgia,'Times New Roman',serif",
     bodyFont: "'Source Sans 3','Segoe UI',Arial,sans-serif",
+  },
+  sanctum: {
+    key: "sanctum",
+    name: "Sanctum",
+    stage: 0, // outside the marketing ladder — reserved for circle correspondence
+    description: "Near-black and old gold — the sealed summons of the circle itself.",
+    pageBg: "#070910",
+    cardBg: "#0d111f",
+    cardBorder: "#242e4e",
+    ink: "#e9e5d8",
+    muted: "#a3abc6",
+    faint: "#79819f",
+    accent: "#c9a45c",
+    calloutBg: "#131a30",
+    calloutBorder: "#c9a45c",
+    buttonBg: "#c9a45c",
+    buttonInk: "#0d111f",
+    stepNumBg: "#c9a45c",
+    stepNumInk: "#0d111f",
+    rule: "#242e4e",
+    headingFont: "Georgia,'Palatino Linotype','Book Antiqua',serif",
+    bodyFont: "Georgia,'Palatino Linotype','Book Antiqua',serif",
+    dark: true,
   },
 };
 
@@ -253,7 +279,7 @@ export function emailShell(options: {
             </tr>
             <tr>
               <td align="center" style="padding-bottom:28px;">
-                <span style="font-family:${t.headingFont}; font-size:21px; letter-spacing:0.22em; color:${t.key === "midnight" ? "#ece7da" : "#1e2337"};">MEEK&nbsp;MEET</span>
+                <span style="font-family:${t.headingFont}; font-size:21px; letter-spacing:0.22em; color:${t.dark ? "#ece7da" : "#1e2337"};">MEEK&nbsp;MEET</span>
               </td>
             </tr>
 

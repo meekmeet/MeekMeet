@@ -1,21 +1,24 @@
 // The session handbook — the whole circle, pre-answered.
 //
 // Four days before a meeting, every member with a 'going' RSVP receives
-// their handbook: the session's introduction and their questions, as a form.
+// their SUMMONS: not the session, but the call to it. The questions are
+// drawn and sealed — they open only behind the member's sign-in, on the
+// handbook page. The email reveals the theme, the night, and the law of the
+// circle; everything else waits inside. Ancient in manner, exact in
+// practice: answer in writing before you arrive; read what you wrote when
+// you are called.
+//
 // The questions are never fixed: each member draws their own set at random
 // from the day's circle topic (see packages/core circle-topics — one theme
-// per weekday, shared by every circle in the country that day), and may
-// redraw any question that doesn't fit. Every redraw is logged, so the
-// platform learns which questions people answer and which they skip.
+// per weekday, shared by every circle in the country that day), plus one
+// threshold question that crosses every day, and may redraw any question
+// that doesn't fit. Every redraw is logged, so the platform learns which
+// questions people answer and which they skip.
 //
 // In the room, nobody is put on the spot — each member reads what they have
 // already thought through, the leader holds the order (never the clock: the
 // circle runs until everyone is heard), and the completed handbooks become
 // the data the platform synthesises into anonymised reports.
-//
-// The form is variable: a member's first handbook in a circle ('first_circle')
-// carries a warmer, slower introduction; long-standing members ('returning')
-// get the shorter check-in.
 
 import { escapeHtml } from "@/lib/validation";
 import { emailShell, themed, EMAIL_THEMES } from "@/lib/emails/shell";
@@ -124,113 +127,110 @@ export function formatMeetingWhen(scheduledAt: string): string {
   return `${date}, ${time}`;
 }
 
+/** 1 → I, 3 → III, 4 → IV … for the seal. */
+export function toRoman(n: number): string {
+  const table: [number, string][] = [
+    [10, "X"], [9, "IX"], [5, "V"], [4, "IV"], [1, "I"],
+  ];
+  let rest = Math.max(0, Math.floor(n));
+  let out = "";
+  for (const [value, glyph] of table) {
+    while (rest >= value) {
+      out += glyph;
+      rest -= value;
+    }
+  }
+  return out;
+}
+
 /**
- * The four-days-before email. The whole session, in the email itself — the
- * member can read and think without clicking anything — with the button
- * carrying them to the form where their answers come back to us.
+ * The seal — the ceremonial heart of the summons. It reveals the SHAPE of
+ * what is coming (in Roman numerals, because some things should feel older
+ * than the week they arrive in) and nothing of the content.
+ */
+function sealBlock(topicQuestionCount: number, thresholdCount: number): string {
+  const t = EMAIL_THEMES.sanctum;
+  return `
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:26px 0;">
+    <tr>
+      <td align="center" style="padding:26px 18px; border-top:1px solid ${t.rule}; border-bottom:1px solid ${t.rule};">
+        <p style="font-family:${t.bodyFont}; font-size:10px; letter-spacing:0.34em; text-transform:uppercase; color:${t.accent}; margin:0 0 12px;">Sealed until you enter</p>
+        <p style="font-family:${t.headingFont}; font-size:34px; letter-spacing:0.18em; color:${t.ink}; margin:0 0 12px;">${toRoman(topicQuestionCount)}&nbsp;·&nbsp;${toRoman(thresholdCount)}</p>
+        <p style="font-family:${t.bodyFont}; font-size:13px; line-height:1.7; color:${t.muted}; margin:0;">
+          ${toRoman(topicQuestionCount) === "I" ? "question" : "questions"} drawn for you by lot, from the bank of the night&rsquo;s theme<br />
+          and ${toRoman(thresholdCount) === "I" ? "one threshold question" : `${toRoman(thresholdCount)} threshold questions`} — the question that crosses every circle, every day
+        </p>
+      </td>
+    </tr>
+  </table>`;
+}
+
+/**
+ * The summons. It does not contain the session — the session is sealed in
+ * the member's handbook, behind their sign-in. The email carries the theme,
+ * the night, the law of the circle, and the way in. Nothing more, because
+ * nothing more is needed to make someone come.
  */
 export function buildHandbookEmail(options: {
   recipientName: string;
   circleName: string;
   scheduledAt: string;
-  locationName?: string | null;
-  /** Set when the circle meets online — the member's personal join link. */
-  joinUrl?: string | null;
   variant: HandbookVariant;
   topic: CircleTopic;
-  questions: HandbookQuestion[];
   handbookUrl: string;
 }): { subject: string; html: string } {
-  const t = EMAIL_THEMES.parchment;
+  const t = EMAIL_THEMES.sanctum;
   const h = themed(t);
   const name = escapeHtml(options.recipientName || "Friend");
   const circle = escapeHtml(options.circleName);
   const when = formatMeetingWhen(options.scheduledAt);
-  const intro = HANDBOOK_INTROS[options.variant];
-
-  const questionSteps = h.steps(
-    options.questions.map((q) => escapeHtml(q.question))
-  );
-
   const firstCircle = options.variant === "first_circle";
-  const online = Boolean(options.joinUrl);
-
-  const whereLine = online
-    ? `online — your personal join link is below`
-    : options.locationName
-      ? `at <strong>${escapeHtml(options.locationName)}</strong>`
-      : "";
 
   const content = `
     ${h.heading(
       firstCircle
-        ? "Four days from now, the circle gathers. This is the whole of it."
-        : "The circle turns again. Here is the whole of it, four days early."
+        ? "Four nights from now, the circle gathers. You are expected."
+        : "The circle turns again in four nights."
     )}
     ${h.paragraph(`Dear ${name},`)}
     ${h.paragraph(
-      firstCircle
-        ? `You are reserved for <strong>${circle}</strong> on <strong>${when}</strong>${whereLine ? `, ${whereLine}` : ""}. Nothing about that evening will be sprung on you. This email — and the handbook behind it — is the entire session: the introduction, the questions, the shape of the night.`
-        : `<strong>${circle}</strong> gathers again on <strong>${when}</strong>${whereLine ? `, ${whereLine}` : ""}. As always: no surprises. Below is the entire session — the check-in, the questions, the shape of the night.`
-    )}
-    ${h.paragraph(
-      "The practice is simple, and it is the whole design: <strong>answer in writing now, read aloud later.</strong> Each question below has a space in your handbook. Write what is true. When the circle gathers, you will never be asked to think on the spot — you will read what you have already thought through, and the leader will hold the room while you do."
+      `<strong>${circle}</strong> convenes on <strong>${when}</strong>. What follows is not the session — the session is sealed. This is only the summons.`
     )}
     ${h.callout(
-      `<strong>Tonight's theme: ${escapeHtml(options.topic.name)} — ${escapeHtml(options.topic.epithet)}.</strong> ${escapeHtml(options.topic.symbolism)} Every circle gathering on this day, across the country, sits with this same theme — each with its own questions.`
+      `<strong>The theme of the night: ${escapeHtml(options.topic.name)} — ${escapeHtml(options.topic.epithet)}.</strong> ${escapeHtml(options.topic.symbolism)} Every circle gathering on this day, across the country, sits with this same theme — each behind its own seal.`
     )}
+    ${sealBlock(HANDBOOK_QUESTION_COUNT, HANDBOOK_THRESHOLD_COUNT)}
     ${h.paragraph(
-      `<strong>${intro.title}.</strong> ${intro.guidance}`
+      "The law of the circle is one sentence: <strong>answer in writing before you arrive; read what you wrote when you are called.</strong> Nothing will be asked of you that you have not already written. If a question does not fit, you may draw another within the theme — as often as you need. The theme stays; the question changes."
     )}
-    ${h.eyebrow("Your questions — drawn for you by lot")}
-    ${questionSteps}
-    ${h.callout(
-      "These questions were not chosen for you — they were drawn at random from the theme's bank, the way lots are drawn. If one of them does not fit — if it asks about a country you never lived in, a grief that is not yours — you may <strong>draw another</strong> on your handbook page, as many times as you need. The theme stays; the question changes. Which questions people keep, and which they send back, is itself something we listen to."
-    )}
-    ${h.paragraph(
-      "The last of them is a <strong>threshold question</strong> — one question that crosses every circle, every day, everywhere we gather. It does not ask what is wrong with us; it asks what is holding back what is possible."
-    )}
-    ${h.paragraph(
-      "Take the four days. Let the questions sit with you the way good questions do — in the car, at the sink, at three in the morning. The best answers are rarely the first ones."
-    )}
-    ${h.button(options.handbookUrl, "OPEN YOUR HANDBOOK")}
-    ${
-      online && options.joinUrl
-        ? `${h.divider()}${h.eyebrow("Joining online")}
-    ${h.paragraph(
-      "The circle meets online. On the night, this link opens the room — it is yours; it is shown only to members who reserved, never published:"
-    )}
-    ${h.button(options.joinUrl, "JOIN THE CIRCLE ONLINE")}`
-        : ""
-    }
+    ${h.button(options.handbookUrl, "BREAK THE SEAL")}
     ${h.finePrint(
-      "Your written answers come back to us and become the circle's record — anonymised and gathered with everyone else's, they are how your street's voice reaches the people who decide its future. Only your circle's leader and our administrators ever see that they are yours."
+      "You will be asked to sign in — the handbook answers to your eyes alone. The place, or the way in online, is shown inside, to the reserved only, and never travels by email. What you write becomes the circle's record: anonymised, gathered with every other voice, and carried to the people with the power to act."
     )}
     ${h.ps(
       firstCircle
-        ? "You are not the audience of this circle. You are one of its shepherds — everyone in the room is. The leader only keeps the order; the tending is all of yours."
-        : "Somebody on your street has never heard of this circle. When you have an evening to spare, that person is your work as a shepherd — the leader keeps the room; you keep the street."
+        ? "You are not the audience of this circle. Every soul in that room is a shepherd; the leader only keeps the order. Come as you are — the seal does the rest."
+        : "Somewhere on your street is a person who has never heard of this circle. They are your work as a shepherd — the leader keeps the room; you keep the street."
     )}
   `;
 
   return {
     subject: firstCircle
-      ? `Your first circle is four days away — here is the whole of it`
-      : `Your handbook for ${circle} — four days out`,
+      ? "You are expected — the circle gathers in four nights"
+      : `${circle} turns in four nights — your questions are sealed`,
     html: emailShell({
-      preheader: firstCircle
-        ? "The introduction, the questions, the shape of the night — answer in writing now, read aloud later."
-        : "The whole session, four days early. Answer in writing now, read aloud later.",
-      eyebrow: firstCircle ? "Your first circle" : "Your circle handbook",
+      preheader:
+        "Questions drawn by lot. One threshold. Sealed until you enter.",
+      eyebrow: firstCircle ? "The first summons" : "The summons",
       contentHtml: content,
-      theme: "parchment",
+      theme: "sanctum",
     }),
   };
 }
 
 // ── The leader pack ────────────────────────────────────────────
-// The same four-days-out moment, but for the leader: the run sheet for the
-// night. The leader keeps the order — never the clock.
+// The leader's summons: the charge, the roster, the way in. The full run
+// sheet and the liturgies live in the leader room, behind sign-in.
 
 /** Read aloud to open the circle, after everyone has arrived. */
 export const LEADER_OPENING_WORDS =
@@ -252,7 +252,7 @@ export const LEADER_RUN_SHEET: { title: string; body: string }[] = [
   },
   {
     title: "The questions",
-    body: "Go member by member. Each person reads their answers in order — question one, then two, then three. No interruptions, no fixing, no advice unless it is asked for. After each reader, let one breath of silence pass. You read last.",
+    body: "Go member by member. Each person reads their answers in order — the topic questions, then the threshold question. No interruptions, no fixing, no advice unless it is asked for. After each reader, let one breath of silence pass. You read last.",
   },
   {
     title: "Keep order, never the clock",
@@ -269,25 +269,23 @@ export const LEADER_RUN_SHEET: { title: string; body: string }[] = [
 ];
 
 /**
- * The leader's four-days-out email: the theme, the roster, the run sheet,
- * the opening and closing words, and the attendance instruction.
+ * The leader's summons — the charge and the roster, sealed in the same
+ * manner as the members' summons. The run sheet, the liturgies, the
+ * completed handbooks and the way in all live in the leader room.
  */
 export function buildLeaderPackEmail(options: {
   leaderName: string;
   circleName: string;
   scheduledAt: string;
-  locationName?: string | null;
-  joinUrl?: string | null;
   topic: CircleTopic;
-  roster: { name: string; variant: HandbookVariant; completed: boolean }[];
+  roster: { name: string; variant: HandbookVariant }[];
   leaderRoomUrl: string;
 }): { subject: string; html: string } {
-  const t = EMAIL_THEMES.midnight;
+  const t = EMAIL_THEMES.sanctum;
   const h = themed(t);
   const name = escapeHtml(options.leaderName || "Leader");
   const circle = escapeHtml(options.circleName);
   const when = formatMeetingWhen(options.scheduledAt);
-  const online = Boolean(options.joinUrl);
 
   const rosterRows = options.roster
     .map(
@@ -295,48 +293,33 @@ export function buildLeaderPackEmail(options: {
         `<tr>
           <td style="padding:8px 0; border-bottom:1px solid ${t.rule}; font-size:15px; color:${t.ink};">
             ${escapeHtml(m.name)}
-            <span style="color:${t.faint}; font-size:13px;"> — ${m.variant === "first_circle" ? "first circle" : "returning"} · handbook ${m.completed ? "completed" : "in progress"}</span>
+            ${m.variant === "first_circle" ? `<span style="color:${t.accent}; font-size:12px; letter-spacing:0.14em;"> &nbsp;· FIRST CIRCLE</span>` : ""}
           </td>
         </tr>`
     )
     .join("");
 
   const content = `
-    ${h.heading("Four days out — the night is yours to keep.")}
+    ${h.heading("Four nights. The room is yours to keep.")}
     ${h.paragraph(`Dear ${name},`)}
     ${h.paragraph(
-      `<strong>${circle}</strong> gathers on <strong>${when}</strong>${
-        online
-          ? ", online — the join link is below"
-          : options.locationName
-            ? ` at <strong>${escapeHtml(options.locationName)}</strong>`
-            : ""
-      }. Every reserved member has just received their handbook — the whole session, pre-answered in writing. Your job on the night is not to teach or to time. It is to keep the order of the room while each person reads what they have already thought through.`
+      `<strong>${circle}</strong> convenes on <strong>${when}</strong>. Every reserved member has received their summons; their questions are drawn and sealed. What they will read aloud, they have already written. Your work is the order of the room — never the clock.`
     )}
     ${h.callout(
-      `<strong>The theme: ${escapeHtml(options.topic.name)} — ${escapeHtml(options.topic.epithet)}.</strong> ${escapeHtml(options.topic.symbolism)} Every circle meeting on this weekday shares this theme; within it, each member drew their own questions by lot, and may redraw any that don't fit. So no two handbooks in your room are the same — and no circle anywhere is repeating itself.`
+      `<strong>The theme of the night: ${escapeHtml(options.topic.name)} — ${escapeHtml(options.topic.epithet)}.</strong> ${escapeHtml(options.topic.symbolism)} Each member drew their own questions by lot and may redraw any that don't fit — no two handbooks in your room are the same. Each handbook also carries one threshold question: the one question the whole country is sitting with together. Let it breathe when it comes.`
     )}
-    ${h.paragraph(
-      "Each member's handbook also carries one <strong>threshold question</strong> — the question that crosses every circle, every day: not what is wrong with us, but what is holding back what is possible. When you reach it in the cycle, let it breathe; it is the one question the whole country is sitting with together."
-    )}
-    ${h.eyebrow("Who is coming")}
+    ${h.eyebrow("Who is expected")}
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 22px;">${rosterRows}</table>
-    ${h.eyebrow("The shape of the night")}
-    ${h.steps(LEADER_RUN_SHEET.map((s) => `<strong>${s.title}.</strong> ${s.body}`))}
-    ${h.eyebrow("The opening words — read aloud to begin")}
-    ${h.scriptureQuote(LEADER_OPENING_WORDS)}
-    ${h.eyebrow("The closing words — read aloud to end")}
-    ${h.scriptureQuote(LEADER_CLOSING_WORDS)}
+    ${h.eyebrow("The charge")}
+    ${h.steps([
+      "Open with the words kept in your leader room.",
+      "Go member by member. Each reads what they have written — the introduction first, then the questions in order. No interruptions, no fixing, no advice unless it is asked for. One breath of silence after each voice. You read last.",
+      "Keep the order, never the clock. The session ends when everyone has been heard — and not before.",
+      "Afterward, mark who came and who did not, and carry what must be carried to us.",
+    ])}
     ${h.button(options.leaderRoomUrl, "OPEN YOUR LEADER ROOM")}
-    ${
-      online && options.joinUrl
-        ? `${h.paragraph(
-            `The circle meets online. Your room link: <a href="${options.joinUrl}" style="color:${t.accent};">${options.joinUrl}</a> — it is shown only to reserved members, never published.`
-          )}`
-        : ""
-    }
     ${h.finePrint(
-      "In your leader room you can read each member's completed handbook before the night, mark attendance afterwards, and see the theme and run sheet again. Members see only their own handbook — the room is yours to hold."
+      "The full run sheet, the opening and closing words, your members' completed handbooks, and the way in — all inside, behind your sign-in, and never sent by email."
     )}
     ${h.ps(
       "You are the first among shepherds, not a shepherd over sheep. The order is yours; the tending belongs to everyone in the room."
@@ -344,13 +327,13 @@ export function buildLeaderPackEmail(options: {
   `;
 
   return {
-    subject: `${circle} — your leader pack for ${when}`,
+    subject: `${circle} — the room is yours in four nights`,
     html: emailShell({
       preheader:
-        "The theme, the roster, the run sheet, the opening and closing words — everything you need to hold the room.",
-      eyebrow: "The leader's pack",
+        "The roster, the charge, the words — sealed inside your leader room.",
+      eyebrow: "The leader's summons",
       contentHtml: content,
-      theme: "midnight",
+      theme: "sanctum",
     }),
   };
 }

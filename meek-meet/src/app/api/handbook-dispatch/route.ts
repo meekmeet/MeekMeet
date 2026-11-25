@@ -41,9 +41,6 @@ interface MeetingRow {
   id: string;
   circle_id: string;
   scheduled_at: string;
-  location_name: string | null;
-  meeting_type: string | null;
-  join_url: string | null;
   leader_pack_sent_at: string | null;
   circles?: { name: string | null } | { name: string | null }[] | null;
   rsvps?: RsvpRel[] | null;
@@ -59,20 +56,11 @@ interface MeetingQuestionRow {
 interface HandbookRosterRow {
   profile_id: string;
   variant: HandbookVariant;
-  completed_at: string | null;
   profiles?: { full_name: string | null } | { full_name: string | null }[] | null;
 }
 
 function first<T>(rel: T | T[] | null | undefined): T | null {
   return Array.isArray(rel) ? (rel[0] ?? null) : (rel ?? null);
-}
-
-/** The member's personal online link — only ever for digital/hybrid meetings. */
-function onlineJoinUrl(meeting: MeetingRow): string | null {
-  if (meeting.meeting_type === "digital" || meeting.meeting_type === "hybrid") {
-    return meeting.join_url?.trim() || null;
-  }
-  return null;
 }
 
 export async function GET(request: NextRequest) {
@@ -93,7 +81,7 @@ export async function GET(request: NextRequest) {
 
   const { data: meetings, error: meetingsError } = await supabase
     .from("meetings")
-    .select("id, circle_id, scheduled_at, location_name, meeting_type, join_url, leader_pack_sent_at, circles(name), rsvps(user_id, status, profiles(email, full_name))")
+    .select("id, circle_id, scheduled_at, leader_pack_sent_at, circles(name), rsvps(user_id, status, profiles(email, full_name))")
     .gte("scheduled_at", windowStart.toISOString())
     .lt("scheduled_at", windowEnd.toISOString())
     .eq("is_cancelled", false)
@@ -147,7 +135,6 @@ export async function GET(request: NextRequest) {
         content: q.content,
       }))
     );
-    const joinUrl = onlineJoinUrl(meeting);
     const goingRsvps = (meeting.rsvps ?? []).filter((r) => r.status === "going");
 
     for (const rsvp of goingRsvps) {
@@ -194,11 +181,8 @@ export async function GET(request: NextRequest) {
         recipientName: profile?.full_name ?? "Friend",
         circleName,
         scheduledAt: meeting.scheduled_at,
-        locationName: meeting.location_name,
-        joinUrl,
         variant,
         topic,
-        questions,
         handbookUrl: `https://meekmeet.com/dashboard/handbook/${meeting.id}`,
       });
 
@@ -230,13 +214,12 @@ export async function GET(request: NextRequest) {
 
         const { data: rosterRows } = await supabase
           .from("session_handbooks")
-          .select("profile_id, variant, completed_at, profiles(full_name)")
+          .select("profile_id, variant, profiles(full_name)")
           .eq("meeting_id", meeting.id);
 
         const roster = ((rosterRows ?? []) as HandbookRosterRow[]).map((r) => ({
           name: first(r.profiles)?.full_name ?? "A member",
           variant: r.variant,
-          completed: r.completed_at !== null,
         }));
 
         for (const leader of (leaders ?? []) as { user_id: string; profiles?: ProfileRel | ProfileRel[] | null }[]) {
@@ -248,8 +231,6 @@ export async function GET(request: NextRequest) {
             leaderName: leaderProfile?.full_name ?? "Leader",
             circleName,
             scheduledAt: meeting.scheduled_at,
-            locationName: meeting.location_name,
-            joinUrl,
             topic,
             roster,
             leaderRoomUrl: `https://meekmeet.com/dashboard/shepherd/${meeting.circle_id}/meetings/${meeting.id}`,

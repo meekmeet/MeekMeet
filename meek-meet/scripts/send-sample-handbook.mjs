@@ -24,7 +24,7 @@ for (const line of readFileSync(envPath, "utf-8").split(/\r?\n/)) {
 }
 
 const { Resend } = await jiti.import("resend");
-const { buildHandbookEmail, buildLeaderPackEmail, drawHandbookQuestions, drawThresholdQuestions } =
+const { buildHandbookEmail, buildLeaderPackEmail } =
   await jiti.import(resolve(here, "../src/lib/handbook.ts"));
 const { getTopicForDate } = await jiti.import("@meekmeet/core/questions");
 
@@ -39,11 +39,8 @@ const meeting = new Date();
 meeting.setDate(meeting.getDate() + 4);
 meeting.setHours(18, 30, 0, 0);
 
-// The theme the sample circle would actually sit with that evening, plus
-// the threshold question that crosses every day.
+// The theme the sample circle would actually sit with that evening.
 const topic = getTopicForDate(meeting);
-const questions = [...drawHandbookQuestions(topic), ...drawThresholdQuestions()];
-const joinUrl = "https://zoom.us/j/0000000000?pwd=sample";
 
 async function send(label, subject, html) {
   const { data, error } = await resend.emails.send({
@@ -65,10 +62,8 @@ for (const variant of ["first_circle", "returning"]) {
     recipientName: "Martin",
     circleName: "Gosford Circle (sample)",
     scheduledAt: meeting.toISOString(),
-    joinUrl,
     variant,
     topic,
-    questions,
     handbookUrl: "https://meekmeet.com/dashboard",
   });
   await send(variant, subject, html);
@@ -78,12 +73,11 @@ const pack = buildLeaderPackEmail({
   leaderName: "Martin",
   circleName: "Gosford Circle (sample)",
   scheduledAt: meeting.toISOString(),
-  joinUrl,
   topic,
   roster: [
-    { name: "Miriam", variant: "first_circle", completed: true },
-    { name: "Sam", variant: "returning", completed: true },
-    { name: "Grace", variant: "returning", completed: false },
+    { name: "Miriam", variant: "first_circle" },
+    { name: "Sam", variant: "returning" },
+    { name: "Grace", variant: "returning" },
   ],
   leaderRoomUrl: "https://meekmeet.com/dashboard",
 });
