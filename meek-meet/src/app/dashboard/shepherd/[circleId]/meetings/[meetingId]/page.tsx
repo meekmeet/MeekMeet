@@ -18,8 +18,9 @@ import {
   LEADER_OPENING_WORDS,
   LEADER_CLOSING_WORDS,
   LEADER_RUN_SHEET,
+  toRoman,
 } from "@/lib/handbook";
-import { getTopicForDate } from "@meekmeet/core/questions";
+import { getTopicForDate, THRESHOLD_TOPIC } from "@meekmeet/core/questions";
 
 interface Props {
   params: Promise<{ circleId: string; meetingId: string }>;
@@ -96,17 +97,25 @@ function MemberRow({
 
       {expanded && member.handbook && (
         <div className="mt-4 pt-4 border-t border-border-soft space-y-4">
-          {member.handbook.responses.map((r, i) => (
-            <div key={r.question_id}>
-              <p className="font-serif text-sm text-charcoal leading-snug mb-1">
-                <span className="text-terracotta mr-1.5">{i + 1}.</span>
-                {r.question}
-              </p>
-              <p className="text-sm text-charcoal-muted leading-relaxed whitespace-pre-wrap pl-5">
-                {r.answer.trim() || <em className="text-faint">Not yet answered.</em>}
-              </p>
-            </div>
-          ))}
+          {member.handbook.responses.map((r, i) => {
+            const threshold = THRESHOLD_TOPIC.questions.some((q) => q.id === r.question_id);
+            return (
+              <div key={r.question_id}>
+                {threshold && (
+                  <p className="text-[10px] tracking-[0.25em] uppercase text-terracotta mb-1 font-medium">
+                    The threshold — the question the whole country sits with tonight
+                  </p>
+                )}
+                <p className="font-serif text-sm text-charcoal leading-snug mb-1">
+                  <span className="text-terracotta mr-1.5 tracking-widest">{toRoman(i + 1)}.</span>
+                  {r.question}
+                </p>
+                <p className="text-sm text-charcoal-muted leading-relaxed whitespace-pre-wrap pl-5">
+                  {r.answer.trim() || <em className="text-faint">Not yet answered.</em>}
+                </p>
+              </div>
+            );
+          })}
           {member.handbook.intentions?.trim() && (
             <div>
               <p className="text-xs tracking-[0.2em] uppercase text-terracotta mb-1 font-medium">
@@ -250,8 +259,8 @@ export default function LeaderRoomPage({ params }: Props) {
         <ol className="space-y-4 mb-6">
           {LEADER_RUN_SHEET.map((step, i) => (
             <li key={step.title} className="flex gap-3">
-              <span className="shrink-0 w-6 h-6 rounded-full bg-wheat/40 text-charcoal text-xs font-serif flex items-center justify-center mt-0.5">
-                {i + 1}
+              <span className="shrink-0 w-7 h-7 rounded-full bg-wheat/40 text-charcoal text-xs font-serif tracking-widest flex items-center justify-center mt-0.5">
+                {toRoman(i + 1)}
               </span>
               <div>
                 <p className="text-sm font-medium text-charcoal">{step.title}</p>
