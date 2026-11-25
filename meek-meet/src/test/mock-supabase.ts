@@ -70,6 +70,9 @@ class QueryChain {
   not(): this {
     return this;
   }
+  is(): this {
+    return this;
+  }
   or(): this {
     return this;
   }

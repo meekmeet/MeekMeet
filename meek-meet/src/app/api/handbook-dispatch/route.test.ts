@@ -338,3 +338,127 @@ describe("GET /api/handbook-dispatch", () => {
     expect(res.status).toBe(500);
   });
 });
+
+describe("GET /api/handbook-dispatch — the daily reminder", () => {
+  const hoursAgo = (h: number) => new Date(Date.now() - h * 3600 * 1000).toISOString();
+
+  const PENDING = {
+    id: "hb-9",
+    meeting_id: MEETING.id,
+    responses: [
+      { question_id: "q1", question: "What do you carry?", answer: "" },
+      { question_id: "q2", question: "What would you change?", answer: "Something" },
+    ],
+    emailed_at: hoursAgo(30),
+    last_reminder_at: null,
+    meetings: {
+      scheduled_at: inFourDays(),
+      meeting_type: "digital",
+      location_name: null,
+      circles: { name: "Gosford Circle" },
+    },
+    profiles: { email: "miriam@example.com", full_name: "Miriam" },
+  };
+
+  it("reminds an unanswered handbook once the summons is over 20h old — even with no meetings in the window", async () => {
+    mockSupa.enqueue([]); // no meetings in the dispatch window
+    mockSupa.enqueue([PENDING]); // the reminder scan
+    mockSupa.enqueue(null); // last_reminder_at stamp
+
+    const res = await GET(cronRequest("cron"));
+    const body = await res.json();
+    expect(body.meetings).toBe(0);
+    expect(body.reminders).toBe(1);
+
+    const email = sendMock.mock.calls.find((c) => c[0].to === "miriam@example.com")?.[0];
+    expect(email).toBeDefined();
+    expect(email.subject).toContain("Gosford Circle");
+    expect(email.html).toContain("still unanswered");
+    expect(email.html).toContain("COMPLETE YOUR HANDBOOK");
+    expect(email.html).toContain(`/dashboard/handbook/${MEETING.id}`);
+    expect(email.html).toContain("returns each day until your handbook is complete");
+    expect(email.html).not.toContain("zoom.us");
+
+    const stamp = mockSupa.updates.find(
+      (u) => typeof u === "object" && u !== null && "last_reminder_at" in u
+    );
+    expect(stamp).toBeDefined();
+  });
+
+  it("does not remind twice inside the interval", async () => {
+    mockSupa.enqueue([]);
+    mockSupa.enqueue([{ ...PENDING, last_reminder_at: hoursAgo(5) }]);
+
+    const res = await GET(cronRequest("cron"));
+    const body = await res.json();
+    expect(body.reminders).toBe(0);
+    expect(sendMock).not.toHaveBeenCalled();
+  });
+
+  it("reminds again the next day, and keeps returning until complete", async () => {
+    mockSupa.enqueue([]);
+    mockSupa.enqueue([{ ...PENDING, last_reminder_at: hoursAgo(26) }]);
+    mockSupa.enqueue(null);
+
+    const res = await GET(cronRequest("cron"));
+    const body = await res.json();
+    expect(body.reminders).toBe(1);
+  });
+
+  it("never reminds a handbook whose answers are all written, even if completed_at lags", async () => {
+    mockSupa.enqueue([]);
+    mockSupa.enqueue([
+      {
+        ...PENDING,
+        responses: [
+          { question_id: "q1", question: "What do you carry?", answer: "A question" },
+          { question_id: "q2", question: "What would you change?", answer: "Something" },
+        ],
+      },
+    ]);
+
+    const res = await GET(cronRequest("cron"));
+    const body = await res.json();
+    expect(body.reminders).toBe(0);
+    expect(sendMock).not.toHaveBeenCalled();
+  });
+
+  it("never reminds a member with no email address", async () => {
+    mockSupa.enqueue([]);
+    mockSupa.enqueue([{ ...PENDING, profiles: { email: null, full_name: "No Mail" } }]);
+
+    const res = await GET(cronRequest("cron"));
+    const body = await res.json();
+    expect(body.reminders).toBe(0);
+    expect(sendMock).not.toHaveBeenCalled();
+  });
+
+  it("counts a failed reminder without aborting the run", async () => {
+    mockSupa.enqueue([]);
+    mockSupa.enqueue([PENDING]);
+    sendMock.mockRejectedValueOnce(new Error("resend down"));
+
+    const res = await GET(cronRequest("cron"));
+    const body = await res.json();
+    expect(body.reminders).toBe(0);
+    expect(body.failed).toBe(1);
+  });
+
+  it("sends the summons and the reminders in the same run", async () => {
+    mockSupa.enqueue([MEETING]); // meetings
+    mockSupa.enqueue(QUESTIONS); // meeting_questions
+    mockSupa.enqueue([]); // existing handbooks
+    mockSupa.enqueue(null); // prior completed count
+    mockSupa.enqueue({ id: "hb-1" }); // insert
+    mockSupa.enqueue(null); // emailed_at stamp
+    enqueueLeaderPack();
+    mockSupa.enqueue([PENDING]); // reminder scan
+    mockSupa.enqueue(null); // last_reminder_at stamp
+
+    const res = await GET(cronRequest("cron"));
+    const body = await res.json();
+    expect(body.sent).toBe(1);
+    expect(body.leaderPacks).toBe(1);
+    expect(body.reminders).toBe(1);
+  });
+});

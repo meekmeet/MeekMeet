@@ -1,6 +1,6 @@
-// Sends sample session-handbook emails (both member variants + the leader
-// pack) to a recipient, using the exact production templates and the live
-// Resend account.
+// Sends sample session-handbook emails (the member summons, the daily
+// reminder, and the leader pack) to a recipient, using the exact production
+// templates and the live Resend account.
 //
 //   node scripts/send-sample-handbook.mjs [to@email]
 //
@@ -24,7 +24,7 @@ for (const line of readFileSync(envPath, "utf-8").split(/\r?\n/)) {
 }
 
 const { Resend } = await jiti.import("resend");
-const { buildHandbookEmail, buildLeaderPackEmail } =
+const { buildHandbookEmail, buildHandbookReminderEmail, buildLeaderPackEmail } =
   await jiti.import(resolve(here, "../src/lib/handbook.ts"));
 
 const to = process.argv[2] ?? "meekmeets@gmail.com";
@@ -53,19 +53,26 @@ async function send(label, subject, html) {
   }
 }
 
-for (const variant of ["first_circle", "returning"]) {
-  const { subject, html } = buildHandbookEmail({
-    recipientName: "Martin",
-    circleName: "Gosford Circle (sample)",
-    scheduledAt: meeting.toISOString(),
-    meetingType: "digital",
-    locationName: null,
-    attendingCount: 7,
-    variant,
-    handbookUrl: "https://meekmeet.com/dashboard",
-  });
-  await send(variant, subject, html);
-}
+const summons = buildHandbookEmail({
+  recipientName: "Martin",
+  circleName: "Gosford Circle (sample)",
+  scheduledAt: meeting.toISOString(),
+  meetingType: "digital",
+  locationName: null,
+  attendingCount: 7,
+  handbookUrl: "https://meekmeet.com/dashboard",
+});
+await send("summons", summons.subject, summons.html);
+
+const reminder = buildHandbookReminderEmail({
+  recipientName: "Martin",
+  circleName: "Gosford Circle (sample)",
+  scheduledAt: meeting.toISOString(),
+  meetingType: "digital",
+  locationName: null,
+  handbookUrl: "https://meekmeet.com/dashboard",
+});
+await send("reminder", reminder.subject, reminder.html);
 
 const pack = buildLeaderPackEmail({
   leaderName: "Martin",

@@ -16,6 +16,7 @@ import {
   formatMeetingWhen,
   handbookComplete,
   handbookVariant,
+  buildHandbookReminderEmail,
   meetingModePhrase,
   SANCTUM_MOON_IMG_URL,
   SANCTUM_SKY_BG_URL,
@@ -198,7 +199,7 @@ describe("buildHandbookEmail — the summons", () => {
   };
 
   it("is built entirely from variables: name, circle, date, mode", () => {
-    const { html, subject } = buildHandbookEmail({ ...base, variant: "returning" });
+    const { html, subject } = buildHandbookEmail(base);
     expect(html).toContain("Miriam");
     expect(html).toContain("Gosford Circle meets Tuesday 1 December");
     expect(html).toContain("online");
@@ -207,7 +208,7 @@ describe("buildHandbookEmail — the summons", () => {
   });
 
   it("adapts the mode phrase: online, in person, hybrid, or nothing", () => {
-    const online = buildHandbookEmail({ ...base, variant: "returning" });
+    const online = buildHandbookEmail(base);
     expect(online.html).toContain("online");
     const inPerson = buildHandbookEmail({
       ...base,
@@ -234,7 +235,7 @@ describe("buildHandbookEmail — the summons", () => {
   });
 
   it("states the practice in one line and carries the member in", () => {
-    const { html } = buildHandbookEmail({ ...base, variant: "returning" });
+    const { html } = buildHandbookEmail(base);
     expect(html).toContain("Your questions are waiting inside");
     expect(html).toContain("you read what you wrote");
     expect(html).toContain("ENTER YOUR HANDBOOK");
@@ -242,7 +243,7 @@ describe("buildHandbookEmail — the summons", () => {
   });
 
   it("shows the live attending count — dynamic, never a fixed number", () => {
-    const { html } = buildHandbookEmail({ ...base, variant: "returning" });
+    const { html } = buildHandbookEmail(base);
     expect(html).toContain("7 are attending");
     expect(html).toContain("Your seat is held under your name");
     expect(html).toContain("opens for you alone");
@@ -250,17 +251,14 @@ describe("buildHandbookEmail — the summons", () => {
     expect(solo.html).toContain("You are the first name down");
   });
 
-  it("gives the first circle one extra assurance, and only the first circle", () => {
-    const first = buildHandbookEmail({ ...base, variant: "first_circle" });
-    expect(first.html).toContain("Nothing will be asked of you on the spot");
-    const returning = buildHandbookEmail({ ...base, variant: "returning" });
-    expect(returning.html).not.toContain("Nothing will be asked of you on the spot");
+  it("no longer carries the first-circle assurance — one standing form for all", () => {
+    const { html } = buildHandbookEmail(base);
+    expect(html).not.toContain("Nothing will be asked of you on the spot");
   });
 
   it("seals everything: no theme, no questions, no address, no join link", () => {
     const { html } = buildHandbookEmail({
       ...base,
-      variant: "returning",
       meetingType: "hybrid",
       locationName: "Gosford Library",
     });
@@ -272,7 +270,7 @@ describe("buildHandbookEmail — the summons", () => {
   });
 
   it("wears the sacred geometry: the moon bears the seed, one screen, no second band", () => {
-    const { html } = buildHandbookEmail({ ...base, variant: "returning" });
+    const { html } = buildHandbookEmail(base);
     expect(html).toContain(SANCTUM_SKY_BG_URL);
     expect(html).toContain(SANCTUM_MOON_IMG_URL);
     expect(html).not.toContain("seed-bottom"); // no bottom band: nothing to expand
@@ -283,7 +281,7 @@ describe("buildHandbookEmail — the summons", () => {
   });
 
   it("contains no em dashes, anywhere", () => {
-    const member = buildHandbookEmail({ ...base, variant: "first_circle" });
+    const member = buildHandbookEmail(base);
     expect(member.html).not.toContain("—");
     expect(member.html).not.toContain("&mdash;");
     expect(member.subject).not.toContain("—");
@@ -294,16 +292,78 @@ describe("buildHandbookEmail — the summons", () => {
       ...base,
       recipientName: "<script>alert(1)</script>",
       circleName: "<img src=x>",
-      variant: "returning",
     });
     expect(html).not.toContain("<script>alert(1)</script>");
     expect(html).not.toContain("<img src=x>");
   });
 
   it("carries the many-names footer thread", () => {
-    const { html } = buildHandbookEmail({ ...base, variant: "first_circle" });
+    const { html } = buildHandbookEmail(base);
     expect(html).toContain("Matthew 5:5");
     expect(html).toContain("Qur");
+  });
+});
+
+describe("buildHandbookReminderEmail — the summons, returned", () => {
+  const base = {
+    recipientName: "Miriam",
+    circleName: "Gosford Circle",
+    scheduledAt: "2026-12-01T09:00:00.000Z",
+    meetingType: "digital",
+    locationName: null,
+    handbookUrl: "https://meekmeet.com/dashboard/handbook/abc",
+  };
+
+  it("is built from the same variables: name, circle, date, mode", () => {
+    const { html, subject } = buildHandbookReminderEmail(base);
+    expect(html).toContain("Miriam");
+    expect(html).toContain("Gosford Circle meets Tuesday 1 December");
+    expect(html).toContain("online");
+    expect(subject).toContain("Gosford Circle");
+  });
+
+  it("names the debt and the law: still unanswered, read what you wrote", () => {
+    const { html } = buildHandbookReminderEmail(base);
+    expect(html).toContain("still unanswered");
+    expect(html).toContain("you read what you wrote");
+    expect(html).toContain("COMPLETE YOUR HANDBOOK");
+    expect(html).toContain("https://meekmeet.com/dashboard/handbook/abc");
+  });
+
+  it("is honest about its own persistence: daily, until complete", () => {
+    const { html } = buildHandbookReminderEmail(base);
+    expect(html).toContain("returns each day until your handbook is complete");
+  });
+
+  it("seals everything and carries no attendance line", () => {
+    const { html } = buildHandbookReminderEmail(base);
+    expect(html).not.toContain("Home &amp; Street");
+    for (const q of TOPIC.questions) {
+      expect(html).not.toContain(q.text.slice(0, 30));
+    }
+    expect(html).not.toContain("zoom.us");
+    expect(html).not.toContain("are attending");
+  });
+
+  it("wears the same sanctum letter, and contains no em dashes", () => {
+    const { html, subject } = buildHandbookReminderEmail(base);
+    expect(html).toContain(SANCTUM_SKY_BG_URL);
+    expect(html).toContain(SANCTUM_MOON_IMG_URL);
+    expect(html).toContain("#060608");
+    expect(html).toContain("#c9a45c");
+    expect(html).not.toContain("—");
+    expect(html).not.toContain("&mdash;");
+    expect(subject).not.toContain("—");
+  });
+
+  it("escapes HTML in member-controlled fields", () => {
+    const { html } = buildHandbookReminderEmail({
+      ...base,
+      recipientName: "<script>alert(1)</script>",
+      circleName: "<img src=x>",
+    });
+    expect(html).not.toContain("<script>alert(1)</script>");
+    expect(html).not.toContain("<img src=x>");
   });
 });
 

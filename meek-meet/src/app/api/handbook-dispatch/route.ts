@@ -5,12 +5,16 @@ import { isAuthorizedCron } from "@/lib/cron-auth";
 import { rateLimit, rateLimitResponse, limiters } from "@/lib/rate-limit";
 import {
   HANDBOOK_LEAD_DAYS,
+  REMINDER_INTERVAL_HOURS,
   buildHandbookEmail,
   buildHandbookQuestions,
+  buildHandbookReminderEmail,
   buildLeaderPackEmail,
   drawHandbookQuestions,
   drawThresholdQuestions,
+  handbookComplete,
   handbookVariant,
+  type HandbookQuestion,
 } from "@/lib/handbook";
 import { getTopicForDate, type CircleTopic } from "@meekmeet/core/questions";
 
@@ -19,6 +23,11 @@ import { getTopicForDate, type CircleTopic } from "@meekmeet/core/questions";
 // (meeting_id, profile_id) unique constraint, emailed_at, and
 // leader_pack_sent_at make re-runs idempotent. Runs with the service role
 // to read across RLS.
+//
+// After dispatch, every run also sends the daily reminder: any member whose
+// handbook is still unanswered (completed_at null, answers empty) and whose
+// last touch — summons or reminder — was at least REMINDER_INTERVAL_HOURS
+// ago gets the reminder email, until they complete it or the meeting passes.
 //
 // The questions are never fixed: each member draws their own set at random
 // from the day's circle topic (one theme per weekday, shared by every
@@ -85,42 +94,41 @@ export async function GET(request: NextRequest) {
   if (meetingsError) {
     return NextResponse.json({ error: meetingsError.message }, { status: 500 });
   }
-  if (!meetings || meetings.length === 0) {
-    return NextResponse.json({ sent: 0, leaderPacks: 0, meetings: 0, message: "No meetings in the handbook window" });
-  }
-
-  const meetingIds = (meetings as MeetingRow[]).map((m) => m.id);
-
-  // Leader-added custom questions ride along after the drawn ones.
-  const { data: questionRows } = await supabase
-    .from("meeting_questions")
-    .select("meeting_id, question_id, content, order_index")
-    .in("meeting_id", meetingIds)
-    .order("order_index", { ascending: true });
-
-  const customByMeeting = new Map<string, MeetingQuestionRow[]>();
-  for (const q of (questionRows ?? []) as MeetingQuestionRow[]) {
-    const list = customByMeeting.get(q.meeting_id) ?? [];
-    list.push(q);
-    customByMeeting.set(q.meeting_id, list);
-  }
-
-  // Existing handbooks in this batch — never email the same member twice.
-  const { data: existingRows } = await supabase
-    .from("session_handbooks")
-    .select("meeting_id, profile_id")
-    .in("meeting_id", meetingIds);
-  const existing = new Set(
-    ((existingRows ?? []) as { meeting_id: string; profile_id: string }[]).map(
-      (r) => `${r.meeting_id}:${r.profile_id}`
-    )
-  );
 
   let sent = 0;
   let leaderPacks = 0;
   let failed = 0;
 
-  for (const meeting of meetings as MeetingRow[]) {
+  const meetingIds = ((meetings ?? []) as MeetingRow[]).map((m) => m.id);
+
+  const customByMeeting = new Map<string, MeetingQuestionRow[]>();
+  const existing = new Set<string>();
+
+  if (meetingIds.length > 0) {
+    // Leader-added custom questions ride along after the drawn ones.
+    const { data: questionRows } = await supabase
+      .from("meeting_questions")
+      .select("meeting_id, question_id, content, order_index")
+      .in("meeting_id", meetingIds)
+      .order("order_index", { ascending: true });
+
+    for (const q of (questionRows ?? []) as MeetingQuestionRow[]) {
+      const list = customByMeeting.get(q.meeting_id) ?? [];
+      list.push(q);
+      customByMeeting.set(q.meeting_id, list);
+    }
+
+    // Existing handbooks in this batch — never email the same member twice.
+    const { data: existingRows } = await supabase
+      .from("session_handbooks")
+      .select("meeting_id, profile_id")
+      .in("meeting_id", meetingIds);
+    for (const r of (existingRows ?? []) as { meeting_id: string; profile_id: string }[]) {
+      existing.add(`${r.meeting_id}:${r.profile_id}`);
+    }
+  }
+
+  for (const meeting of (meetings ?? []) as MeetingRow[]) {
     const circleName = first(meeting.circles)?.name ?? "Your circle";
     // The theme follows the local day of the gathering, not UTC.
     const topic: CircleTopic = getTopicForDate(new Date(meeting.scheduled_at));
@@ -179,7 +187,6 @@ export async function GET(request: NextRequest) {
         meetingType: meeting.meeting_type,
         locationName: meeting.location_name,
         attendingCount: goingRsvps.length,
-        variant,
         handbookUrl: `https://meekmeet.com/dashboard/handbook/${meeting.id}`,
       });
 
@@ -251,5 +258,101 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  return NextResponse.json({ sent, leaderPacks, failed, meetings: meetings.length });
+  // ── The reminders: the summons returns each day until the handbook is
+  // complete. Runs on every invocation, even when no meeting sits in the
+  // dispatch window — a member summoned yesterday is reminded today.
+  const reminders = await sendDueReminders(supabase);
+  failed += reminders.failed;
+
+  return NextResponse.json({
+    sent,
+    leaderPacks,
+    reminders: reminders.sent,
+    failed,
+    meetings: meetings?.length ?? 0,
+  });
+}
+
+interface PendingMeetingRel {
+  scheduled_at: string;
+  meeting_type: string | null;
+  location_name: string | null;
+  circles?: { name: string | null } | { name: string | null }[] | null;
+}
+
+interface PendingHandbookRow {
+  id: string;
+  meeting_id: string;
+  responses: HandbookQuestion[] | null;
+  emailed_at: string | null;
+  last_reminder_at: string | null;
+  meetings?: PendingMeetingRel | PendingMeetingRel[] | null;
+  profiles?: ProfileRel | ProfileRel[] | null;
+}
+
+/** Remind every member whose handbook is still unanswered, at most once per
+ *  REMINDER_INTERVAL_HOURS, until they complete it or the meeting passes. */
+async function sendDueReminders(
+  supabase: ReturnType<typeof createServiceClient>
+): Promise<{ sent: number; failed: number }> {
+  const now = Date.now();
+  const { data: rows, error } = await supabase
+    .from("session_handbooks")
+    .select(
+      "id, meeting_id, responses, emailed_at, last_reminder_at, meetings!inner(scheduled_at, meeting_type, location_name, is_cancelled, status, circles(name)), profiles(email, full_name)"
+    )
+    .not("emailed_at", "is", null)
+    .is("completed_at", null)
+    .eq("meetings.is_cancelled", false)
+    .eq("meetings.status", "scheduled")
+    .gt("meetings.scheduled_at", new Date(now).toISOString());
+
+  if (error) {
+    console.error("Handbook reminder query failed:", error);
+    return { sent: 0, failed: 1 };
+  }
+
+  let sent = 0;
+  let failed = 0;
+  const intervalMs = REMINDER_INTERVAL_HOURS * 60 * 60 * 1000;
+
+  for (const row of (rows ?? []) as PendingHandbookRow[]) {
+    // completed_at can lag a just-finished form; the answers are the truth.
+    if (handbookComplete((row.responses ?? []) as HandbookQuestion[])) continue;
+    const lastTouch = row.last_reminder_at ?? row.emailed_at;
+    if (!lastTouch || now - new Date(lastTouch).getTime() < intervalMs) continue;
+
+    const meeting = first(row.meetings);
+    const profile = first(row.profiles);
+    const email = profile?.email?.trim();
+    if (!meeting || !email) continue;
+
+    const { subject, html } = buildHandbookReminderEmail({
+      recipientName: profile?.full_name ?? "Friend",
+      circleName: first(meeting.circles)?.name ?? "Your circle",
+      scheduledAt: meeting.scheduled_at,
+      meetingType: meeting.meeting_type,
+      locationName: meeting.location_name,
+      handbookUrl: `https://meekmeet.com/dashboard/handbook/${row.meeting_id}`,
+    });
+
+    try {
+      await getResend().emails.send({
+        from: "Meek Meet <hello@meekmeet.com>",
+        to: email,
+        subject,
+        html,
+      });
+      await supabase
+        .from("session_handbooks")
+        .update({ last_reminder_at: new Date(now).toISOString() })
+        .eq("id", row.id);
+      sent++;
+    } catch (err) {
+      console.error(`Handbook reminder failed for handbook ${row.id}:`, err);
+      failed++;
+    }
+  }
+
+  return { sent, failed };
 }

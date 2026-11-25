@@ -274,11 +274,9 @@ export function buildHandbookEmail(options: {
   locationName?: string | null;
   /** How many are attending this meeting (reserved seats, live count). */
   attendingCount: number;
-  variant: HandbookVariant;
   handbookUrl: string;
 }): { subject: string; html: string } {
   const h = themed(EMAIL_THEMES.sanctum);
-  const firstCircle = options.variant === "first_circle";
   const name = escapeHtml(options.recipientName || "Friend");
   const circle = escapeHtml(options.circleName);
   const when = formatMeetingWhen(options.scheduledAt);
@@ -294,11 +292,6 @@ export function buildHandbookEmail(options: {
     ${line(`${name},`)}
     ${line(`${circle} meets ${when}${mode ? ` &middot; ${escapeHtml(mode)}` : ""}.`)}
     ${line("Your questions are waiting inside. Answer them before you join. In the circle, you read what you wrote.")}
-    ${
-      firstCircle
-        ? line("Nothing will be asked of you on the spot. Everything you will say, you have already written.")
-        : ""
-    }
     ${h.button(options.handbookUrl, "ENTER YOUR HANDBOOK")}
     ${signoff(attendance)}
   `;
@@ -307,6 +300,47 @@ export function buildHandbookEmail(options: {
     subject: `${options.circleName} · ${formatMeetingShort(options.scheduledAt)}`,
     html: sanctumShell({
       preheader: "Your questions are inside. Answer before you join.",
+      contentHtml: content,
+    }),
+  };
+}
+
+/** How long after the last touch (summons or reminder) a reminder falls due.
+ *  Just under a day, so the daily cron never skips a member through drift. */
+export const REMINDER_INTERVAL_HOURS = 20;
+
+/**
+ * The reminder. The summons, returned: shorter, plainer, and honest about
+ * its own persistence — it comes back each day until the handbook is
+ * complete, then never again.
+ */
+export function buildHandbookReminderEmail(options: {
+  recipientName: string;
+  circleName: string;
+  scheduledAt: string;
+  meetingType?: string | null;
+  locationName?: string | null;
+  handbookUrl: string;
+}): { subject: string; html: string } {
+  const h = themed(EMAIL_THEMES.sanctum);
+  const name = escapeHtml(options.recipientName || "Friend");
+  const circle = escapeHtml(options.circleName);
+  const when = formatMeetingWhen(options.scheduledAt);
+  const mode = meetingModePhrase(options.meetingType, options.locationName);
+
+  const content = `
+    ${h.eyebrow("The summons stands")}
+    ${line(`${name},`)}
+    ${line(`${circle} meets ${when}${mode ? ` &middot; ${escapeHtml(mode)}` : ""}.`)}
+    ${line("Your questions are still unanswered. In the circle, you read what you wrote, so write it before you join.")}
+    ${h.button(options.handbookUrl, "COMPLETE YOUR HANDBOOK")}
+    ${signoff("This reminder returns each day until your handbook is complete.")}
+  `;
+
+  return {
+    subject: `${options.circleName} · your handbook is waiting`,
+    html: sanctumShell({
+      preheader: "Your questions are still unanswered.",
       contentHtml: content,
     }),
   };
