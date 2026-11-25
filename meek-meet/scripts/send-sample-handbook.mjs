@@ -24,7 +24,7 @@ for (const line of readFileSync(envPath, "utf-8").split(/\r?\n/)) {
 }
 
 const { Resend } = await jiti.import("resend");
-const { buildHandbookEmail, buildLeaderPackEmail, drawHandbookQuestions } =
+const { buildHandbookEmail, buildLeaderPackEmail, drawHandbookQuestions, drawThresholdQuestions } =
   await jiti.import(resolve(here, "../src/lib/handbook.ts"));
 const { getTopicForDate } = await jiti.import("@meekmeet/core/questions");
 
@@ -39,9 +39,10 @@ const meeting = new Date();
 meeting.setDate(meeting.getDate() + 4);
 meeting.setHours(18, 30, 0, 0);
 
-// The theme the sample circle would actually sit with that evening.
+// The theme the sample circle would actually sit with that evening, plus
+// the threshold question that crosses every day.
 const topic = getTopicForDate(meeting);
-const questions = drawHandbookQuestions(topic);
+const questions = [...drawHandbookQuestions(topic), ...drawThresholdQuestions()];
 const joinUrl = "https://zoom.us/j/0000000000?pwd=sample";
 
 async function send(label, subject, html) {
