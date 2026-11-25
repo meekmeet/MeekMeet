@@ -17,7 +17,7 @@ import {
   handbookComplete,
   handbookVariant,
   meetingModePhrase,
-  SANCTUM_EMBLEM_URL,
+  SANCTUM_LETTER_BG_URL,
   toRoman,
 } from "./handbook";
 import { getTopicForWeekday, CIRCLE_TOPICS, THRESHOLD_TOPIC } from "@meekmeet/core/questions";
@@ -243,7 +243,7 @@ describe("buildHandbookEmail — the summons", () => {
   it("shows the live attending count — dynamic, never a fixed number", () => {
     const { html } = buildHandbookEmail({ ...base, variant: "returning" });
     expect(html).toContain("7 are attending");
-    expect(html).toContain("your seat is held under your name");
+    expect(html).toContain("Your seat is held under your name");
     expect(html).toContain("opens for you alone");
     const solo = buildHandbookEmail({ ...base, variant: "returning", attendingCount: 1 });
     expect(solo.html).toContain("You are the first name down");
@@ -270,12 +270,19 @@ describe("buildHandbookEmail — the summons", () => {
     expect(html).not.toContain("zoom.us");
   });
 
-  it("wears the sacred geometry: the Seed of Life in gold on true black", () => {
+  it("wears the sacred geometry: the whole email is the black letter", () => {
     const { html } = buildHandbookEmail({ ...base, variant: "returning" });
-    expect(html).toContain(SANCTUM_EMBLEM_URL);
-    expect(html).toContain("seed-of-life.png");
-    expect(html).toContain("#0c0c10"); // true black card
+    expect(html).toContain(SANCTUM_LETTER_BG_URL);
+    expect(html).toContain("background-image");
+    expect(html).toContain("#060608"); // true black
     expect(html).toContain("#c9a45c"); // old gold
+  });
+
+  it("contains no em dashes, anywhere", () => {
+    const member = buildHandbookEmail({ ...base, variant: "first_circle" });
+    expect(member.html).not.toContain("—");
+    expect(member.html).not.toContain("&mdash;");
+    expect(member.subject).not.toContain("—");
   });
 
   it("escapes HTML in member-controlled fields", () => {
@@ -371,9 +378,11 @@ describe("buildLeaderPackEmail — the leader's summons", () => {
 
   it("wears the sacred geometry in gold on true black", () => {
     const { html } = buildLeaderPackEmail(base);
-    expect(html).toContain(SANCTUM_EMBLEM_URL);
-    expect(html).toContain("#0c0c10");
+    expect(html).toContain(SANCTUM_LETTER_BG_URL);
+    expect(html).toContain("#060608");
     expect(html).toContain("#c9a45c");
+    expect(html).not.toContain("—");
+    expect(html).not.toContain("&mdash;");
   });
 
   it("escapes HTML in leader-controlled fields", () => {

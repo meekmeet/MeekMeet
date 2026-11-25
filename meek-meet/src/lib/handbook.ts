@@ -20,7 +20,7 @@
 // the data the platform synthesises into anonymised reports.
 
 import { escapeHtml } from "@/lib/validation";
-import { emailShell, themed, EMAIL_THEMES } from "@/lib/emails/shell";
+import { themed, EMAIL_THEMES } from "@/lib/emails/shell";
 import {
   drawQuestions,
   THRESHOLD_TOPIC,
@@ -177,24 +177,60 @@ export function toRoman(n: number): string {
 }
 
 // ── The summons chrome ─────────────────────────────────────────
-// Deliberately austere: the sacred emblem, lines, one button. The power is
-// in the structure and the facts, and every sentence is built from
+// The email IS the black letter: the whole background is the sacred
+// geometry (a hosted PNG; email clients cannot be trusted with SVG or CSS
+// gradients), the copy sits directly on its darkened centre. No card, no
+// ornaments, and no em dashes anywhere. Every sentence is built from
 // variables so it scales to any date, any circle, any mode, at any volume.
 
-/** The Seed of Life — seven circles (the circle week), twelve points (the
- *  seats). Hosted PNG; email clients cannot be trusted with SVG. */
+/** The Seed of Life emblem (used on the site and in dark contexts). */
 export const SANCTUM_EMBLEM_URL = "https://meekmeet.com/sacred/seed-of-life.png";
 
-/** The sacred geometry at the head of every summons. */
-function emblem(): string {
+/** The full-bleed black-letter background: sacred geometry, gold on black. */
+export const SANCTUM_LETTER_BG_URL = "https://meekmeet.com/sacred/letter-bg.png";
+
+/** The black-letter shell: sacred geometry as the entire background. */
+function sanctumShell(options: { preheader: string; contentHtml: string }): string {
+  const t = EMAIL_THEMES.sanctum;
   return `
-  <table role="presentation" cellpadding="0" cellspacing="0" align="center" style="margin:0 auto 20px;">
-    <tr>
-      <td align="center">
-        <img src="${SANCTUM_EMBLEM_URL}" alt="" width="120" height="120" style="display:block; width:120px; height:120px; border:0;" />
-      </td>
-    </tr>
-  </table>`;
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <title>Meek Meet</title>
+  </head>
+  <body style="margin:0; padding:0; background-color:${t.pageBg};">
+    <div style="display:none; max-height:0; overflow:hidden; mso-hide:all;">${options.preheader}</div>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:${t.pageBg};">
+      <tr>
+        <td align="center" bgcolor="${t.pageBg}" background="${SANCTUM_LETTER_BG_URL}" style="background-color:${t.pageBg}; background-image:url('${SANCTUM_LETTER_BG_URL}'); background-position:center top; background-repeat:repeat-y; background-size:cover;">
+          <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px; width:100%;">
+            <tr>
+              <td align="center" style="padding:52px 40px 30px;">
+                <span style="font-family:${t.headingFont}; font-size:19px; letter-spacing:0.26em; color:#ece8dc;">MEEK&nbsp;MEET</span>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:10px 44px 48px; font-family:${t.bodyFont}; color:${t.ink};">
+                ${options.contentHtml}
+              </td>
+            </tr>
+            <tr>
+              <td align="center" style="padding:0 40px 56px; font-family:${t.bodyFont}; font-size:11.5px; color:${t.faint}; line-height:2;">
+                <em style="font-size:13px; color:${t.accent};">&ldquo;Blessed are the meek, for they shall inherit the earth.&rdquo;</em><br />
+                <span style="font-size:10.5px;">The promise has many names: Matthew 5:5 &middot; Psalm 37:11 &middot; Qur&rsquo;an 21:105 &middot; Tao Te Ching 66</span><br />
+                <a href="https://meekmeet.com" style="color:${t.muted}; text-decoration:underline;">meekmeet.com</a>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+  </html>
+  `;
 }
 
 /** A short line of body copy. */
@@ -233,18 +269,17 @@ export function buildHandbookEmail(options: {
 
   const attendance =
     options.attendingCount <= 1
-      ? "You are the first name down — the way in opens for you alone."
-      : `${options.attendingCount} are attending — your seat is held under your name. The way in opens for you alone.`;
+      ? "You are the first name down. The way in opens for you alone."
+      : `${options.attendingCount} are attending. Your seat is held under your name, and the way in opens for you alone.`;
 
   const content = `
-    ${emblem()}
     ${h.eyebrow("The summons")}
-    ${line(`${name} &mdash;`)}
+    ${line(`${name},`)}
     ${line(`${circle} meets ${when}${mode ? ` &middot; ${escapeHtml(mode)}` : ""}.`)}
-    ${line("Your questions are waiting inside. Answer them before you join &mdash; in the circle, you read what you wrote.")}
+    ${line("Your questions are waiting inside. Answer them before you join. In the circle, you read what you wrote.")}
     ${
       firstCircle
-        ? line("Nothing will be asked of you on the spot &mdash; everything you will say, you have already written.")
+        ? line("Nothing will be asked of you on the spot. Everything you will say, you have already written.")
         : ""
     }
     ${h.button(options.handbookUrl, "ENTER YOUR HANDBOOK")}
@@ -252,11 +287,10 @@ export function buildHandbookEmail(options: {
   `;
 
   return {
-    subject: `${options.circleName} — ${formatMeetingShort(options.scheduledAt)}`,
-    html: emailShell({
+    subject: `${options.circleName} · ${formatMeetingShort(options.scheduledAt)}`,
+    html: sanctumShell({
       preheader: "Your questions are inside. Answer before you join.",
       contentHtml: content,
-      theme: "sanctum",
     }),
   };
 }
@@ -321,21 +355,19 @@ export function buildLeaderPackEmail(options: {
   const mode = meetingModePhrase(options.meetingType, options.locationName);
 
   const content = `
-    ${emblem()}
-    ${h.eyebrow("The summons — for the one who keeps the room")}
-    ${line(`${name} &mdash;`)}
+    ${h.eyebrow("The summons · for the one who keeps the room")}
+    ${line(`${name},`)}
     ${line(`${circle} meets ${when}${mode ? ` &middot; ${escapeHtml(mode)}` : ""} &middot; ${options.expectedCount} reserved.`)}
     ${line("Their questions are drawn and answered in writing. You hold the order. You read last. It ends when everyone has been heard.")}
     ${h.button(options.leaderRoomUrl, "OPEN THE LEADER ROOM")}
-    ${signoff("The roster, the words, and the way in are inside &mdash; under your sign-in alone.")}
+    ${signoff("The roster, the words, and the way in are inside, under your sign-in alone.")}
   `;
 
   return {
-    subject: `${options.circleName} — ${formatMeetingShort(options.scheduledAt)}`,
-    html: emailShell({
+    subject: `${options.circleName} · ${formatMeetingShort(options.scheduledAt)}`,
+    html: sanctumShell({
       preheader: "The draw is done. The roster and the words wait inside.",
       contentHtml: content,
-      theme: "sanctum",
     }),
   };
 }
