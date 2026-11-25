@@ -268,7 +268,20 @@ export async function createMeeting(
   const safeMeetingType = ["in_person", "digital", "hybrid"].includes(meetingType)
     ? meetingType
     : "in_person";
-  const safeJoinUrl = joinUrl && joinUrl.trim() ? assertOptionalString(joinUrl, "Join URL", 500) : null;
+  let safeJoinUrl = joinUrl && joinUrl.trim() ? assertOptionalString(joinUrl, "Join URL", 500) : null;
+
+  // Digital meetings fall back to the circle's standing room, so a circle
+  // with a configured room always has a door to walk through.
+  if (safeMeetingType === "digital" && !safeJoinUrl) {
+    const { data: circleRoom } = await supabase
+      .from("circles")
+      .select("zoom_room_url")
+      .eq("id", circleId)
+      .single();
+    if (circleRoom?.zoom_room_url) {
+      safeJoinUrl = circleRoom.zoom_room_url;
+    }
+  }
 
   const { error } = await supabase.from("meetings").insert({
     circle_id: circleId,
@@ -339,6 +352,7 @@ export async function updateCircle(
     meetingPlace: string;
     meetingAddress: string;
     imageUrl: string;
+    zoomRoomUrl?: string;
   }
 ) {
   const { supabase } = await verifyShepherd(circleId);
@@ -357,6 +371,15 @@ export async function updateCircle(
     safeImageUrl = data.imageUrl.trim();
   }
 
+  // The standing room: validated when present, cleared when blanked out.
+  let safeZoomRoomUrl: string | null = null;
+  if (data.zoomRoomUrl && data.zoomRoomUrl.trim()) {
+    if (!isValidUrl(data.zoomRoomUrl.trim())) {
+      throw new Error("Room URL must be a valid URL");
+    }
+    safeZoomRoomUrl = data.zoomRoomUrl.trim();
+  }
+
   const { error } = await supabase
     .from("circles")
     .update({
@@ -366,6 +389,7 @@ export async function updateCircle(
       meeting_place: safeMeetingPlace,
       meeting_address: safeMeetingAddress,
       image_url: safeImageUrl,
+      zoom_room_url: safeZoomRoomUrl,
     })
     .eq("id", circleId);
 

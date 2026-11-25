@@ -2,6 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { createClient } from "@/lib/supabase/server";
 import { isAuthorizedCron } from "@/lib/cron-auth";
+import { rateLimit, rateLimitResponse, limiters } from "@/lib/rate-limit";
+import {
+  planCohorts,
+  DEFAULT_CAP,
+  DEFAULT_MIN_CLUSTER,
+  type MatchableMember,
+  type ExistingCohort,
+} from "@/lib/circles/matcher";
 
 // Minimum number of distinct members with a 'going' RSVP on a non-cancelled
 // meeting of the global circle required to auto-provision a local circle for
@@ -47,6 +55,15 @@ function titleCaseArea(area: string): string {
     .join(" ");
 }
 
+// Supabase errors are plain { message } objects, not Error instances.
+function errorMessageOf(err: unknown): string {
+  if (err instanceof Error) return err.message;
+  if (err && typeof err === "object" && "message" in err) {
+    return String((err as { message: unknown }).message);
+  }
+  return "unknown error";
+}
+
 // Bearer CRON_SECRET (Vercel Cron) or an authenticated admin session.
 async function isAuthorized(request: NextRequest): Promise<boolean> {
   if (isAuthorizedCron(request)) return true;
@@ -75,6 +92,9 @@ async function isAuthorized(request: NextRequest): Promise<boolean> {
 // location and provisions a local circle for any area with at least
 // MIN_MEMBERS distinct 'going' RSVPs that doesn't have a circle yet.
 export async function POST(request: NextRequest) {
+  const limit = rateLimit(request, "circle-organizer", limiters.circleOrganizer());
+  if (!limit.ok) return rateLimitResponse(limit);
+
   if (!(await isAuthorized(request))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -239,12 +259,119 @@ export async function POST(request: NextRequest) {
         });
       } catch (err) {
         errors.push(
-          `${group.areaName}: ${err instanceof Error ? err.message : "unknown error"}`
+          `${group.areaName}: ${errorMessageOf(err)}`
         );
       }
     }
 
     const response: Record<string, unknown> = { created, below_threshold: belowThreshold };
+
+    // ── 7. Recompute meeting cohorts for the global circle ─────────
+    // Cap-bounded groups; areas too small to sustain a cohort are absorbed
+    // into the nearest cohort with spare capacity (satellite members), and
+    // previous-cycle assignments are honoured for stability.
+    const cohortSummary: { name: string; members: number; satellites: number }[] = [];
+    try {
+      const locatedProfiles = (profiles ?? []).filter((p) => p.location);
+      if (locatedProfiles.length > 0) {
+        const { data: areaRows } = await supabase
+          .from("member_areas")
+          .select("user_id, area_key, area_name, latitude, longitude")
+          .in("user_id", userIds);
+
+        const areaByUser = new Map((areaRows ?? []).map((a) => [a.user_id, a]));
+        const members: MatchableMember[] = locatedProfiles.map((p) => {
+          const area = areaByUser.get(p.id);
+          const fallbackName = normalizeArea(p.location as string);
+          return {
+            userId: p.id,
+            areaKey: area?.area_key ?? fallbackName.toLowerCase(),
+            areaName: area?.area_name ?? fallbackName,
+            latitude: area?.latitude ?? null,
+            longitude: area?.longitude ?? null,
+          };
+        });
+
+        const { data: configRows } = await supabase
+          .from("meek_meet_config")
+          .select("key, value")
+          .in("key", ["cohort_cap", "cohort_min_cluster"]);
+        const config = Object.fromEntries((configRows ?? []).map((r) => [r.key, r.value]));
+        const cap = parseInt(config.cohort_cap ?? "", 10) || DEFAULT_CAP;
+        const minCluster =
+          parseInt(config.cohort_min_cluster ?? "", 10) || DEFAULT_MIN_CLUSTER;
+
+        const { data: existingCohorts } = await supabase
+          .from("circle_cohorts")
+          .select("id, cohort_index")
+          .eq("circle_id", globalCircle.id);
+
+        let existing: ExistingCohort[] = [];
+        if ((existingCohorts ?? []).length > 0) {
+          const ids = (existingCohorts ?? []).map((c) => c.id);
+          const { data: existingMembers } = await supabase
+            .from("circle_cohort_members")
+            .select("cohort_id, user_id")
+            .in("cohort_id", ids);
+          existing = (existingCohorts ?? []).map((c) => ({
+            cohortIndex: c.cohort_index,
+            memberIds: (existingMembers ?? [])
+              .filter((m) => m.cohort_id === c.id)
+              .map((m) => m.user_id),
+          }));
+        }
+
+        const plan = planCohorts(members, { cap, minCluster, existing });
+
+        // Replace the previous cycle's cohorts (cascade clears membership).
+        await supabase.from("circle_cohorts").delete().eq("circle_id", globalCircle.id);
+        for (const cohort of plan.cohorts) {
+          const { data: inserted, error: cohortError } = await supabase
+            .from("circle_cohorts")
+            .insert({
+              circle_id: globalCircle.id,
+              cohort_index: cohort.index,
+              name: cohort.name,
+              area_key: cohort.areaKey,
+              area_name: cohort.areaName,
+            })
+            .select("id")
+            .single();
+          if (cohortError || !inserted) {
+            throw cohortError ?? new Error("cohort insert returned no id");
+          }
+
+          const rows = [
+            ...cohort.memberIds.map((user_id) => ({
+              cohort_id: inserted.id,
+              user_id,
+              is_satellite: false,
+            })),
+            ...cohort.satelliteMemberIds.map((user_id) => ({
+              cohort_id: inserted.id,
+              user_id,
+              is_satellite: true,
+            })),
+          ];
+          if (rows.length > 0) {
+            const { error: memberError } = await supabase
+              .from("circle_cohort_members")
+              .insert(rows);
+            if (memberError) throw memberError;
+          }
+
+          cohortSummary.push({
+            name: cohort.name,
+            members: cohort.memberIds.length,
+            satellites: cohort.satelliteMemberIds.length,
+          });
+        }
+      }
+    } catch (err) {
+      errors.push(`cohorts: ${errorMessageOf(err)}`);
+    }
+
+    if (cohortSummary.length > 0) response.cohorts = cohortSummary;
     if (errors.length > 0) response.errors = errors;
     return NextResponse.json(response);
   } catch (err) {

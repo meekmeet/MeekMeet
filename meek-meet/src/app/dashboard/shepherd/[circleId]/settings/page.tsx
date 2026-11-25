@@ -15,6 +15,7 @@ export default function SettingsPage() {
   const [meetingPlace, setMeetingPlace] = useState("");
   const [meetingAddress, setMeetingAddress] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [zoomRoomUrl, setZoomRoomUrl] = useState("");
   const [isPending, startTransition] = useTransition();
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,6 +33,7 @@ export default function SettingsPage() {
           meetingPlace,
           meetingAddress,
           imageUrl,
+          zoomRoomUrl,
         });
         setSaved(true);
         setTimeout(() => setSaved(false), 3000);
@@ -124,6 +126,24 @@ export default function SettingsPage() {
             className="w-full px-4 py-3 bg-cream border border-border-soft rounded-xl focus:border-terracotta focus:outline-none transition-colors text-sm"
           />
           <p className="text-xs text-charcoal-muted">Leave empty for a default background.</p>
+        </div>
+
+        {/* Standing room */}
+        <div className="space-y-2">
+          <label className="text-sm text-charcoal-light font-medium">
+            The Circle&apos;s Room (video link)
+          </label>
+          <input
+            type="url"
+            value={zoomRoomUrl}
+            onChange={(e) => setZoomRoomUrl(e.target.value)}
+            placeholder="https://zoom.us/j/…  or your Google Meet link"
+            className="w-full px-4 py-3 bg-cream border border-border-soft rounded-xl focus:border-terracotta focus:outline-none transition-colors text-sm"
+          />
+          <p className="text-xs text-charcoal-muted">
+            Your circle&apos;s standing room. Digital meetings without their own link
+            use this one — the circle always has a door to walk through.
+          </p>
         </div>
 
         {/* Save */}
