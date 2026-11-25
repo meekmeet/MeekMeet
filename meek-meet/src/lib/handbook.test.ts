@@ -17,8 +17,8 @@ import {
   handbookComplete,
   handbookVariant,
   meetingModePhrase,
-  SANCTUM_MOON_BG_URL,
-  SANCTUM_SEED_BG_URL,
+  SANCTUM_MOON_IMG_URL,
+  SANCTUM_SKY_BG_URL,
   toRoman,
 } from "./handbook";
 import { getTopicForWeekday, CIRCLE_TOPICS, THRESHOLD_TOPIC } from "@meekmeet/core/questions";
@@ -273,7 +273,8 @@ describe("buildHandbookEmail — the summons", () => {
 
   it("wears the sacred geometry: the moon bears the seed, one screen, no second band", () => {
     const { html } = buildHandbookEmail({ ...base, variant: "returning" });
-    expect(html).toContain(SANCTUM_MOON_BG_URL);
+    expect(html).toContain(SANCTUM_SKY_BG_URL);
+    expect(html).toContain(SANCTUM_MOON_IMG_URL);
     expect(html).not.toContain("seed-bottom"); // no bottom band: nothing to expand
     expect(html).toContain("background-image");
     expect(html).toContain("logo.png"); // the mark still crowns the letter
@@ -381,7 +382,8 @@ describe("buildLeaderPackEmail — the leader's summons", () => {
 
   it("wears the sacred geometry in gold on true black", () => {
     const { html } = buildLeaderPackEmail(base);
-    expect(html).toContain(SANCTUM_MOON_BG_URL);
+    expect(html).toContain(SANCTUM_SKY_BG_URL);
+    expect(html).toContain(SANCTUM_MOON_IMG_URL);
     expect(html).not.toContain("seed-bottom"); // one screen, no second band
     expect(html).toContain("#060608");
     expect(html).toContain("#c9a45c");

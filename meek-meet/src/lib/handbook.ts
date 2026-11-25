@@ -186,14 +186,17 @@ export function toRoman(n: number): string {
 /** The Seed of Life emblem (used on the site and in dark contexts). */
 export const SANCTUM_EMBLEM_URL = "https://meekmeet.com/sacred/seed-of-life.png";
 
-/** The letter's sky: the dark moon bearing the Seed of Life within its
- *  limb, presiding over the top of the letter. */
-export const SANCTUM_MOON_BG_URL = "https://meekmeet.com/sacred/new-moon-bg.png";
+/** The letter's sky: sparse gold stars on true black. */
+export const SANCTUM_SKY_BG_URL = "https://meekmeet.com/sacred/star-sky-bg.png";
 
-/** The black-letter shell: the moon bearing the Seed of Life presides over
- *  the top of the letter; the scripture footer closes it. The whole letter
- *  fits on one screen, so nothing is ever collapsed behind "show quoted
- *  text". */
+/** The moon bearing the Seed of Life, carried as a real image between the
+ *  wordmark and the copy so no text ever crosses her face. */
+export const SANCTUM_MOON_IMG_URL = "https://meekmeet.com/sacred/moon-seed.png";
+
+/** The black-letter shell: stars behind everything, the moon bearing the
+ *  Seed of Life above the copy, the scripture footer closing it. The whole
+ *  letter fits on one screen, so nothing is ever collapsed behind "show
+ *  quoted text". */
 function sanctumShell(options: { preheader: string; contentHtml: string }): string {
   const t = EMAIL_THEMES.sanctum;
   return `
@@ -209,25 +212,30 @@ function sanctumShell(options: { preheader: string; contentHtml: string }): stri
     <div style="display:none; max-height:0; overflow:hidden; mso-hide:all;">${options.preheader}</div>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:${t.pageBg};">
       <tr>
-        <td align="center" bgcolor="${t.pageBg}" background="${SANCTUM_MOON_BG_URL}" style="background-color:${t.pageBg}; background-image:url('${SANCTUM_MOON_BG_URL}'); background-position:center top; background-repeat:no-repeat;">
+        <td align="center" bgcolor="${t.pageBg}" background="${SANCTUM_SKY_BG_URL}" style="background-color:${t.pageBg}; background-image:url('${SANCTUM_SKY_BG_URL}'); background-position:center top; background-repeat:no-repeat;">
           <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px; width:100%;">
             <tr>
-              <td align="center" style="padding:30px 40px 10px;">
-                <img src="${SANCTUM_LOGO_URL}" alt="Meek Meet" width="46" height="46" style="display:inline-block; border-radius:11px; border:0;" />
+              <td align="center" style="padding:28px 40px 8px;">
+                <img src="${SANCTUM_LOGO_URL}" alt="Meek Meet" width="42" height="42" style="display:inline-block; border-radius:10px; border:0;" />
               </td>
             </tr>
             <tr>
-              <td align="center" style="padding:0 40px 20px;">
-                <span style="font-family:${t.headingFont}; font-size:17px; letter-spacing:0.26em; color:#ece8dc;">MEEK&nbsp;MEET</span>
+              <td align="center" style="padding:0 40px 6px;">
+                <span style="font-family:${t.headingFont}; font-size:16px; letter-spacing:0.26em; color:#ece8dc;">MEEK&nbsp;MEET</span>
               </td>
             </tr>
             <tr>
-              <td style="padding:6px 44px 26px; font-family:${t.bodyFont}; color:${t.ink};">
+              <td align="center" style="padding:0 0 4px;">
+                <img src="${SANCTUM_MOON_IMG_URL}" alt="" width="190" style="display:inline-block; width:190px; height:auto; border:0;" />
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:0 44px 22px; font-family:${t.bodyFont}; color:${t.ink};">
                 ${options.contentHtml}
               </td>
             </tr>
             <tr>
-              <td align="center" style="padding:0 40px 34px; font-family:${t.bodyFont}; font-size:11.5px; color:${t.faint}; line-height:2;">
+              <td align="center" style="padding:0 40px 30px; font-family:${t.bodyFont}; font-size:11.5px; color:${t.faint}; line-height:2;">
                 <em style="font-size:13px; color:${t.accent};">&ldquo;Blessed are the meek, for they shall inherit the earth.&rdquo;</em><br />
                 <span style="font-size:10.5px;">The promise has many names: Matthew 5:5 &middot; Psalm 37:11 &middot; Qur&rsquo;an 21:105 &middot; Tao Te Ching 66</span><br />
                 <a href="https://meekmeet.com" style="color:${t.muted}; text-decoration:underline;">meekmeet.com</a>
