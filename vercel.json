@@ -16,6 +16,22 @@
     {
       "path": "/api/meeting-lifecycle",
       "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/marketing-drip",
+      "schedule": "30 2 * * *"
+    },
+    {
+      "path": "/api/marketing-drip",
+      "schedule": "30 5 * * *"
+    },
+    {
+      "path": "/api/marketing-drip",
+      "schedule": "30 8 * * *"
+    },
+    {
+      "path": "/api/marketing-drip",
+      "schedule": "30 23 * * *"
     }
   ]
 }
