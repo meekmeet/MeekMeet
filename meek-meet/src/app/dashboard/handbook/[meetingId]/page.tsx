@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { BookOpen, CheckCircle2, Download, Loader2, RefreshCw, Video } from "lucide-react";
 import { getMyHandbook, saveHandbook, regenerateHandbookQuestion, type HandbookData } from "../actions";
 import { HANDBOOK_INTROS, handbookComplete } from "@/lib/handbook";
-import { getTopicById } from "@meekmeet/core/questions";
+import { getTopicById, THRESHOLD_TOPIC } from "@meekmeet/core/questions";
 
 function formatWhen(iso: string): string {
   const d = new Date(iso);
@@ -213,7 +213,8 @@ export default function HandbookPage() {
                 <span className="text-terracotta mr-2">{i + 1}.</span>
                 {r.question}
               </label>
-              {topic && topic.questions.some((q) => q.id === r.question_id) && (
+              {(topic && topic.questions.some((q) => q.id === r.question_id)) ||
+              THRESHOLD_TOPIC.questions.some((q) => q.id === r.question_id) ? (
                 <button
                   type="button"
                   onClick={() => redraw(r.question_id)}
@@ -228,7 +229,7 @@ export default function HandbookPage() {
                   )}
                   Draw another
                 </button>
-              )}
+              ) : null}
             </div>
             <textarea
               id={`q-${r.question_id}`}

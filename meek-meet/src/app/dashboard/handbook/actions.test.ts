@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { MockSupabaseClient, makeAuthUser } from "@/test/mock-supabase";
-import { getTopicById, getTopicForDate } from "@meekmeet/core/questions";
+import { getTopicById, getTopicForDate, THRESHOLD_TOPIC } from "@meekmeet/core/questions";
 
 vi.mock("@/lib/supabase/server", () => ({ createClient: vi.fn() }));
 
@@ -168,6 +168,28 @@ describe("regenerateHandbookQuestion — the redraw engine", () => {
     await expect(
       regenerateHandbookQuestion(MEETING_ID, "hom-9")
     ).rejects.toThrow("not in your handbook");
+  });
+
+  it("redraws a threshold question within the threshold bank, logged as such", async () => {
+    const thr = THRESHOLD_TOPIC.questions[0];
+    mockSupa.enqueue(
+      handbookRow({
+        responses: [
+          ...topicResponses(["hom-1", "hom-2"]),
+          { question_id: thr.id, question: thr.text, answer: "" },
+        ],
+      })
+    );
+    mockSupa.enqueue(null); // update
+    mockSupa.enqueue(null); // swap log
+
+    const result = await regenerateHandbookQuestion(MEETING_ID, thr.id);
+    const replaced = result.responses[2];
+    expect(replaced.question_id).not.toBe(thr.id);
+    expect(THRESHOLD_TOPIC.questions.some((q) => q.id === replaced.question_id)).toBe(true);
+    const swap = mockSupa.inserts[0] as { topic_id: string; old_question_id: string };
+    expect(swap.topic_id).toBe("the-threshold");
+    expect(swap.old_question_id).toBe(thr.id);
   });
 
   it("refuses to redraw a leader-set custom question", async () => {

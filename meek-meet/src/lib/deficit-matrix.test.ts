@@ -2,16 +2,38 @@ import { describe, it, expect } from "vitest";
 import { buildDeficitMatrix } from "./deficit-matrix";
 
 describe("buildDeficitMatrix", () => {
-  it("counts the authored bank: 12 questions per deficit", () => {
+  it("counts the authored banks: 12 per personal deficit, 4 per societal", () => {
     const matrix = buildDeficitMatrix([], []);
-    expect(matrix).toHaveLength(7);
+    expect(matrix).toHaveLength(12);
     for (const row of matrix) {
-      expect(row.inBank).toBe(12);
+      expect(row.inBank).toBe(row.deficit.kind === "personal" ? 12 : 4);
       expect(row.drawn).toBe(0);
       expect(row.answered).toBe(0);
       expect(row.sentBack).toBe(0);
       expect(row.answerRate).toBeNull();
     }
+  });
+
+  it("aggregates threshold questions into the societal family", () => {
+    const matrix = buildDeficitMatrix(
+      [
+        {
+          responses: [
+            { question_id: "thr-1", answer: "Housing approval times." }, // stagnation
+            { question_id: "thr-9", answer: "" }, // helplessness, unanswered
+          ],
+        },
+      ],
+      [{ old_question_id: "thr-5" }] // fragmentation sent back
+    );
+    const stagnation = matrix.find((r) => r.deficit.id === "stagnation")!;
+    const helplessness = matrix.find((r) => r.deficit.id === "helplessness")!;
+    const fragmentation = matrix.find((r) => r.deficit.id === "fragmentation")!;
+    expect(stagnation.drawn).toBe(1);
+    expect(stagnation.answered).toBe(1);
+    expect(helplessness.drawn).toBe(1);
+    expect(helplessness.answered).toBe(0);
+    expect(fragmentation.sentBack).toBe(1);
   });
 
   it("counts drawn and answered responses per deficit", () => {

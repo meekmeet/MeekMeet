@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
 import { MockSupabaseClient } from "@/test/mock-supabase";
-import { getTopicForDate } from "@meekmeet/core/questions";
-import { HANDBOOK_QUESTION_COUNT } from "@/lib/handbook";
+import { getTopicForDate, THRESHOLD_TOPIC } from "@meekmeet/core/questions";
+import { HANDBOOK_QUESTION_COUNT, HANDBOOK_THRESHOLD_COUNT } from "@/lib/handbook";
 
 const { sendMock } = vi.hoisted(() => ({ sendMock: vi.fn() }));
 
@@ -128,7 +128,8 @@ describe("GET /api/handbook-dispatch", () => {
     expect(body.sent).toBe(1);
     expect(body.failed).toBe(0);
 
-    // The inserted handbook: topic stamped, drawn questions + the custom one.
+    // The inserted handbook: topic stamped, drawn questions + one threshold
+    // question + the custom one.
     const insert = mockSupa.inserts[0] as {
       topic_id: string;
       responses: { question_id: string; question: string; answer: string }[];
@@ -137,11 +138,16 @@ describe("GET /api/handbook-dispatch", () => {
     const expectedTopic = getTopicForDate(new Date(MEETING.scheduled_at));
     expect(insert.topic_id).toBe(expectedTopic.id);
     expect(insert.variant).toBe("first_circle");
-    expect(insert.responses).toHaveLength(HANDBOOK_QUESTION_COUNT + 1);
+    expect(insert.responses).toHaveLength(
+      HANDBOOK_QUESTION_COUNT + HANDBOOK_THRESHOLD_COUNT + 1
+    );
     const drawnIds = insert.responses.slice(0, HANDBOOK_QUESTION_COUNT).map((r) => r.question_id);
     for (const id of drawnIds) {
       expect(expectedTopic.questions.some((q) => q.id === id)).toBe(true);
     }
+    // The threshold question rides after the topic draw — it crosses every day.
+    const threshold = insert.responses[HANDBOOK_QUESTION_COUNT];
+    expect(THRESHOLD_TOPIC.questions.some((q) => q.id === threshold.question_id)).toBe(true);
     // The leader's custom question rides last, verbatim.
     const custom = insert.responses[insert.responses.length - 1];
     expect(custom.question_id).toBe("custom-1");
@@ -165,6 +171,7 @@ describe("GET /api/handbook-dispatch", () => {
     expect(memberEmail.subject).toContain("first circle");
     expect(memberEmail.html).toContain("What would make your street safer?");
     expect(memberEmail.html).toContain("drawn for you by lot");
+    expect(memberEmail.html).toContain("threshold question");
     expect(memberEmail.html).toContain(
       getTopicForDate(new Date(MEETING.scheduled_at)).name.replace(/&/g, "&amp;")
     );

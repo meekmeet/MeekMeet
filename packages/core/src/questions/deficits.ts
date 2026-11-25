@@ -31,6 +31,16 @@ export type DeficitId =
   | "wrath"
   | "sloth";
 
+/** The societal family — what holds back the progress of a people. */
+export type SocietalDeficitId =
+  | "stagnation"
+  | "fragmentation"
+  | "helplessness"
+  | "short_sightedness"
+  | "gatekeeping";
+
+export type AnyDeficitId = DeficitId | SocietalDeficitId;
+
 export interface VirtuePole {
   name: string;
   essence: string;
@@ -47,7 +57,9 @@ export interface TraditionParallels {
 }
 
 export interface RootDeficit {
-  id: DeficitId;
+  id: AnyDeficitId;
+  /** personal = the seven, what holds a person back; societal = the five, what holds a people back. */
+  kind: "personal" | "societal";
   name: string;
   /** What the deficit actually is, beneath its cartoon version. */
   essence: string;
@@ -59,6 +71,7 @@ export interface RootDeficit {
 export const ROOT_DEFICITS: RootDeficit[] = [
   {
     id: "pride",
+    kind: "personal",
     name: "Pride",
     essence:
       "The managed self: image over truth, status over love, self-sufficiency over trust. In community life it appears as the polite mask, the unspoken conviction, the struggle nobody admits to, and the institution that never asks.",
@@ -86,6 +99,7 @@ export const ROOT_DEFICITS: RootDeficit[] = [
   },
   {
     id: "greed",
+    kind: "personal",
     name: "Greed",
     essence:
       "The clenched hand: accumulation as safety, an 'enough' that never arrives. In community life it appears as the housing squeeze, the undervalued worker, the surplus never shared, the street that has everything but each other.",
@@ -113,6 +127,7 @@ export const ROOT_DEFICITS: RootDeficit[] = [
   },
   {
     id: "lust",
+    kind: "personal",
     name: "Craving",
     essence:
       "Wanting that consumes: the person, the thing, the moment — wanted, not loved. In public life craving rarely appears naked; it wears greed's and gluttony's clothes, which is why the bank probes it through them.",
@@ -140,6 +155,7 @@ export const ROOT_DEFICITS: RootDeficit[] = [
   },
   {
     id: "envy",
+    kind: "personal",
     name: "Envy",
     essence:
       "The bent eye: another's good read as one's own loss. The quiet assassin of gratitude — it cannot celebrate, only compare, and it isolates the envious inside their own accounting.",
@@ -167,6 +183,7 @@ export const ROOT_DEFICITS: RootDeficit[] = [
   },
   {
     id: "gluttony",
+    kind: "personal",
     name: "Gluttony",
     essence:
       "The false consolation: consuming to fill what only meaning fills — food, drink, comfort, distraction, the scroll at midnight. Its modern form is the comfort that quietly becomes a cage.",
@@ -194,6 +211,7 @@ export const ROOT_DEFICITS: RootDeficit[] = [
   },
   {
     id: "wrath",
+    kind: "personal",
     name: "Wrath",
     essence:
       "The fire that forgets its target: resentment inherited, nursed, and handed down — in families, between neighbours, across generations. Anger is information; wrath is information set alight.",
@@ -221,6 +239,7 @@ export const ROOT_DEFICITS: RootDeficit[] = [
   },
   {
     id: "sloth",
+    kind: "personal",
     name: "Acedia",
     essence:
       "Not laziness — the noonday demon. Numbness, despair, the retreat from what calls us: the unseeing eye that walks past the neighbour, the gift left buried, the silence that watches injustice pass. The deficit of a distracted age.",
@@ -248,8 +267,159 @@ export const ROOT_DEFICITS: RootDeficit[] = [
   },
 ];
 
+/**
+ * The five societal deficits — the threshold family. Where the seven hold a
+ * PERSON back, these hold a PEOPLE back: the brakes on human progress that
+ * the threshold questions (threshold.ts) are authored from. Same shape, same
+ * interfaith spine, same rule: invisible to members, visible in The Gate.
+ */
+export const SOCIETAL_DEFICITS: RootDeficit[] = [
+  {
+    id: "stagnation",
+    kind: "societal",
+    name: "Stagnation",
+    essence:
+      "The settled-for world: 'that's just how things are here.' A culture that has stopped expecting tomorrow to be better than today — behind the rest of the world in ways it no longer even notices, accepting as permanent what elsewhere is already solved.",
+    parallels: {
+      buddhism: "clinging to the present form — anicca (impermanence) denied",
+      islam: "'sufficient for us is what we found our fathers doing' (Qur'an 2:170) — the inherited refusal to look forward",
+      judaism: "'nothing new under the sun' read as despair instead of a charge",
+      hinduism: "tamas at the scale of a society — inertia become culture",
+      sikhism: "the ever-creating Creator (karta purakh) — and a people who stopped creating with him",
+      classical: "the late republic looking backward — Rome mourning itself",
+    },
+    virtue: {
+      name: "Momentum",
+      essence:
+        "The expectation of progress made practical: catching up where we are behind, then going further — small wins compounded until the culture believes in tomorrow again.",
+      parallels: {
+        buddhism: "the wheel set turning — the dharma that moves",
+        islam: "'God does not change the condition of a people until they change what is in themselves' (13:11)",
+        judaism: "'go forward' — the sea opens only after the first step in",
+        hinduism: "karma yoga at civilisational scale — motion as worship",
+        sikhism: "chardhi kala — the ever-rising spirit",
+        classical: "the pioneer virtue — the city always building",
+      },
+    },
+  },
+  {
+    id: "fragmentation",
+    kind: "societal",
+    name: "Fragmentation",
+    essence:
+      "The silo: knowledge, people and effort divided against itself. Every field reinventing what the next one knows, every community solving alone what is already solved next door, every congregation certain the others are the problem.",
+    parallels: {
+      buddhism: "the divided sangha — schism named as the first warning",
+      islam: "'hold fast to the rope of God and do not be divided' (3:103)",
+      judaism: "sinat chinam — the causeless hatred the sages say felled the Temple",
+      hinduism: "duty pursued without union — the kula at war with itself",
+      sikhism: "'there is no Hindu, there is no Muslim' — division refused at the root",
+      classical: "divide et impera turned inward — a people conquered by its own pieces",
+    },
+    virtue: {
+      name: "Cohesion",
+      essence:
+        "Many hands, one table: the mosque and the church and the secular club sharing what each holds alone — effort that compounds because it is joined.",
+      parallels: {
+        buddhism: "the four immeasurables practised together, not alone",
+        islam: "the ummah — one body, many members",
+        judaism: "kol yisrael areivim — all of one people, responsible for one another",
+        hinduism: "vasudhaiva kutumbakam — the world as one family",
+        sikhism: "langar — the one table that seats everyone",
+        classical: "concordia — the Roman dream that outlived Rome",
+      },
+    },
+  },
+  {
+    id: "helplessness",
+    kind: "societal",
+    name: "Helplessness",
+    essence:
+      "Learned dependency: waiting for permission, for government, for someone. A people who have quietly handed their agency away and now watch their own streets as spectators — certain that change is something that happens to them.",
+    parallels: {
+      buddhism: "the raft refused — 'be a lamp unto yourself'",
+      islam: "the condition unchanged because the selves were (13:11, the other edge)",
+      judaism: "'why do you cry out to me? Tell the people to go forward' (Ex 14:15)",
+      hinduism: "'lift yourself by yourself' (Gita 6:5)",
+      sikhism: "kirat karni denied — dignity traded for waiting",
+      classical: "the client at the patron's door — the citizen who forgot he was one",
+    },
+    virtue: {
+      name: "Agency",
+      essence:
+        "The lamp lit: ordinary people starting without permission — the street fixed by its own residents, the problem owned by whoever saw it first.",
+      parallels: {
+        buddhism: "self-reliance on the path — the work of crossing is yours",
+        islam: "tawakkul after the camel is tied — trust that acts first",
+        judaism: "the partnership of creation — 'the work is not yours to finish, nor are you free to desist'",
+        hinduism: "svadharma — one's own duty, taken up",
+        sikhism: "seva begun without being asked",
+        classical: "civitas — the citizen who builds",
+      },
+    },
+  },
+  {
+    id: "short_sightedness",
+    kind: "societal",
+    name: "Short-sightedness",
+    essence:
+      "The election-cycle mind: what wins this year weighed against what our grandchildren need — and the grandchildren lose. The harvest eaten, the seed forgotten, the twenty-year build that no one will start because no one will cut the ribbon.",
+    parallels: {
+      buddhism: "the unseen long consequence — karmic time ignored",
+      islam: "'did they not see what generations before them did?' — the denied lesson",
+      judaism: "'choose life, that your descendants may live' (Deut 30:19)",
+      hinduism: "dharma owed seven generations forward",
+      sikhism: "time held in trust for the ages — the sahib of all seasons",
+      classical: "the seed corn eaten — the oldest story of civilisational decline",
+    },
+    virtue: {
+      name: "Foresight",
+      essence:
+        "The long now: building what you will never cut the ribbon on, planting shade you will never sit in — the future treated as a neighbour who is coming to stay.",
+      parallels: {
+        buddhism: "the long view of suffering and its ending — across lives",
+        islam: "'be in this world as a stranger' — building for a longer home",
+        judaism: "the command to plant even as the days end — 'plant a carob tree'",
+        hinduism: "the rishi's horizon — thought measured in yugas",
+        sikhism: "the langar that outlives its builders",
+        classical: "the Roman roads — infrastructure as a love letter to the unborn",
+      },
+    },
+  },
+  {
+    id: "gatekeeping",
+    kind: "societal",
+    name: "Gatekeeping",
+    essence:
+      "The toll booth: knowledge, tools, medicine and opportunity locked behind price, credential and connection — so the people who need them most stand outside doors their own community owns. Access hoarded is progress withheld.",
+    parallels: {
+      buddhism: "the dharma sold — the teaching that once had no price",
+      islam: "'do not devour one another's wealth unjustly' — the hoarded key",
+      judaism: "'do not withhold the wages of the hired hand' — the ladder pulled up",
+      hinduism: "the ashram gate closed to the low-born — wisdom withheld",
+      sikhism: "langar's opposite — the meal served behind a wall",
+      classical: "the mysteries kept from the many — knowledge as aristocracy",
+    },
+    virtue: {
+      name: "Open Access",
+      essence:
+        "The ladder let down: the public library of every tool, the clinic that is actually reachable, the knowledge that moves at the speed of need — progress measured by who it reaches.",
+      parallels: {
+        buddhism: "the teaching given freely to all who ask",
+        islam: "the pursuit of knowledge 'from cradle to grave' — for every believer",
+        judaism: "'teach them diligently to your children' — wisdom as public property",
+        hinduism: "vidya dadaati vinayam — knowledge that liberates, given freely",
+        sikhism: "the langar doors open to all — no one outside the kitchen",
+        classical: "the agora — the open square where every citizen speaks",
+      },
+    },
+  },
+];
+
+export const ALL_DEFICITS: RootDeficit[] = [...ROOT_DEFICITS, ...SOCIETAL_DEFICITS];
+
 export function getDeficitById(id: string): RootDeficit | null {
-  return ROOT_DEFICITS.find((d) => d.id === id) ?? null;
+  return ALL_DEFICITS.find((d) => d.id === id) ?? null;
 }
 
 // ── The gate map ───────────────────────────────────────────────
@@ -362,20 +532,62 @@ export const QUESTION_DEFICITS: Record<string, DeficitId> = {
 };
 
 /**
- * The gate: the deficit a question was written to probe, or null if the
- * question is not in the gated bank (e.g. a leader's custom question —
+ * The threshold gate map: every threshold question (threshold.ts) → the
+ * societal deficit it was authored from. Balanced 4 per societal deficit and
+ * test-enforced, exactly like the personal gate.
+ */
+export const THRESHOLD_DEFICITS: Record<string, SocietalDeficitId> = {
+  // Stagnation → Momentum
+  "thr-1": "stagnation",  // where we are behind → why catching up matters
+  "thr-2": "stagnation",  // "just how things are" → already solved elsewhere
+  "thr-3": "stagnation",  // five years out → what actually stops it
+  "thr-4": "stagnation",  // seen momentum → what set it moving
+  // Fragmentation → Cohesion
+  "thr-5": "fragmentation",  // the two groups not talking → if they did
+  "thr-6": "fragmentation",  // the same problem solved separately
+  "thr-7": "fragmentation",  // what each holds alone → shared
+  "thr-8": "fragmentation",  // strangers combining → seen once
+  // Helplessness → Agency
+  "thr-9": "helplessness",   // waiting for "someone" → who is the someone
+  "thr-10": "helplessness",  // no permission, no budget → done anyway
+  "thr-11": "helplessness",  // the skill the street lacks → held nearby
+  "thr-12": "helplessness",  // the ordinary person who simply started
+  // Short-sightedness → Foresight
+  "thr-13": "short_sightedness",  // this decision → the grandchildren's verdict
+  "thr-14": "short_sightedness",  // the ten-year build → no cycle long enough
+  "thr-15": "short_sightedness",  // untaught now → desperately needed later
+  "thr-16": "short_sightedness",  // the shade you will never sit in
+  // Gatekeeping → Open Access
+  "thr-17": "gatekeeping",  // locked behind price or credential
+  "thr-18": "gatekeeping",  // technology's open door → who is still outside
+  "thr-19": "gatekeeping",  // access on paper → unreachable in practice
+  "thr-20": "gatekeeping",  // the doors opened after hours → what we'd become
+};
+
+/**
+ * The gate: the deficit a question was authored from, or null if the
+ * question is not in the gated banks (e.g. a leader's custom question —
  * those answer to the leader, not to the gate).
  */
 export function getDeficitForQuestion(questionId: string): RootDeficit | null {
-  const id = QUESTION_DEFICITS[questionId];
+  const id = QUESTION_DEFICITS[questionId] ?? THRESHOLD_DEFICITS[questionId];
   return id ? getDeficitById(id) : null;
 }
 
-/** Deficit ids actually used by the bank, with their question counts. */
+/** Deficit ids actually used by the day-topic bank, with their question counts. */
 export function deficitDistribution(): Record<DeficitId, number> {
   const counts = Object.fromEntries(
     ROOT_DEFICITS.map((d) => [d.id, 0])
   ) as Record<DeficitId, number>;
   for (const id of Object.values(QUESTION_DEFICITS)) counts[id]++;
+  return counts;
+}
+
+/** Societal deficit ids used by the threshold bank, with question counts. */
+export function thresholdDeficitDistribution(): Record<SocietalDeficitId, number> {
+  const counts = Object.fromEntries(
+    SOCIETAL_DEFICITS.map((d) => [d.id, 0])
+  ) as Record<SocietalDeficitId, number>;
+  for (const id of Object.values(THRESHOLD_DEFICITS)) counts[id]++;
   return counts;
 }

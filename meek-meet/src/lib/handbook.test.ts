@@ -3,6 +3,7 @@ import {
   HANDBOOK_INTROS,
   HANDBOOK_LEAD_DAYS,
   HANDBOOK_QUESTION_COUNT,
+  HANDBOOK_THRESHOLD_COUNT,
   LEADER_OPENING_WORDS,
   LEADER_CLOSING_WORDS,
   LEADER_RUN_SHEET,
@@ -10,11 +11,12 @@ import {
   buildHandbookQuestions,
   buildLeaderPackEmail,
   drawHandbookQuestions,
+  drawThresholdQuestions,
   formatMeetingWhen,
   handbookComplete,
   handbookVariant,
 } from "./handbook";
-import { getTopicForWeekday, CIRCLE_TOPICS } from "@meekmeet/core/questions";
+import { getTopicForWeekday, CIRCLE_TOPICS, THRESHOLD_TOPIC } from "@meekmeet/core/questions";
 
 const TOPIC = getTopicForWeekday(2); // Home & Street
 
@@ -81,6 +83,30 @@ describe("drawHandbookQuestions — the questions are never fixed", () => {
       const drawn = drawHandbookQuestions(topic);
       const ids = new Set(topic.questions.map((q) => q.id));
       for (const q of drawn) expect(ids.has(q.question_id)).toBe(true);
+    }
+  });
+});
+
+describe("drawThresholdQuestions — the question that crosses every day", () => {
+  it("draws one threshold question by default", () => {
+    const drawn = drawThresholdQuestions();
+    expect(drawn).toHaveLength(HANDBOOK_THRESHOLD_COUNT);
+    expect(THRESHOLD_TOPIC.questions.some((q) => q.id === drawn[0].question_id)).toBe(true);
+  });
+
+  it("never draws a threshold question twice across a member's redraws", () => {
+    const first = drawThresholdQuestions(19);
+    const second = drawThresholdQuestions(5, first.map((q) => q.question_id));
+    expect(second).toHaveLength(1);
+    expect(first.map((q) => q.question_id)).not.toContain(second[0].question_id);
+  });
+
+  it("never collides with the day-topic banks", () => {
+    const thresholdIds = new Set(THRESHOLD_TOPIC.questions.map((q) => q.id));
+    for (const topic of CIRCLE_TOPICS) {
+      for (const q of topic.questions) {
+        expect(thresholdIds.has(q.id)).toBe(false);
+      }
     }
   });
 });
@@ -197,6 +223,12 @@ describe("buildHandbookEmail", () => {
     expect(html).toContain("The theme stays; the question changes");
   });
 
+  it("names the threshold question — the one that crosses every day", () => {
+    const { html } = buildHandbookEmail({ ...base, variant: "returning" });
+    expect(html).toContain("threshold question");
+    expect(html).toContain("what is holding back what is possible");
+  });
+
   it("links to the member's handbook form", () => {
     const { html } = buildHandbookEmail({ ...base, variant: "first_circle" });
     expect(html).toContain("https://meekmeet.com/dashboard/handbook/abc");
@@ -279,6 +311,12 @@ describe("buildLeaderPackEmail", () => {
     expect(html).toContain("Home &amp; Street");
     expect(html).toContain("drew their own questions by lot");
     expect(html).toContain("no two handbooks in your room are the same");
+  });
+
+  it("tells the leader about the threshold question and how to hold it", () => {
+    const { html } = buildLeaderPackEmail(base);
+    expect(html).toContain("threshold question");
+    expect(html).toContain("the whole country is sitting with together");
   });
 
   it("includes the roster with variant and handbook status", () => {

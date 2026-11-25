@@ -3,7 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { isValidUuid, assertNonEmptyString } from "@/lib/validation";
 import { handbookComplete, type HandbookQuestion } from "@/lib/handbook";
-import { drawQuestions, getTopicById, getTopicForDate } from "@meekmeet/core/questions";
+import { drawQuestions, getTopicById, getTopicForDate, THRESHOLD_TOPIC } from "@meekmeet/core/questions";
 
 const MAX_ANSWER_LENGTH = 4000;
 const MAX_INTENTIONS_LENGTH = 2000;
@@ -163,12 +163,17 @@ export async function regenerateHandbookQuestion(
     getTopicForDate(new Date(meetingRel?.scheduled_at as string));
 
   const current = responses[slot];
-  const inBank = topic.questions.some((q) => q.id === current.question_id);
-  if (!inBank) {
+  // Threshold questions redraw within the threshold bank (it crosses every
+  // day); topic questions within the day's topic; anything else is a
+  // leader-set custom question and cannot be redrawn.
+  const inThreshold = THRESHOLD_TOPIC.questions.some((q) => q.id === current.question_id);
+  const inTopic = topic.questions.some((q) => q.id === current.question_id);
+  if (!inThreshold && !inTopic) {
     throw new Error("This question was set by your leader and cannot be redrawn");
   }
+  const bank = inThreshold ? THRESHOLD_TOPIC : topic;
 
-  const [replacement] = drawQuestions(topic, 1, {
+  const [replacement] = drawQuestions(bank, 1, {
     excludeIds: responses.map((r) => r.question_id),
   });
   if (!replacement) {
@@ -196,7 +201,7 @@ export async function regenerateHandbookQuestion(
       meeting_id: meetingId,
       circle_id: row.circle_id,
       profile_id: user.id,
-      topic_id: topic.id,
+      topic_id: bank.id,
       slot,
       old_question_id: current.question_id,
       old_question: current.question,

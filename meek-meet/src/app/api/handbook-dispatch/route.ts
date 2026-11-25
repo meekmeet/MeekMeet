@@ -9,6 +9,7 @@ import {
   buildHandbookQuestions,
   buildLeaderPackEmail,
   drawHandbookQuestions,
+  drawThresholdQuestions,
   handbookVariant,
   type HandbookVariant,
 } from "@/lib/handbook";
@@ -164,9 +165,11 @@ export async function GET(request: NextRequest) {
         .not("completed_at", "is", null);
       const variant = handbookVariant(count ?? 0);
 
-      // The member's own draw from the day's theme, plus any custom questions.
+      // The member's own draw: the day's theme, then one threshold question
+      // that crosses every day, then any leader-set custom questions.
       const drawn = drawHandbookQuestions(topic);
-      const questions = [...drawn, ...customQuestions];
+      const threshold = drawThresholdQuestions();
+      const questions = [...drawn, ...threshold, ...customQuestions];
 
       const { data: inserted, error: insertError } = await supabase
         .from("session_handbooks")

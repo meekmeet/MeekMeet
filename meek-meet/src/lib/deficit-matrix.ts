@@ -8,9 +8,10 @@
 // admin, never for members or regular admins.
 
 import {
-  ROOT_DEFICITS,
+  ALL_DEFICITS,
   QUESTION_DEFICITS,
-  type DeficitId,
+  THRESHOLD_DEFICITS,
+  type AnyDeficitId,
   type RootDeficit,
 } from "@meekmeet/core/questions";
 
@@ -36,28 +37,33 @@ export interface SwapRow {
   old_question_id: string;
 }
 
+const GATE_MAP: Record<string, AnyDeficitId> = {
+  ...QUESTION_DEFICITS,
+  ...THRESHOLD_DEFICITS,
+};
+
 export function buildDeficitMatrix(
   handbooks: HandbookResponseRow[],
   swaps: SwapRow[]
 ): DeficitStats[] {
-  const inBank = new Map<DeficitId, number>();
-  const drawn = new Map<DeficitId, number>();
-  const answered = new Map<DeficitId, number>();
-  const sentBack = new Map<DeficitId, number>();
-  for (const d of ROOT_DEFICITS) {
+  const inBank = new Map<AnyDeficitId, number>();
+  const drawn = new Map<AnyDeficitId, number>();
+  const answered = new Map<AnyDeficitId, number>();
+  const sentBack = new Map<AnyDeficitId, number>();
+  for (const d of ALL_DEFICITS) {
     inBank.set(d.id, 0);
     drawn.set(d.id, 0);
     answered.set(d.id, 0);
     sentBack.set(d.id, 0);
   }
 
-  for (const deficit of Object.values(QUESTION_DEFICITS)) {
+  for (const deficit of Object.values(GATE_MAP)) {
     inBank.set(deficit, (inBank.get(deficit) ?? 0) + 1);
   }
 
   for (const row of handbooks) {
     for (const r of row.responses ?? []) {
-      const deficit = QUESTION_DEFICITS[r.question_id];
+      const deficit = GATE_MAP[r.question_id];
       if (!deficit) continue; // leader customs answer to the leader, not the gate
       drawn.set(deficit, (drawn.get(deficit) ?? 0) + 1);
       if (typeof r.answer === "string" && r.answer.trim().length > 0) {
@@ -67,12 +73,12 @@ export function buildDeficitMatrix(
   }
 
   for (const swap of swaps) {
-    const deficit = QUESTION_DEFICITS[swap.old_question_id];
+    const deficit = GATE_MAP[swap.old_question_id];
     if (!deficit) continue;
     sentBack.set(deficit, (sentBack.get(deficit) ?? 0) + 1);
   }
 
-  return ROOT_DEFICITS.map((deficit) => {
+  return ALL_DEFICITS.map((deficit) => {
     const d = drawn.get(deficit.id) ?? 0;
     const a = answered.get(deficit.id) ?? 0;
     return {

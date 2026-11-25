@@ -54,9 +54,11 @@ export default async function DeficitsPage() {
         are moving.
       </p>
       <p className="text-xs text-faint mb-8 max-w-2xl">
-        The bank is mathematically balanced: 84 questions, exactly 12 per deficit, every
-        day-topic touching all seven. Balance and coverage are enforced by test — no
-        question ships without passing the gate.
+        Two families, one gate. <strong>The Seven</strong> hold a person back;{" "}
+        <strong>The Five</strong> hold a people back — the threshold family, drawn into
+        every handbook on every day. The bank is mathematically balanced (12 questions per
+        personal deficit, 4 per societal deficit, every day-topic touching all seven) and
+        the balance is enforced by test — no question ships without passing the gate.
       </p>
 
       {/* The running totals */}
@@ -73,8 +75,27 @@ export default async function DeficitsPage() {
         ))}
       </div>
 
-      <div className="space-y-6">
-        {matrix.map(({ deficit, inBank, drawn, answered, sentBack, answerRate }) => (
+      {(
+        [
+          {
+            kind: "personal" as const,
+            title: "The Seven — what holds a person back",
+            note: "The root deficits of the soul, in every tradition's tongue. The day-topics draw from these.",
+          },
+          {
+            kind: "societal" as const,
+            title: "The Five — what holds a people back",
+            note: "The threshold family: the brakes on human progress. One threshold question crosses into every handbook, every day.",
+          },
+        ]
+      ).map((section) => (
+        <div key={section.kind} className="mb-10">
+          <h2 className="font-serif text-2xl text-charcoal mb-1">{section.title}</h2>
+          <p className="text-xs text-charcoal-muted mb-5">{section.note}</p>
+          <div className="space-y-6">
+            {matrix
+              .filter((row) => row.deficit.kind === section.kind)
+              .map(({ deficit, inBank, drawn, answered, sentBack, answerRate }) => (
           <div key={deficit.id} className="bg-cream-warm border border-border-soft rounded-2xl p-6">
             <div className="flex flex-wrap items-baseline justify-between gap-2 mb-2">
               <h2 className="font-serif text-xl text-charcoal">
@@ -120,10 +141,12 @@ export default async function DeficitsPage() {
                   <span className="text-faint"> → {deficit.virtue.parallels[tradition as keyof typeof deficit.virtue.parallels]}</span>
                 </p>
               ))}
-            </div>
+                </div>
+              </div>
+              ))}
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
 
       <p className="mt-10 text-xs text-faint leading-relaxed max-w-2xl">
         How to read this: the draw is random, so over time &ldquo;drawn&rdquo; evens out —

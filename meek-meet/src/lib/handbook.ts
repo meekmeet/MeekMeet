@@ -21,14 +21,21 @@ import { escapeHtml } from "@/lib/validation";
 import { emailShell, themed, EMAIL_THEMES } from "@/lib/emails/shell";
 import {
   drawQuestions,
+  THRESHOLD_TOPIC,
   type CircleTopic,
   type CircleTopicQuestion,
 } from "@meekmeet/core/questions";
 
 export const HANDBOOK_LEAD_DAYS = 4;
 
-/** Questions drawn per member, from the day's topic bank. */
+/** Questions drawn per member from the day's topic bank. */
 export const HANDBOOK_QUESTION_COUNT = 3;
+
+/**
+ * Threshold questions drawn per member — one question that crosses every
+ * day and every topic: the standing appointment with what carries us forward.
+ */
+export const HANDBOOK_THRESHOLD_COUNT = 1;
 
 export type HandbookVariant = "first_circle" | "returning";
 
@@ -83,6 +90,14 @@ export function drawHandbookQuestions(
       content: q.text,
     }))
   );
+}
+
+/** Draw the member's threshold question(s) — the bank that crosses every day. */
+export function drawThresholdQuestions(
+  count: number = HANDBOOK_THRESHOLD_COUNT,
+  excludeIds: string[] = []
+): HandbookQuestion[] {
+  return drawHandbookQuestions(THRESHOLD_TOPIC, count, excludeIds);
 }
 
 /** A handbook is complete when every question carries a written answer. */
@@ -171,6 +186,9 @@ export function buildHandbookEmail(options: {
     ${questionSteps}
     ${h.callout(
       "These questions were not chosen for you — they were drawn at random from the theme's bank, the way lots are drawn. If one of them does not fit — if it asks about a country you never lived in, a grief that is not yours — you may <strong>draw another</strong> on your handbook page, as many times as you need. The theme stays; the question changes. Which questions people keep, and which they send back, is itself something we listen to."
+    )}
+    ${h.paragraph(
+      "The last of them is a <strong>threshold question</strong> — one question that crosses every circle, every day, everywhere we gather. It does not ask what is wrong with us; it asks what is holding back what is possible."
     )}
     ${h.paragraph(
       "Take the four days. Let the questions sit with you the way good questions do — in the car, at the sink, at three in the morning. The best answers are rarely the first ones."
@@ -297,6 +315,9 @@ export function buildLeaderPackEmail(options: {
     )}
     ${h.callout(
       `<strong>The theme: ${escapeHtml(options.topic.name)} — ${escapeHtml(options.topic.epithet)}.</strong> ${escapeHtml(options.topic.symbolism)} Every circle meeting on this weekday shares this theme; within it, each member drew their own questions by lot, and may redraw any that don't fit. So no two handbooks in your room are the same — and no circle anywhere is repeating itself.`
+    )}
+    ${h.paragraph(
+      "Each member's handbook also carries one <strong>threshold question</strong> — the question that crosses every circle, every day: not what is wrong with us, but what is holding back what is possible. When you reach it in the cycle, let it breathe; it is the one question the whole country is sitting with together."
     )}
     ${h.eyebrow("Who is coming")}
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 22px;">${rosterRows}</table>
