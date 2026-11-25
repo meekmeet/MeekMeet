@@ -37,7 +37,6 @@ import {
   ClipboardList,
   Eye,
   Loader2,
-  Mail,
   MapPin,
   Megaphone,
   Play,
@@ -280,7 +279,7 @@ export default function MarketingPage() {
   }, []);
 
   useEffect(() => {
-    load();
+    void Promise.resolve().then(load);
   }, [load]);
 
   // Live preview: the full drip ladder by default, a single themed email for

@@ -21,7 +21,7 @@ const mockSupa = new (class {
   }
   from = vi.fn((table: string) => {
     this.tables.push(table);
-    const owner = this;
+
     const thenable: {
       select: () => unknown;
       insert: (row: Record<string, unknown>) => { select: () => { single: () => Promise<unknown> } };
@@ -35,16 +35,16 @@ const mockSupa = new (class {
       then: (onF: (v: unknown) => unknown) => Promise<unknown>;
     } = {
       select: () => thenable,
-      insert: () => ({ select: () => ({ single: () => owner.next() }) }),
-      update: () => ({ eq: () => owner.next(), in: () => owner.next() }),
+      insert: () => ({ select: () => ({ single: () => this.next() }) }),
+      update: () => ({ eq: () => this.next(), in: () => this.next() }),
       eq: () => thenable,
       lte: () => thenable,
       gte: () => thenable,
       in: () => thenable,
       order: () => thenable,
       limit: () => thenable,
-      single: () => owner.next(),
-      then: (onF) => owner.next().then(onF),
+      single: () => this.next(),
+      then: (onF) => this.next().then(onF),
     };
     return thenable;
   });

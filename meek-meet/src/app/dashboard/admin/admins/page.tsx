@@ -43,7 +43,6 @@ export default function AdminsPage() {
   const [email, setEmail] = useState("");
 
   const load = useCallback(async () => {
-    setLoading(true);
     try {
       const [data, log] = await Promise.all([getAdminRoster(), getAuditLog()]);
       setAdmins(data.admins);
@@ -57,7 +56,7 @@ export default function AdminsPage() {
   }, []);
 
   useEffect(() => {
-    load();
+    void Promise.resolve().then(load);
   }, [load]);
 
   const handleInvite = (e: React.FormEvent) => {

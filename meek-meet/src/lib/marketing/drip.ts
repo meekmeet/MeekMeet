@@ -3,6 +3,7 @@
 // step 3 (terracotta) on day 14. A reply or a tracked click stops the ladder.
 // Shared by the marketing-drip cron route and the admin actions.
 
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { getMarketingTemplate, MARKETING_EMAIL_FROM } from "@/lib/emails/marketing";
 import { generateFlyerSvg, ORG_ACCENTS, accentForOrg } from "@/lib/flyer";
 import { getResend } from "@/lib/resend";
@@ -43,9 +44,7 @@ export interface SequenceRow {
   faith?: string | null;
 }
 
-interface SupabaseService {
-  from: (table: string) => any;
-}
+type SupabaseService = SupabaseClient;
 
 /**
  * Send one step of a sequence. Logs the send (linked to the sequence),

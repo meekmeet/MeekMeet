@@ -35,7 +35,6 @@ export default function MembersPage() {
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async (term?: string) => {
-    setLoading(true);
     try {
       setMembers(await getMembers(term));
     } catch (err) {
@@ -46,12 +45,13 @@ export default function MembersPage() {
   }, []);
 
   useEffect(() => {
-    load();
+    void Promise.resolve().then(() => load());
   }, [load]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     startTransition(async () => {
+      setLoading(true);
       await load(search);
     });
   };
