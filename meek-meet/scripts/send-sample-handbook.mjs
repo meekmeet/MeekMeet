@@ -1,10 +1,11 @@
-// Sends sample session-handbook emails (both variants) to a recipient, using
-// the exact production template and the live Resend account.
+// Sends sample session-handbook emails (both member variants + the leader
+// pack) to a recipient, using the exact production templates and the live
+// Resend account.
 //
 //   node scripts/send-sample-handbook.mjs [to@email]
 //
 // Reads RESEND_API_KEY from meek-meet/.env.local. Runs the real TypeScript
-// template in src/lib/handbook.ts through jiti so the sample is never a copy.
+// templates in src/lib/handbook.ts through jiti so the sample is never a copy.
 
 import { readFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
@@ -23,9 +24,9 @@ for (const line of readFileSync(envPath, "utf-8").split(/\r?\n/)) {
 }
 
 const { Resend } = await jiti.import("resend");
-const { buildHandbookEmail, buildHandbookQuestions } = await jiti.import(
-  resolve(here, "../src/lib/handbook.ts")
-);
+const { buildHandbookEmail, buildLeaderPackEmail, drawHandbookQuestions } =
+  await jiti.import(resolve(here, "../src/lib/handbook.ts"));
+const { getTopicForDate } = await jiti.import("@meekmeet/core/questions");
 
 const to = process.argv[2] ?? "meekmeets@gmail.com";
 const apiKey = process.env.RESEND_API_KEY;
@@ -38,49 +39,51 @@ const meeting = new Date();
 meeting.setDate(meeting.getDate() + 4);
 meeting.setHours(18, 30, 0, 0);
 
-const questions = buildHandbookQuestions([
-  {
-    question_id: "sample-q1",
-    content:
-      "When you walk your street at night, what makes you feel safe — and what doesn't?",
-  },
-  {
-    question_id: "sample-q2",
-    content: "Who in your neighbourhood do you think eats most meals alone?",
-  },
-  {
-    question_id: "sample-q3",
-    content:
-      "If the council gave your street one change this year, what should it be?",
-  },
-  {
-    question_id: "sample-q4",
-    content: "What is one thing this circle could do together within a month?",
-  },
-]);
+// The theme the sample circle would actually sit with that evening.
+const topic = getTopicForDate(meeting);
+const questions = drawHandbookQuestions(topic);
+const joinUrl = "https://zoom.us/j/0000000000?pwd=sample";
+
+async function send(label, subject, html) {
+  const { data, error } = await resend.emails.send({
+    from: "Meek Meet <hello@meekmeet.com>",
+    to,
+    subject: `[SAMPLE — ${label}] ${subject}`,
+    html,
+  });
+  if (error) {
+    console.error(`✗ ${label}:`, error.message);
+    process.exitCode = 1;
+  } else {
+    console.log(`✓ ${label} sent to ${to} (${data?.id})`);
+  }
+}
 
 for (const variant of ["first_circle", "returning"]) {
   const { subject, html } = buildHandbookEmail({
     recipientName: "Martin",
     circleName: "Gosford Circle (sample)",
     scheduledAt: meeting.toISOString(),
-    locationName: "Gosford Community Hall",
+    joinUrl,
     variant,
+    topic,
     questions,
     handbookUrl: "https://meekmeet.com/dashboard",
   });
-
-  const { data, error } = await resend.emails.send({
-    from: "Meek Meet <hello@meekmeet.com>",
-    to,
-    subject: `[SAMPLE — ${variant}] ${subject}`,
-    html,
-  });
-
-  if (error) {
-    console.error(`✗ ${variant}:`, error.message);
-    process.exitCode = 1;
-  } else {
-    console.log(`✓ ${variant} sent to ${to} (${data?.id})`);
-  }
+  await send(variant, subject, html);
 }
+
+const pack = buildLeaderPackEmail({
+  leaderName: "Martin",
+  circleName: "Gosford Circle (sample)",
+  scheduledAt: meeting.toISOString(),
+  joinUrl,
+  topic,
+  roster: [
+    { name: "Miriam", variant: "first_circle", completed: true },
+    { name: "Sam", variant: "returning", completed: true },
+    { name: "Grace", variant: "returning", completed: false },
+  ],
+  leaderRoomUrl: "https://meekmeet.com/dashboard",
+});
+await send("leader pack", pack.subject, pack.html);

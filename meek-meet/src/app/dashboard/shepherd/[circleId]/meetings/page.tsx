@@ -3,7 +3,8 @@
 import { useState, useTransition, useEffect, useCallback } from "react";
 import { createMeeting, cancelMeeting, deleteMeeting } from "../actions";
 import { createClient } from "@/lib/supabase/client";
-import { Plus, Trash2, X, Loader2, Calendar, MapPin, Clock, Video } from "lucide-react";
+import Link from "next/link";
+import { Plus, Trash2, X, Loader2, Calendar, MapPin, Clock, Video, BookOpen } from "lucide-react";
 
 interface Props {
   params: Promise<{ circleId: string }>;
@@ -344,6 +345,13 @@ export default function MeetingsPage({ params }: Props) {
                 )}
               </div>
               <div className="flex items-center gap-2">
+                <Link
+                  href={`/dashboard/shepherd/${circleId}/meetings/${meeting.id}`}
+                  className="px-3 py-1.5 text-xs bg-midnight text-cream rounded-full hover:bg-midnight-soft transition-colors flex items-center gap-1.5"
+                >
+                  <BookOpen className="w-3 h-3" strokeWidth={1.5} />
+                  Leader room
+                </Link>
                 {!meeting.is_cancelled && (
                   <button
                     onClick={() => handleCancel(meeting.id)}

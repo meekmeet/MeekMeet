@@ -15,6 +15,7 @@ import {
   Crown,
   Heart,
   Megaphone,
+  KeyRound,
 } from "lucide-react";
 import { useAuth } from "@/components/auth-provider";
 import { isMasterEmail } from "@/lib/master-admin";
@@ -34,19 +35,19 @@ const navItems = [
 ];
 
 // Admin management is reserved for the master admin only; regular admins
-// never see this entry (server actions and RPCs enforce it too).
-const masterNavItem = {
-  href: "/dashboard/admin/admins",
-  label: "Admins",
-  icon: Crown,
-};
+// never see this entry (server actions and RPCs enforce it too). The Gate —
+// the deficit→virtue matrix — is likewise master-only.
+const masterNavItems = [
+  { href: "/dashboard/admin/deficits", label: "The Gate", icon: KeyRound },
+  { href: "/dashboard/admin/admins", label: "Admins", icon: Crown },
+];
 
 export default function AdminNav() {
   const pathname = usePathname();
   const { user } = useAuth();
 
   const items = isMasterEmail(user?.email)
-    ? [...navItems, masterNavItem]
+    ? [...navItems, ...masterNavItems]
     : navItems;
 
   return (

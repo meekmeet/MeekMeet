@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
 import { MockSupabaseClient } from "@/test/mock-supabase";
+import { getTopicForDate } from "@meekmeet/core/questions";
+import { HANDBOOK_QUESTION_COUNT } from "@/lib/handbook";
 
 const { sendMock } = vi.hoisted(() => ({ sendMock: vi.fn() }));
 
@@ -35,6 +37,9 @@ const MEETING = {
   circle_id: "22222222-2222-2222-2222-222222222222",
   scheduled_at: inFourDays(),
   location_name: "Gosford Library",
+  meeting_type: "in_person",
+  join_url: null,
+  leader_pack_sent_at: null,
   circles: { name: "Gosford Circle" },
   rsvps: [
     {
@@ -53,11 +58,32 @@ const MEETING = {
 const QUESTIONS = [
   {
     meeting_id: MEETING.id,
-    question_id: "q1",
+    question_id: "custom-1",
     content: "What would make your street safer?",
     order_index: 0,
   },
 ];
+
+const LEADER = {
+  user_id: "leader-1",
+  profiles: { email: "leah@example.com", full_name: "Leah" },
+};
+
+const ROSTER = [
+  {
+    profile_id: "u1",
+    variant: "first_circle",
+    completed_at: null,
+    profiles: { full_name: "Miriam" },
+  },
+];
+
+/** Queue the leader-pack queries for one meeting (leaders, roster, stamp). */
+function enqueueLeaderPack(leaders: unknown[] = [LEADER], roster: unknown[] = ROSTER) {
+  mockSupa.enqueue(leaders); // circle_shepherds
+  mockSupa.enqueue(roster); // session_handbooks roster
+  mockSupa.enqueue(null); // meetings leader_pack_sent_at update
+}
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -65,6 +91,7 @@ beforeEach(() => {
   mockSupa.results.length = 0;
   mockSupa.tables.length = 0;
   mockSupa.updates.length = 0;
+  mockSupa.inserts.length = 0;
   process.env.CRON_SECRET = "cron";
   vi.mocked(createServiceClient).mockReturnValue(mockSupa as never);
 });
@@ -82,45 +109,125 @@ describe("GET /api/handbook-dispatch", () => {
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.sent).toBe(0);
+    expect(body.leaderPacks).toBe(0);
     expect(sendMock).not.toHaveBeenCalled();
   });
 
-  it("creates a handbook and emails each going RSVP, skipping others", async () => {
+  it("draws each member's questions from the day's topic, plus leader customs", async () => {
     mockSupa.enqueue([MEETING]); // meetings
     mockSupa.enqueue(QUESTIONS); // meeting_questions
     mockSupa.enqueue([]); // existing handbooks
     mockSupa.enqueue(null); // prior completed count (none)
     mockSupa.enqueue({ id: "hb-1" }); // insert .single()
     mockSupa.enqueue(null); // emailed_at update
+    enqueueLeaderPack();
 
     const res = await GET(cronRequest("cron"));
     const body = await res.json();
 
     expect(body.sent).toBe(1);
     expect(body.failed).toBe(0);
-    expect(sendMock).toHaveBeenCalledTimes(1);
-    const email = sendMock.mock.calls[0][0];
-    expect(email.to).toBe("miriam@example.com");
-    expect(email.subject).toContain("first circle");
-    expect(email.html).toContain("What would make your street safer?");
-    expect(email.html).toContain(`/dashboard/handbook/${MEETING.id}`);
 
-    // The inserted handbook snapshots the questions with empty answers.
-    const insertPayload = mockSupa.upserts.length
-      ? mockSupa.upserts
-      : undefined;
-    expect(insertPayload).toBeUndefined(); // insert(), not upsert()
+    // The inserted handbook: topic stamped, drawn questions + the custom one.
+    const insert = mockSupa.inserts[0] as {
+      topic_id: string;
+      responses: { question_id: string; question: string; answer: string }[];
+      variant: string;
+    };
+    const expectedTopic = getTopicForDate(new Date(MEETING.scheduled_at));
+    expect(insert.topic_id).toBe(expectedTopic.id);
+    expect(insert.variant).toBe("first_circle");
+    expect(insert.responses).toHaveLength(HANDBOOK_QUESTION_COUNT + 1);
+    const drawnIds = insert.responses.slice(0, HANDBOOK_QUESTION_COUNT).map((r) => r.question_id);
+    for (const id of drawnIds) {
+      expect(expectedTopic.questions.some((q) => q.id === id)).toBe(true);
+    }
+    // The leader's custom question rides last, verbatim.
+    const custom = insert.responses[insert.responses.length - 1];
+    expect(custom.question_id).toBe("custom-1");
+    expect(custom.question).toBe("What would make your street safer?");
+    for (const r of insert.responses) expect(r.answer).toBe("");
+  });
+
+  it("emails the member their handbook with the theme and the draw explained", async () => {
+    mockSupa.enqueue([MEETING]);
+    mockSupa.enqueue(QUESTIONS);
+    mockSupa.enqueue([]);
+    mockSupa.enqueue(null);
+    mockSupa.enqueue({ id: "hb-1" });
+    mockSupa.enqueue(null);
+    enqueueLeaderPack();
+
+    await GET(cronRequest("cron"));
+
+    const memberEmail = sendMock.mock.calls.find((c) => c[0].to === "miriam@example.com")?.[0];
+    expect(memberEmail).toBeDefined();
+    expect(memberEmail.subject).toContain("first circle");
+    expect(memberEmail.html).toContain("What would make your street safer?");
+    expect(memberEmail.html).toContain("drawn for you by lot");
+    expect(memberEmail.html).toContain(
+      getTopicForDate(new Date(MEETING.scheduled_at)).name.replace(/&/g, "&amp;")
+    );
+    expect(memberEmail.html).toContain(`/dashboard/handbook/${MEETING.id}`);
+  });
+
+  it("sends the leader their pack with roster, run sheet and room link", async () => {
+    mockSupa.enqueue([MEETING]);
+    mockSupa.enqueue(QUESTIONS);
+    mockSupa.enqueue([]);
+    mockSupa.enqueue(null);
+    mockSupa.enqueue({ id: "hb-1" });
+    mockSupa.enqueue(null);
+    enqueueLeaderPack();
+
+    const res = await GET(cronRequest("cron"));
+    const body = await res.json();
+    expect(body.leaderPacks).toBe(1);
+
+    const leaderEmail = sendMock.mock.calls.find((c) => c[0].to === "leah@example.com")?.[0];
+    expect(leaderEmail).toBeDefined();
+    expect(leaderEmail.html).toContain("Miriam"); // roster
+    expect(leaderEmail.html).toContain("The shape of the night");
+    expect(leaderEmail.html).toContain(
+      `/dashboard/shepherd/${MEETING.circle_id}/meetings/${MEETING.id}`
+    );
+
+    // The meeting is stamped so the pack never sends twice.
+    const stamp = mockSupa.updates.find(
+      (u) => typeof u === "object" && u !== null && "leader_pack_sent_at" in u
+    );
+    expect(stamp).toBeDefined();
   });
 
   it("never emails a member who already has a handbook for the meeting", async () => {
     mockSupa.enqueue([MEETING]);
     mockSupa.enqueue(QUESTIONS);
     mockSupa.enqueue([{ meeting_id: MEETING.id, profile_id: "u1" }]); // existing
+    enqueueLeaderPack([], []);
 
     const res = await GET(cronRequest("cron"));
     const body = await res.json();
     expect(body.sent).toBe(0);
     expect(sendMock).not.toHaveBeenCalled();
+  });
+
+  it("skips the leader pack entirely when it was already sent", async () => {
+    mockSupa.enqueue([{ ...MEETING, leader_pack_sent_at: "2026-01-01T00:00:00Z" }]);
+    mockSupa.enqueue(QUESTIONS);
+    mockSupa.enqueue([]);
+    mockSupa.enqueue(null);
+    mockSupa.enqueue({ id: "hb-1" });
+    mockSupa.enqueue(null);
+
+    const res = await GET(cronRequest("cron"));
+    const body = await res.json();
+    expect(body.sent).toBe(1);
+    expect(body.leaderPacks).toBe(0);
+    expect(sendMock).toHaveBeenCalledTimes(1); // member only
+    const stamp = mockSupa.updates.find(
+      (u) => typeof u === "object" && u !== null && "leader_pack_sent_at" in u
+    );
+    expect(stamp).toBeUndefined();
   });
 
   it("uses the returning variant for members with a completed handbook in the circle", async () => {
@@ -130,13 +237,54 @@ describe("GET /api/handbook-dispatch", () => {
     mockSupa.results.push({ data: null, error: null, count: 2 } as never); // prior completed
     mockSupa.enqueue({ id: "hb-1" });
     mockSupa.enqueue(null);
+    enqueueLeaderPack();
 
     const res = await GET(cronRequest("cron"));
     const body = await res.json();
     expect(body.sent).toBe(1);
-    const email = sendMock.mock.calls[0][0];
-    expect(email.html).toContain("Your check-in");
-    expect(email.subject).toContain("Gosford Circle");
+    const insert = mockSupa.inserts[0] as { variant: string };
+    expect(insert.variant).toBe("returning");
+    const memberEmail = sendMock.mock.calls.find((c) => c[0].to === "miriam@example.com")?.[0];
+    expect(memberEmail.html).toContain("Your check-in");
+    expect(memberEmail.subject).toContain("Gosford Circle");
+  });
+
+  it("carries the online join link into both emails for digital meetings", async () => {
+    const digital = {
+      ...MEETING,
+      meeting_type: "digital",
+      join_url: "https://zoom.us/j/abc123",
+      location_name: null,
+    };
+    mockSupa.enqueue([digital]);
+    mockSupa.enqueue([]);
+    mockSupa.enqueue([]);
+    mockSupa.enqueue(null);
+    mockSupa.enqueue({ id: "hb-1" });
+    mockSupa.enqueue(null);
+    enqueueLeaderPack();
+
+    await GET(cronRequest("cron"));
+    const memberEmail = sendMock.mock.calls.find((c) => c[0].to === "miriam@example.com")?.[0];
+    expect(memberEmail.html).toContain("JOIN THE CIRCLE ONLINE");
+    expect(memberEmail.html).toContain("https://zoom.us/j/abc123");
+    const leaderEmail = sendMock.mock.calls.find((c) => c[0].to === "leah@example.com")?.[0];
+    expect(leaderEmail.html).toContain("https://zoom.us/j/abc123");
+  });
+
+  it("never leaks the join link for in-person meetings", async () => {
+    mockSupa.enqueue([{ ...MEETING, join_url: "https://zoom.us/j/shouldnothide" }]);
+    mockSupa.enqueue([]);
+    mockSupa.enqueue([]);
+    mockSupa.enqueue(null);
+    mockSupa.enqueue({ id: "hb-1" });
+    mockSupa.enqueue(null);
+    enqueueLeaderPack();
+
+    await GET(cronRequest("cron"));
+    for (const call of sendMock.mock.calls) {
+      expect(call[0].html).not.toContain("shouldnothide");
+    }
   });
 
   it("skips RSVPs with no email address", async () => {
@@ -150,6 +298,7 @@ describe("GET /api/handbook-dispatch", () => {
     ]);
     mockSupa.enqueue(QUESTIONS);
     mockSupa.enqueue([]);
+    enqueueLeaderPack([], []);
 
     const res = await GET(cronRequest("cron"));
     const body = await res.json();
@@ -164,6 +313,7 @@ describe("GET /api/handbook-dispatch", () => {
     mockSupa.enqueue(null); // count
     mockSupa.enqueue({ id: "hb-1" });
     sendMock.mockRejectedValueOnce(new Error("resend down"));
+    enqueueLeaderPack([], []);
 
     const res = await GET(cronRequest("cron"));
     const body = await res.json();

@@ -7,13 +7,23 @@ import {
   HANDBOOK_LEAD_DAYS,
   buildHandbookEmail,
   buildHandbookQuestions,
+  buildLeaderPackEmail,
+  drawHandbookQuestions,
   handbookVariant,
+  type HandbookVariant,
 } from "@/lib/handbook";
+import { getTopicForDate, type CircleTopic } from "@meekmeet/core/questions";
 
 // Sends each reserved member their session handbook four days before the
-// meeting: the whole session as a pre-answered form. Runs daily; the
-// (meeting_id, profile_id) unique constraint plus the emailed_at stamp make
-// re-runs idempotent. Runs with the service role to read across RLS.
+// meeting — and the leader their run sheet. Runs daily; the
+// (meeting_id, profile_id) unique constraint, emailed_at, and
+// leader_pack_sent_at make re-runs idempotent. Runs with the service role
+// to read across RLS.
+//
+// The questions are never fixed: each member draws their own set at random
+// from the day's circle topic (one theme per weekday, shared by every
+// circle in the country that day). Any questions the leader added to the
+// meeting by hand are appended after the drawn ones, fixed and unswappable.
 
 interface ProfileRel {
   email: string | null;
@@ -31,6 +41,9 @@ interface MeetingRow {
   circle_id: string;
   scheduled_at: string;
   location_name: string | null;
+  meeting_type: string | null;
+  join_url: string | null;
+  leader_pack_sent_at: string | null;
   circles?: { name: string | null } | { name: string | null }[] | null;
   rsvps?: RsvpRel[] | null;
 }
@@ -42,8 +55,23 @@ interface MeetingQuestionRow {
   order_index: number | null;
 }
 
+interface HandbookRosterRow {
+  profile_id: string;
+  variant: HandbookVariant;
+  completed_at: string | null;
+  profiles?: { full_name: string | null } | { full_name: string | null }[] | null;
+}
+
 function first<T>(rel: T | T[] | null | undefined): T | null {
   return Array.isArray(rel) ? (rel[0] ?? null) : (rel ?? null);
+}
+
+/** The member's personal online link — only ever for digital/hybrid meetings. */
+function onlineJoinUrl(meeting: MeetingRow): string | null {
+  if (meeting.meeting_type === "digital" || meeting.meeting_type === "hybrid") {
+    return meeting.join_url?.trim() || null;
+  }
+  return null;
 }
 
 export async function GET(request: NextRequest) {
@@ -64,7 +92,7 @@ export async function GET(request: NextRequest) {
 
   const { data: meetings, error: meetingsError } = await supabase
     .from("meetings")
-    .select("id, circle_id, scheduled_at, location_name, circles(name), rsvps(user_id, status, profiles(email, full_name))")
+    .select("id, circle_id, scheduled_at, location_name, meeting_type, join_url, leader_pack_sent_at, circles(name), rsvps(user_id, status, profiles(email, full_name))")
     .gte("scheduled_at", windowStart.toISOString())
     .lt("scheduled_at", windowEnd.toISOString())
     .eq("is_cancelled", false)
@@ -74,22 +102,23 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: meetingsError.message }, { status: 500 });
   }
   if (!meetings || meetings.length === 0) {
-    return NextResponse.json({ sent: 0, meetings: 0, message: "No meetings in the handbook window" });
+    return NextResponse.json({ sent: 0, leaderPacks: 0, meetings: 0, message: "No meetings in the handbook window" });
   }
 
   const meetingIds = (meetings as MeetingRow[]).map((m) => m.id);
 
+  // Leader-added custom questions ride along after the drawn ones.
   const { data: questionRows } = await supabase
     .from("meeting_questions")
     .select("meeting_id, question_id, content, order_index")
     .in("meeting_id", meetingIds)
     .order("order_index", { ascending: true });
 
-  const questionsByMeeting = new Map<string, MeetingQuestionRow[]>();
+  const customByMeeting = new Map<string, MeetingQuestionRow[]>();
   for (const q of (questionRows ?? []) as MeetingQuestionRow[]) {
-    const list = questionsByMeeting.get(q.meeting_id) ?? [];
+    const list = customByMeeting.get(q.meeting_id) ?? [];
     list.push(q);
-    questionsByMeeting.set(q.meeting_id, list);
+    customByMeeting.set(q.meeting_id, list);
   }
 
   // Existing handbooks in this batch — never email the same member twice.
@@ -104,16 +133,20 @@ export async function GET(request: NextRequest) {
   );
 
   let sent = 0;
+  let leaderPacks = 0;
   let failed = 0;
 
   for (const meeting of meetings as MeetingRow[]) {
     const circleName = first(meeting.circles)?.name ?? "Your circle";
-    const questions = buildHandbookQuestions(
-      (questionsByMeeting.get(meeting.id) ?? []).map((q) => ({
+    // The theme follows the local day of the gathering, not UTC.
+    const topic: CircleTopic = getTopicForDate(new Date(meeting.scheduled_at));
+    const customQuestions = buildHandbookQuestions(
+      (customByMeeting.get(meeting.id) ?? []).map((q) => ({
         question_id: q.question_id,
         content: q.content,
       }))
     );
+    const joinUrl = onlineJoinUrl(meeting);
     const goingRsvps = (meeting.rsvps ?? []).filter((r) => r.status === "going");
 
     for (const rsvp of goingRsvps) {
@@ -131,6 +164,10 @@ export async function GET(request: NextRequest) {
         .not("completed_at", "is", null);
       const variant = handbookVariant(count ?? 0);
 
+      // The member's own draw from the day's theme, plus any custom questions.
+      const drawn = drawHandbookQuestions(topic);
+      const questions = [...drawn, ...customQuestions];
+
       const { data: inserted, error: insertError } = await supabase
         .from("session_handbooks")
         .insert({
@@ -138,6 +175,7 @@ export async function GET(request: NextRequest) {
           circle_id: meeting.circle_id,
           profile_id: rsvp.user_id,
           variant,
+          topic_id: topic.id,
           responses: questions,
         })
         .select("id")
@@ -154,7 +192,9 @@ export async function GET(request: NextRequest) {
         circleName,
         scheduledAt: meeting.scheduled_at,
         locationName: meeting.location_name,
+        joinUrl,
         variant,
+        topic,
         questions,
         handbookUrl: `https://meekmeet.com/dashboard/handbook/${meeting.id}`,
       });
@@ -176,7 +216,61 @@ export async function GET(request: NextRequest) {
         failed++;
       }
     }
+
+    // ── The leader pack: run sheet, roster, opening/closing words ──
+    if (!meeting.leader_pack_sent_at) {
+      try {
+        const { data: leaders } = await supabase
+          .from("circle_shepherds")
+          .select("user_id, profiles(email, full_name)")
+          .eq("circle_id", meeting.circle_id);
+
+        const { data: rosterRows } = await supabase
+          .from("session_handbooks")
+          .select("profile_id, variant, completed_at, profiles(full_name)")
+          .eq("meeting_id", meeting.id);
+
+        const roster = ((rosterRows ?? []) as HandbookRosterRow[]).map((r) => ({
+          name: first(r.profiles)?.full_name ?? "A member",
+          variant: r.variant,
+          completed: r.completed_at !== null,
+        }));
+
+        for (const leader of (leaders ?? []) as { user_id: string; profiles?: ProfileRel | ProfileRel[] | null }[]) {
+          const leaderProfile = first(leader.profiles);
+          const leaderEmail = leaderProfile?.email?.trim();
+          if (!leaderEmail) continue;
+
+          const pack = buildLeaderPackEmail({
+            leaderName: leaderProfile?.full_name ?? "Leader",
+            circleName,
+            scheduledAt: meeting.scheduled_at,
+            locationName: meeting.location_name,
+            joinUrl,
+            topic,
+            roster,
+            leaderRoomUrl: `https://meekmeet.com/dashboard/shepherd/${meeting.circle_id}/meetings/${meeting.id}`,
+          });
+
+          await getResend().emails.send({
+            from: "Meek Meet <hello@meekmeet.com>",
+            to: leaderEmail,
+            subject: pack.subject,
+            html: pack.html,
+          });
+          leaderPacks++;
+        }
+
+        await supabase
+          .from("meetings")
+          .update({ leader_pack_sent_at: new Date().toISOString() })
+          .eq("id", meeting.id);
+      } catch (err) {
+        console.error(`Leader pack failed for meeting ${meeting.id}:`, err);
+        failed++;
+      }
+    }
   }
 
-  return NextResponse.json({ sent, failed, meetings: meetings.length });
+  return NextResponse.json({ sent, leaderPacks, failed, meetings: meetings.length });
 }

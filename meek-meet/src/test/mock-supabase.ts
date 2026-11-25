@@ -31,7 +31,8 @@ class QueryChain {
   select(): this {
     return this;
   }
-  insert(): this {
+  insert(rows?: unknown): this {
+    if (rows !== undefined) this.owner.inserts.push(rows);
     return this;
   }
   update(values?: unknown): this {
@@ -112,6 +113,8 @@ export class MockSupabaseClient {
   /** Payloads passed to update() and upsert(), in call order. */
   readonly updates: unknown[] = [];
   readonly upserts: unknown[] = [];
+  /** Payloads passed to insert(), in call order. */
+  readonly inserts: unknown[] = [];
 
   readonly auth = {
     getUser: vi.fn(),

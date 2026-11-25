@@ -2,9 +2,10 @@
 
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { useParams } from "next/navigation";
-import { BookOpen, CheckCircle2, Loader2 } from "lucide-react";
-import { getMyHandbook, saveHandbook, type HandbookData } from "../actions";
+import { BookOpen, CheckCircle2, Download, Loader2, RefreshCw, Video } from "lucide-react";
+import { getMyHandbook, saveHandbook, regenerateHandbookQuestion, type HandbookData } from "../actions";
 import { HANDBOOK_INTROS, handbookComplete } from "@/lib/handbook";
+import { getTopicById } from "@meekmeet/core/questions";
 
 function formatWhen(iso: string): string {
   const d = new Date(iso);
@@ -25,6 +26,7 @@ export default function HandbookPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [redrawingId, setRedrawingId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
@@ -81,6 +83,36 @@ export default function HandbookPage() {
     [handbook, answers, intentions, meetingId]
   );
 
+  const redraw = useCallback(
+    (questionId: string) => {
+      if (!handbook || redrawingId) return;
+      setError(null);
+      setNotice(null);
+      setRedrawingId(questionId);
+      startTransition(async () => {
+        try {
+          // Persist current writing first so no draft is lost in the swap.
+          const current = handbook.responses.map((r) => ({
+            ...r,
+            answer: answers[r.question_id] ?? "",
+          }));
+          await saveHandbook(meetingId, current, intentions, false);
+          const result = await regenerateHandbookQuestion(meetingId, questionId);
+          setHandbook({ ...handbook, responses: result.responses });
+          const map: Record<string, string> = {};
+          for (const r of result.responses) map[r.question_id] = r.answer;
+          setAnswers(map);
+          setNotice("A new question, drawn from the same theme. The one you sent back is noted — it teaches us which questions fit, and which don't.");
+        } catch (err) {
+          setError(err instanceof Error ? err.message : "Failed to draw a new question");
+        } finally {
+          setRedrawingId(null);
+        }
+      });
+    },
+    [handbook, answers, intentions, meetingId, redrawingId]
+  );
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-24 text-charcoal-muted">
@@ -100,6 +132,7 @@ export default function HandbookPage() {
   if (!handbook) return null;
 
   const intro = HANDBOOK_INTROS[handbook.variant];
+  const topic = handbook.topic_id ? getTopicById(handbook.topic_id) : null;
   const allAnswered = handbookComplete(
     handbook.responses.map((r) => ({ ...r, answer: answers[r.question_id] ?? "" }))
   );
@@ -112,10 +145,39 @@ export default function HandbookPage() {
       <h1 className="font-serif text-3xl text-charcoal mb-2">
         {handbook.meeting.circle_name}
       </h1>
-      <p className="text-sm text-charcoal-muted mb-8">
+      <p className="text-sm text-charcoal-muted mb-4">
         {formatWhen(handbook.meeting.scheduled_at)}
         {handbook.meeting.location_name ? ` · ${handbook.meeting.location_name}` : ""}
       </p>
+
+      {handbook.meeting.join_url && (
+        <a
+          href={handbook.meeting.join_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 mb-6 px-5 py-2.5 bg-midnight text-cream rounded-full text-sm tracking-wide hover:bg-midnight-soft transition-colors"
+        >
+          <Video className="w-4 h-4" strokeWidth={1.5} />
+          Join the circle online
+        </a>
+      )}
+
+      {topic && (
+        <div className="bg-parchment border border-border-warm rounded-2xl p-6 mb-6">
+          <p className="text-xs tracking-[0.25em] uppercase text-terracotta mb-1 font-medium">
+            This circle&rsquo;s theme
+          </p>
+          <h2 className="font-serif text-xl text-charcoal mb-1">
+            {topic.name} <span className="text-charcoal-muted text-base">— {topic.epithet}</span>
+          </h2>
+          <p className="text-sm text-charcoal-muted leading-relaxed">{topic.symbolism}</p>
+          <p className="text-xs text-charcoal-muted leading-relaxed mt-3 border-t border-border-warm pt-3">
+            Every circle gathering on this day, across the country, sits with this same
+            theme. Your questions were drawn from it by lot — if one doesn&rsquo;t fit, draw
+            another. The theme stays; the question changes.
+          </p>
+        </div>
+      )}
 
       <div className="bg-parchment border border-border-warm rounded-2xl p-6 mb-8">
         <p className="text-sm leading-relaxed text-charcoal">
@@ -143,13 +205,31 @@ export default function HandbookPage() {
       <section className="space-y-8 mb-10">
         {handbook.responses.map((r, i) => (
           <div key={r.question_id}>
-            <label
-              htmlFor={`q-${r.question_id}`}
-              className="block font-serif text-lg text-charcoal leading-snug mb-3"
-            >
-              <span className="text-terracotta mr-2">{i + 1}.</span>
-              {r.question}
-            </label>
+            <div className="flex items-start justify-between gap-4 mb-3">
+              <label
+                htmlFor={`q-${r.question_id}`}
+                className="block font-serif text-lg text-charcoal leading-snug"
+              >
+                <span className="text-terracotta mr-2">{i + 1}.</span>
+                {r.question}
+              </label>
+              {topic && topic.questions.some((q) => q.id === r.question_id) && (
+                <button
+                  type="button"
+                  onClick={() => redraw(r.question_id)}
+                  disabled={isPending || redrawingId !== null}
+                  title="Draw a different question from the same theme"
+                  className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 border border-border-warm rounded-full text-xs text-charcoal-muted hover:text-charcoal hover:bg-parchment transition-colors disabled:opacity-50"
+                >
+                  {redrawingId === r.question_id ? (
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                  ) : (
+                    <RefreshCw className="w-3 h-3" strokeWidth={1.5} />
+                  )}
+                  Draw another
+                </button>
+              )}
+            </div>
             <textarea
               id={`q-${r.question_id}`}
               value={answers[r.question_id] ?? ""}
@@ -198,6 +278,13 @@ export default function HandbookPage() {
           <CheckCircle2 className="w-4 h-4" strokeWidth={1.5} />
           {handbook.completed_at ? "Update completed handbook" : "Mark complete"}
         </button>
+        <a
+          href={`/dashboard/handbook/${meetingId}/pdf`}
+          className="inline-flex items-center gap-2 px-6 py-3 border border-border-warm rounded-full text-sm text-charcoal hover:bg-parchment transition-colors"
+        >
+          <Download className="w-4 h-4" strokeWidth={1.5} />
+          Download PDF
+        </a>
         {handbook.completed_at && (
           <span className="text-xs text-sage-dark">Completed — you can still revise until the circle gathers.</span>
         )}
