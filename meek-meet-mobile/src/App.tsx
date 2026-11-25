@@ -40,6 +40,7 @@ const MeetingAnalyticsScreen = lazy(() => import('@/screens/MeetingAnalyticsScre
 const PrivacyScreen = lazy(() => import('@/screens/PrivacyScreen'))
 const TermsScreen = lazy(() => import('@/screens/TermsScreen'))
 const OnboardingScreen = lazy(() => import('@/screens/OnboardingScreen'))
+const SacredLibraryScreen = lazy(() => import('@/screens/SacredLibraryScreen'))
 
 function LazyWrap({ children }: { children: React.ReactNode }) {
   return (
@@ -115,6 +116,7 @@ function AnimatedRoutes() {
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<AuthGate><AppLayout><PageTransition><HomeScreen /></PageTransition></AppLayout></AuthGate>} />
         <Route path="/read" element={<AuthGate><AppLayout><PageTransition><ReadScreen /></PageTransition></AppLayout></AuthGate>} />
+        <Route path="/library" element={<AuthGate><AppLayout><PageTransition><LazyWrap><SacredLibraryScreen /></LazyWrap></PageTransition></AppLayout></AuthGate>} />
         <Route path="/read/:tradition" element={<AuthGate><AppLayout><PageTransition><ReaderScreen /></PageTransition></AppLayout></AuthGate>} />
         <Route path="/read/:tradition/:bookId/:chapter" element={<AuthGate><AppLayout><PageTransition><ReaderScreen /></PageTransition></AppLayout></AuthGate>} />
         <Route path="/circles" element={<AuthGate><AppLayout><PageTransition><CirclesScreen /></PageTransition></AppLayout></AuthGate>} />

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, Heart, Trash2, StickyNote, X } from 'lucide-react'
 import { useReadingProgress } from '@/hooks/useReadingProgress'
+import { TRADITION_LABELS } from '@/data/tradition-labels'
 
 export default function BookmarksScreen() {
   const navigate = useNavigate()
@@ -10,13 +11,7 @@ export default function BookmarksScreen() {
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [noteDraft, setNoteDraft] = useState('')
 
-  const traditionLabels: Record<string, string> = {
-    bible: 'Bible',
-    quran: 'Quran',
-    tanakh: 'Tanakh',
-    buddhist: 'Dhammapada',
-    mormon: 'Book of Mormon',
-  }
+  const traditionLabels = TRADITION_LABELS
 
   const handleSaveNote = (id: string) => {
     editNote(id, noteDraft)

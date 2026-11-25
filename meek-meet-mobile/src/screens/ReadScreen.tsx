@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { BookOpen, Cross, Moon, Star, Flower2, ChevronRight, Search, BookMarked } from 'lucide-react'
+import { BookOpen, Cross, Moon, Star, Flower2, ChevronRight, Search, BookMarked, Library } from 'lucide-react'
 import { hapticSelect } from '@/lib/haptics'
 import { getDailyReadingFromData } from '@/lib/scriptures'
 import type { DailyPassage } from '@/types'
@@ -131,6 +131,30 @@ export default function ReadScreen() {
             </motion.button>
           )
         })}
+        {/* Sacred Library CTA */}
+        <motion.button
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: traditions.length * 0.1 }}
+          onClick={() => { hapticSelect(); navigate('/library') }}
+          whileTap={{ scale: 0.98 }}
+          className="w-full bg-midnight rounded-2xl border border-midnight p-5 text-left shadow-sm active:scale-[0.98] transition-all hover:shadow-md"
+        >
+          <div className="flex items-start justify-between">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-cream/10 text-cream flex items-center justify-center flex-shrink-0">
+                <Library className="w-6 h-6" strokeWidth={1.5} />
+              </div>
+              <div>
+                <h2 className="font-medium text-cream">The Sacred Library</h2>
+                <p className="text-sm text-cream/70 mt-0.5">Dead Sea Scrolls · Nag Hammadi · Apocrypha</p>
+                <p className="text-sm text-cream/70 mt-1">Upanishads · Tao Te Ching · Analects &amp; more</p>
+              </div>
+            </div>
+            <ChevronRight className="w-5 h-5 text-cream/70 mt-1" strokeWidth={1.5} />
+          </div>
+        </motion.button>
+
       </div>
 
       {/* Today's Reading CTA */}

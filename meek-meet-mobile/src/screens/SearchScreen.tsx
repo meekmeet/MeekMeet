@@ -4,23 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Search, ArrowLeft, BookOpen, X } from 'lucide-react'
 import { hapticSelect } from '@/lib/haptics'
 import { searchScriptures } from '@/lib/scriptures'
+import { TRADITION_LABELS as traditionLabels, TRADITION_COLORS as traditionColors, ALL_TRADITION_COUNT } from '@/data/tradition-labels'
 import type { SearchResult } from '@/types'
-
-const traditionLabels: Record<string, string> = {
-  bible: 'Bible',
-  tanakh: 'Tanakh',
-  quran: 'Quran',
-  buddhist: 'Dhammapada',
-  mormon: 'Book of Mormon',
-}
-
-const traditionColors: Record<string, string> = {
-  bible: 'bg-emerald-100 text-emerald-800',
-  tanakh: 'bg-amber-100 text-amber-800',
-  quran: 'bg-sky-100 text-sky-800',
-  buddhist: 'bg-rose-100 text-rose-800',
-  mormon: 'bg-orange-100 text-orange-800',
-}
 
 function highlightText(text: string, query: string) {
   const q = query.toLowerCase()
@@ -128,7 +113,7 @@ export default function SearchScreen() {
         {searched && !loading && results.length === 0 && (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <p className="text-midnight/40 text-sm font-medium">The words you seek are moving waters.</p>
-            <p className="text-midnight/30 text-sm mt-1">Try a different current — search across all five traditions.</p>
+            <p className="text-midnight/30 text-sm mt-1">Try a different current — search across all {ALL_TRADITION_COUNT} traditions.</p>
           </div>
         )}
 

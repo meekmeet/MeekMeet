@@ -25,6 +25,7 @@ import { supabase } from '@/lib/supabase'
 
 import CrossReference from '@/components/CrossReference'
 import TypographySettings, { presets as typePresets, type TypographyPreset } from '@/components/TypographySettings'
+import { traditionLabel } from '@/data/tradition-labels'
 import type { DailyPassage, ScriptureMeta } from '@/types'
 
 export default function ReaderScreen() {
@@ -462,7 +463,7 @@ export default function ReaderScreen() {
           <>
             <div className="mb-8">
               <span className={`text-sm uppercase tracking-wider ${t.verseNum} font-medium`}>
-                {tradition}
+                {traditionLabel(tradition)}
               </span>
               <h1 className="font-serif text-2xl mt-1" style={{ fontFamily: t.fontFamily }}>
                 {passage.book} {passage.chapter}

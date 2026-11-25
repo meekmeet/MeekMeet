@@ -1,0 +1,12 @@
+{
+  "tradition": "dead_sea_scrolls",
+  "name": "The Dead Sea Scrolls",
+  "translation": "Selected excerpts (after G. Vermes)",
+  "language": "en",
+  "note": "Selected excerpts from the Qumran library, discovered 1947–1956 in caves near the Dead Sea. Dating from c. 250 BCE to 70 CE.",
+  "books": [
+    { "id": "community_rule", "name": "The Community Rule (1QS)", "chapters": 4 },
+    { "id": "thanksgiving_hymns", "name": "The Thanksgiving Hymns (1QH)", "chapters": 3 },
+    { "id": "war_scroll", "name": "The War Scroll (1QM)", "chapters": 3 }
+  ]
+}

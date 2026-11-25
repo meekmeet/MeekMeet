@@ -1,0 +1,13 @@
+{
+  "tradition": "upanishads",
+  "name": "The Upanishads",
+  "translation": "Selected passages, F. Max Müller (1879-84)",
+  "language": "en",
+  "note": "The philosophical heart of the Vedas — dialogues on the Self, Brahman, and liberation, composed c. 800-500 BCE. These texts gave the world 'Tat tvam asi' (That thou art), the neti neti method, and much of the vocabulary of Indian philosophy.",
+  "books": [
+    { "id": "isha", "name": "Isha Upanishad", "chapters": 2 },
+    { "id": "katha", "name": "Katha Upanishad", "chapters": 3 },
+    { "id": "chandogya", "name": "Chandogya Upanishad", "chapters": 2 },
+    { "id": "brihadaranyaka", "name": "Brihadaranyaka Upanishad", "chapters": 3 }
+  ]
+}

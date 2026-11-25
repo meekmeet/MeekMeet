@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { Shuffle, ArrowRight } from 'lucide-react'
 import { hapticSelect } from '@/lib/haptics'
 import { getRelatedVerses } from '@/data/cross-references'
+import { TRADITION_LABELS as traditionLabels } from '@/data/tradition-labels'
 
 interface CrossReferenceProps {
   tradition: string
@@ -11,20 +12,22 @@ interface CrossReferenceProps {
   verse: number
 }
 
-const traditionLabels: Record<string, string> = {
-  bible: 'Bible',
-  quran: 'Quran',
-  tanakh: 'Tanakh',
-  buddhist: 'Dhammapada',
-  mormon: 'Book of Mormon',
-}
-
 const traditionColors: Record<string, string> = {
   bible: 'bg-sage-pale text-sage-dark border-sage/20',
   quran: 'bg-wheat-pale text-wheat-dark border-wheat/20',
   tanakh: 'bg-sky-pale text-sky-soft border-sky-soft/20',
   buddhist: 'bg-terracotta-pale text-terracotta border-terracotta/20',
   mormon: 'bg-amber-50 text-amber-800 border-amber-200',
+  dead_sea_scrolls: 'bg-stone-200 text-stone-700 border-stone-300',
+  nag_hammadi: 'bg-violet-100 text-violet-800 border-violet-200',
+  apocrypha: 'bg-teal-100 text-teal-800 border-teal-200',
+  pseudepigrapha: 'bg-indigo-100 text-indigo-800 border-indigo-200',
+  vedas: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+  upanishads: 'bg-orange-100 text-orange-900 border-orange-200',
+  tao: 'bg-gray-200 text-gray-700 border-gray-300',
+  confucian: 'bg-red-100 text-red-800 border-red-200',
+  sikh: 'bg-blue-100 text-blue-800 border-blue-200',
+  jain: 'bg-lime-100 text-lime-800 border-lime-200',
 }
 
 export default function CrossReference({ tradition, bookId, chapter, verse }: CrossReferenceProps) {

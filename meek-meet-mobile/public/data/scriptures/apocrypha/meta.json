@@ -1,0 +1,16 @@
+{
+  "tradition": "apocrypha",
+  "name": "The Apocrypha",
+  "translation": "King James Version (deuterocanon)",
+  "language": "en",
+  "note": "The deuterocanonical books — treasured by Catholic and Orthodox Christianity, preserved in the Septuagint and the King James Apocrypha. Removed from most Protestant Bibles in the 19th century, yet full of stories and wisdom most people have never heard.",
+  "books": [
+    { "id": "tobit", "name": "The Book of Tobit", "chapters": 3 },
+    { "id": "judith", "name": "The Book of Judith", "chapters": 2 },
+    { "id": "wisdom", "name": "The Wisdom of Solomon", "chapters": 3 },
+    { "id": "sirach", "name": "Ecclesiasticus (Sirach)", "chapters": 3 },
+    { "id": "baruch", "name": "The Book of Baruch", "chapters": 2 },
+    { "id": "1_maccabees", "name": "1 Maccabees", "chapters": 3 },
+    { "id": "2_maccabees", "name": "2 Maccabees", "chapters": 3 }
+  ]
+}
