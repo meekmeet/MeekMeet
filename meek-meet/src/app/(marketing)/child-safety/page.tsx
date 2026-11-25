@@ -115,7 +115,7 @@ export default function ChildSafetyPage() {
           <h2>6. Contact Point</h2>
           <p>
             Our designated point of contact for child safety matters is reachable at{" "}
-            <a href="mailto:4martinkhoury@gmail.com">4martinkhoury@gmail.com</a>. This
+            <a href="mailto:safety@meekmeet.com">safety@meekmeet.com</a>. This
             contact is ready and able to speak to our child safety practices and
             compliance obligations.
           </p>

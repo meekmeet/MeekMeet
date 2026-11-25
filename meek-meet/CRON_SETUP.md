@@ -1,14 +1,15 @@
 # Cron & Automation Setup
 
-Meek Meet relies on three scheduled jobs to keep the platform alive:
+Meek Meet relies on four scheduled jobs to keep the platform alive:
 
 1. **Daily meeting reminders** — `/api/send-reminders` (18:00)
 2. **Daily news-driven questions** — `/api/trigger-news-questions` (09:00)
 3. **Meeting lifecycle** — `/api/meeting-lifecycle` (02:00): completes past meetings, triggers insight synthesis, generates monthly draft reports
+4. **Marketing drip** — `/api/marketing-drip`, four times a day (02:30, 05:30, 08:30, 23:30 UTC — 12:30pm, 3:30pm, 6:30pm and 9:30am Sydney): sends the due step of every active outreach ladder (parchment on day 0, midnight on day 7, terracotta on day 14), picking up queued bulk-campaign day-0s at their assigned window. Each run is capped at one window's capacity (`MARKETING_DAILY_BUDGET` ÷ 4, default 20) and at the remaining daily budget. Replies, tracked clicks and bounces stop a ladder before the cron sees it, and the cron additionally refuses to email leads marked bounced/replied/engaged.
 
 ## Authorization
 
-All three endpoints accept exactly one credential:
+All four endpoints accept exactly one credential:
 
 ```
 Authorization: Bearer <CRON_SECRET>
@@ -42,6 +43,7 @@ Configure your scheduler to send the header (never put the secret in the URL):
 GET https://your-domain.com/api/send-reminders
 GET https://your-domain.com/api/trigger-news-questions
 GET https://your-domain.com/api/meeting-lifecycle
+curl -H "Authorization: Bearer $CRON_SECRET"   https://your-domain.com/api/marketing-drip
 Header: Authorization: Bearer <CRON_SECRET>
 ```
 

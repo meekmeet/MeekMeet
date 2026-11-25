@@ -10,7 +10,7 @@ export default function TermsPage() {
     <main className="min-h-screen pt-28 pb-20 bg-cream">
       <div className="max-w-3xl mx-auto px-6 lg:px-8">
         <h1 className="font-serif text-4xl text-charcoal mb-8">Terms of Service</h1>
-        <p className="text-charcoal-muted mb-8">Last updated: 16 June 2026</p>
+        <p className="text-charcoal-muted mb-8">Last updated: 25 November 2026</p>
 
         <div className="prose prose-lg prose-stone max-w-none">
           <p>
@@ -24,6 +24,11 @@ export default function TermsPage() {
             Meek Meet is a community listening and civic intelligence platform. We provide
             tools for individuals and groups to gather, reflect, and share anonymised,
             aggregated community insights with decision-makers.
+          </p>
+          <p>
+            Meek Meet is operated by Martin Khoury (sole trader), ABN 96 557 008 393, based
+            in New South Wales, Australia. In these Terms, “Meek Meet”, “we”, “us” and “our”
+            refer to that operator.
           </p>
 
           <h2>2. Eligibility</h2>

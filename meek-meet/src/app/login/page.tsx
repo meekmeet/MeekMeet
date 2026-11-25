@@ -203,6 +203,12 @@ export default function LoginPage() {
               <UserCog className="w-3.5 h-3.5" strokeWidth={1.5} />
               {showReviewLogin ? "Use magic link instead" : "Reviewer access"}
             </button>
+            {showReviewLogin && (
+              <p className="text-[11px] text-charcoal-muted/80 text-center leading-relaxed -mt-2">
+                Password sign-in for app-store reviewers and support testing.
+                Everyone else: use the magic link above.
+              </p>
+            )}
 
             <div className="flex items-center gap-4">
               <div className="flex-1 h-px bg-border-soft" />
@@ -239,7 +245,15 @@ export default function LoginPage() {
         )}
 
         <p className="text-center text-xs text-charcoal-muted mt-6">
-          By signing in, you agree to our Terms and Code of Love.
+          By signing in, you agree to our{" "}
+          <Link href="/terms" className="text-terracotta hover:underline">
+            Terms
+          </Link>{" "}
+          and{" "}
+          <Link href="/code-of-love" className="text-terracotta hover:underline">
+            Code of Love
+          </Link>
+          .
         </p>
       </motion.div>
     </section>

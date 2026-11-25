@@ -1,6 +1,6 @@
-import { createClient } from "@/lib/supabase/server";
 import { Globe, Video, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { getActiveCircles } from "@/lib/public-data";
 import CircleCard from "../_components/circle-card";
 import SearchForm from "./_components/search-form";
 
@@ -26,42 +26,30 @@ export default async function CirclesPage({ searchParams }: Props) {
   const q = sanitizeSearch(raw.q);
   const location = sanitizeSearch(raw.location);
 
-  const supabase = await createClient();
+  // One cached round-trip for everyone; filtering happens in JS below.
+  const allCircles = await getActiveCircles();
 
-  let dbQuery = supabase
-    .from("circles")
-    .select("*")
-    .eq("is_active", true)
-    .order("created_at", { ascending: false });
-
-  if (q) {
-    dbQuery = dbQuery.or(`name.ilike.%${q}%,description.ilike.%${q}%`);
-  }
-  if (location) {
-    dbQuery = dbQuery.ilike("location", `%${location}%`);
-  }
-
-  const { data: circles, error } = await dbQuery;
-
-  if (error) {
-    console.error("Failed to fetch circles:", error);
-  }
+  const needle = q?.toLowerCase();
+  const locNeedle = location?.toLowerCase();
+  const filtered = allCircles.filter((c) => {
+    if (needle) {
+      const haystack = `${c.name ?? ""} ${c.description ?? ""}`.toLowerCase();
+      if (!haystack.includes(needle)) return false;
+    }
+    if (locNeedle && !(c.location ?? "").toLowerCase().includes(locNeedle)) {
+      return false;
+    }
+    return true;
+  });
 
   // Surface the global (virtual-first) circle above search results,
   // but only when no search filters are actively narrowing the list.
-  let globalCircle: NonNullable<typeof circles>[number] | null = null;
-  if (!q && !location) {
-    const { data } = await supabase
-      .from("circles")
-      .select("*")
-      .eq("is_active", true)
-      .eq("kind", "global")
-      .limit(1)
-      .maybeSingle();
-    globalCircle = data;
-  }
+  const globalCircle =
+    !q && !location
+      ? (filtered.find((c) => c.kind === "global") ?? null)
+      : null;
 
-  const localCircles = (circles ?? []).filter((c) => c.id !== globalCircle?.id);
+  const localCircles = filtered.filter((c) => c.id !== globalCircle?.id);
 
   return (
     <section className="min-h-screen pt-32 pb-20 bg-cream">
@@ -117,6 +105,11 @@ export default async function CirclesPage({ searchParams }: Props) {
               <CircleCard key={circle.id} circle={circle} index={i} />
             ))}
           </div>
+        ) : globalCircle ? (
+          <p className="text-center text-charcoal-muted max-w-md mx-auto">
+            More circles are forming across Australia — join the Global New Moon
+            Circle above while one near you takes shape.
+          </p>
         ) : (
           <div className="text-center py-20">
             <div className="w-16 h-16 bg-wheat-pale rounded-full flex items-center justify-center mx-auto mb-6">

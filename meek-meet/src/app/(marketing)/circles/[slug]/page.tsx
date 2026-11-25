@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getCircleBySlug, getCirclePublicData } from "@/lib/public-data";
 import { MapPin, Clock, Calendar, Users, BookOpen } from "lucide-react";
 import Link from "next/link";
 import RsvpSection from "../_components/rsvp-section";
@@ -8,51 +9,33 @@ interface Props {
   params: Promise<{ slug: string }>;
 }
 
+export async function generateMetadata({ params }: Props) {
+  const { slug } = await params;
+  const circle = await getCircleBySlug(slug);
+  return {
+    title: circle ? `${circle.name} | Meek Meet` : "Circle | Meek Meet",
+    description:
+      circle?.description ||
+      "A Meek Meet circle — gather under the new moon, share your voice, shape your community.",
+  };
+}
+
 export default async function CircleDetailPage({ params }: Props) {
   const { slug } = await params;
   const supabase = await createClient();
 
-  // Fetch user
-  const { data: { user } } = await supabase.auth.getUser();
-
-  // Fetch circle
-  const { data: circle } = await supabase
-    .from("circles")
-    .select("*")
-    .eq("slug", slug)
-    .eq("is_active", true)
-    .single();
+  // Auth and the (cached) public circle fetch run concurrently.
+  const [{ data: { user } }, circle] = await Promise.all([
+    supabase.auth.getUser(),
+    getCircleBySlug(slug),
+  ]);
 
   if (!circle) {
     notFound();
   }
 
-  // Fetch related data in parallel
-  const [
-    { data: questions },
-    { data: routines },
-    { data: meetings },
-  ] = await Promise.all([
-    supabase
-      .from("circle_questions")
-      .select("*")
-      .eq("circle_id", circle.id)
-      .eq("is_active", true)
-      .order("order_index", { ascending: true }),
-    supabase
-      .from("circle_routines")
-      .select("*")
-      .eq("circle_id", circle.id)
-      .order("order_index", { ascending: true }),
-    supabase
-      .from("public_meetings")
-      .select("id, scheduled_at, duration_minutes, location_name, location_address")
-      .eq("circle_id", circle.id)
-      .eq("is_cancelled", false)
-      .gte("scheduled_at", new Date().toISOString())
-      .order("scheduled_at", { ascending: true })
-      .limit(5),
-  ]);
+  // Public detail data is cached (60s TTL); user-specific reads below are not.
+  const { questions, routines, meetings } = await getCirclePublicData(circle.id);
 
   // Fetch user RSVPs for these meetings
   let userRsvps: { meeting_id: string; status: string }[] = [];

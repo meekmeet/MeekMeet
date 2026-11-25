@@ -59,3 +59,11 @@ curl "https://meekmeet.com/api/public/insights?region_type=lga&region_code=sydne
 - Credit Meek Meet when publishing derived analysis.
 - Do not use insights to target individuals or groups.
 - Contact us for high-volume or research partnerships.
+
+## Rate Limiting
+
+All API endpoints enforce per-IP fixed-window rate limits and respond with
+`429 Too Many Requests` and a `Retry-After` header when exceeded. The public
+insights endpoint allows 120 requests/minute per IP; responses are
+additionally cached for 5 minutes at the edge. Contact us if you need a
+higher limit for legitimate integrations.
