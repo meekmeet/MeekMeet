@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getResend } from "@/lib/resend";
 import { revalidatePath } from "next/cache";
 import { isValidUuid, escapeHtml, assertNonEmptyString } from "@/lib/validation";
+import { auditEvent } from "@/lib/audit";
 
 export async function getApplications(status?: "pending" | "approved" | "rejected") {
   const supabase = await createClient();
@@ -55,6 +56,12 @@ export async function approveApplication(applicationId: string, userId: string) 
   );
 
   if (reviewError) throw new Error(reviewError.message);
+
+  await auditEvent(supabase, user.id, {
+    action: "application.approve",
+    targetType: "application",
+    targetId: applicationId,
+  });
 
   // Send approval email
   const { data: application } = await supabase
@@ -116,6 +123,12 @@ export async function rejectApplication(applicationId: string) {
   );
 
   if (reviewError) throw new Error(reviewError.message);
+
+  await auditEvent(supabase, user.id, {
+    action: "application.reject",
+    targetType: "application",
+    targetId: applicationId,
+  });
 
   // Send rejection email
   const { data: application } = await supabase
@@ -213,6 +226,13 @@ export async function reviewDocument(
 
   if (error) throw new Error(error.message);
 
+  await auditEvent(supabase, user.id, {
+    action: "document.review",
+    targetType: "document",
+    targetId: documentId,
+    detail: { decision },
+  });
+
   revalidatePath("/dashboard/admin/verification");
   revalidatePath("/dashboard/admin/applications");
 }
@@ -291,6 +311,12 @@ export async function toggleMessageStatus(messageId: string, currentStatus: stri
     .eq("id", messageId);
 
   if (error) throw new Error(error.message);
+
+  await auditEvent(supabase, user.id, {
+    action: resolving ? "message.resolve" : "message.reopen",
+    targetType: "message",
+    targetId: messageId,
+  });
 
   revalidatePath("/dashboard/admin/inbox");
 }

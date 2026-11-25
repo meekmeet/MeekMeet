@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { auditEvent } from "@/lib/audit";
 
 export async function getAuthorities() {
   const supabase = await createClient();
@@ -49,6 +50,14 @@ export async function createAuthority(formData: {
   });
 
   if (error) throw new Error(error.message);
+
+  await auditEvent(supabase, user.id, {
+    action: "authority.create",
+    targetType: "authority",
+    targetId: formData.name,
+    detail: { region: `${formData.region_type}:${formData.region_code}` },
+  });
+
   revalidatePath("/dashboard/admin/authorities");
 }
 
@@ -62,6 +71,13 @@ export async function deleteAuthority(id: string) {
 
   const { error } = await supabase.from("authorities").delete().eq("id", id);
   if (error) throw new Error(error.message);
+
+  await auditEvent(supabase, user.id, {
+    action: "authority.delete",
+    targetType: "authority",
+    targetId: id,
+  });
+
   revalidatePath("/dashboard/admin/authorities");
 }
 
@@ -105,5 +121,11 @@ export async function seedSampleAuthorities() {
 
   const { error } = await supabase.from("authorities").upsert(sample, { onConflict: "authority_type,region_code" });
   if (error) throw new Error(error.message);
+
+  await auditEvent(supabase, user.id, {
+    action: "authority.seed_samples",
+    detail: { count: sample.length },
+  });
+
   revalidatePath("/dashboard/admin/authorities");
 }
