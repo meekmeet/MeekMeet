@@ -1,0 +1,10 @@
+{
+  "tradition": "vedas",
+  "name": "The Rig Veda",
+  "translation": "Selected hymns, R.T.H. Griffith (1896)",
+  "language": "en",
+  "note": "The oldest religious text still in active use — hymns composed in Sanskrit more than 3,000 years ago on the banks of the Indus. The Rig Veda is the foundation scripture of Hinduism and one of the oldest known bodies of literature in any Indo-European language.",
+  "books": [
+    { "id": "rig_veda", "name": "Rig Veda — Selected Hymns", "chapters": 5 }
+  ]
+}

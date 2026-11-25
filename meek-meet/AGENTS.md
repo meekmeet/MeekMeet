@@ -31,16 +31,25 @@ Meek Meet is a faith-rooted, interfaith community organizing platform. The core 
 src/
   app/
     (marketing)/          # public pages: /, /about, /circles, /circles/[slug], /shepherd,
-                          # /voice, /child-safety, /delete-account, /code-of-love (all get
-                          # Navbar+Footer via the group layout — never add public pages at
-                          # src/app root level, they would render chrome-less)
+                          # /voice, /child-safety, /delete-account, /code-of-love, /library
+                          # (+ /library/[tradition]/[book] — the Sacred Library reader,
+                          # all statically generated) — every public page gets
+                          # Navbar+Footer via the group layout; never add public pages at
+                          # src/app root level, they would render chrome-less
     dashboard/            # authenticated member area
       admin/              # admin-only: applications, verification, authorities, members, marketing
       shepherd/[circleId]/# shepherd area: meetings, questions, routine, reports, settings
     api/                  # route handlers (cron + public insights + upload + circle-organizer)
     auth/callback/        # OAuth/magic-link callback
     login/ privacy/ terms/
-  components/             # shared components (auth-provider)
+  components/             # shared components (auth-provider, pwa/install-banner)
+  data/
+    sacred-library.ts     # editorial metadata for the 10 curated collections
+    scriptures/           # curated public-domain excerpts per tradition — MIRROR of
+                          # meek-meet-mobile/public/data/scriptures/ (the 10 Sacred
+                          # Library traditions only; main canons stay mobile-only).
+                          # Change one, change both. Read via src/lib/library.ts at
+                          # build time; library pages are fully static.
   lib/
     supabase/             # client.ts (browser), server.ts (RSC), middleware.ts, service.ts (service role)
     reports/              # circle report generation + authority submission
@@ -67,6 +76,7 @@ supabase/
 - **API routes must call `rateLimit()` before doing any work** (see any `src/app/api/**/route.ts`). Tune via `RATE_LIMIT_*` env vars; never bypass for public endpoints.
 - **Anonymous meeting reads** go through the `public_meetings` view (no join_url/notes/coordinates). The `meetings` table itself is authenticated-only.
 - **Marketing sends are paced, never blasted.** Bulk lead drips (`startLeadDrips`) QUEUE sequences with staggered `next_run_at` slots — `src/lib/marketing/pace.ts` assigns ~`MARKETING_DAILY_BUDGET`(default 80)÷4 per send window (02:30/05:30/08:30/23:30 UTC = 12:30/15:30/18:30/09:30 Sydney), rolling across days for large batches; nothing sends from the action itself. `/api/marketing-drip` (4×/day per `vercel.json`) fires due steps, capped per window AND by the remaining daily budget. One drip per address per 14-day cooldown (`DRIP_COOLDOWN_DAYS`): active ladders and any ladder that sent mail within the cooldown block a new one (one-off sends are the deliberate escape hatch). Bounced/complained addresses are stopped at the webhook (`stopped_bounced`) and the cron refuses to email leads marked bounced/replied/engaged. Marketing sends default to the drip ladder (`marketing_sequences`, migration 000036): day 0 fires per schedule, days 7/14 from the cron. One-off sends are the exception, behind the "One-off send" toggle. `marketing_leads` (000037) is admin-only and org-facing: import only publicly-listed org contact emails, never scraped personal addresses. The org letter's scripture quote is faith-aware (`faith` column → Qur'an 49:13, Hillel/Pirkei Avot 1:14, Metta Sutta, Mahabharata, Guru Nanak, or civic). Every pitch body also NAMES the spark openly — our name comes from Jesus' promise that the meek shall inherit the earth (Isa in the islamic pitch, "Psalms 37:11 says it first" in the jewish one, civic restatement in the secular one). The spark is never hidden; it's the bridge. The shared email-shell footer and flyer footer carry the deliberate "The promise has many names — Matthew 5:5 · Psalm 37:11 · Qur'an 21:105 · Tao Te Ching 66" thread line on every send.- **Public marketing pages never touch Supabase per request.** `src/proxy.ts` skips `updateSession` (the `auth.getUser()` round-trip) unless the request carries a Supabase auth cookie (`*-auth-token*`) — anonymous visitors pay zero auth latency; logged-in users still get session refresh everywhere. Public circle reads go through `src/lib/public-data.ts`: cookie-free anon-key queries wrapped in `unstable_cache` (60s TTL, `circles` tag). Never close over cookies/headers inside those cached functions. Anonymous `/dashboard` requests are redirected by the proxy without any Supabase call.
+- **The site is an installable PWA** (`src/app/manifest.ts`, cache-free `public/sw.js`, `InstallBanner` in the root layout). The service worker must stay cache-free — a caching SW on a dynamic site invites stale-page bugs; only add caching with a deliberate strategy. The banner self-suppresses when installed, dismissed (localStorage `mm-pwa-dismissed`), or in standalone mode; iOS gets Share → Add to Home Screen instructions since Safari has no install API.
 - **Join URLs are never public**: `join_url` renders only for signed-in users with an active `going` RSVP on that meeting (see the `[slug]` page). Never expose it in public queries or anonymous HTML.
 - **Admin stats** come from the `get_admin_stats()` RPC (admin-gated), not a view.
 - Server actions must call `supabase.auth.getUser()` and verify role/membership before any mutation (see `src/app/dashboard/admin/actions.ts` for the pattern).

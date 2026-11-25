@@ -1,0 +1,12 @@
+{
+  "tradition": "nag_hammadi",
+  "name": "The Nag Hammadi Library",
+  "translation": "Selected excerpts (after the Coptic Gnostic Library)",
+  "language": "en",
+  "note": "Selected excerpts from the thirteen Coptic codices discovered near Nag Hammadi, Egypt, in 1945. Buried c. 350-400 CE; some works preserve traditions far older, including sayings of Jesus independent of the New Testament.",
+  "books": [
+    { "id": "gospel_of_thomas", "name": "The Gospel of Thomas", "chapters": 5 },
+    { "id": "gospel_of_truth", "name": "The Gospel of Truth", "chapters": 3 },
+    { "id": "gospel_of_philip", "name": "The Gospel of Philip", "chapters": 3 }
+  ]
+}

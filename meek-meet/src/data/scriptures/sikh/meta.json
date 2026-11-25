@@ -1,0 +1,10 @@
+{
+  "tradition": "sikh",
+  "name": "Sikh Scripture",
+  "translation": "Selections from Japji Sahib and the Mul Mantar (classic English renderings)",
+  "language": "en",
+  "note": "Selections from the opening of the Guru Granth Sahib, the eternal Guru of the Sikhs — the Mul Mantar, the root formula of Sikh faith composed by Guru Nanak (1469-1539), and the opening stanzas of the Japji, recited by observant Sikhs every morning.",
+  "books": [
+    { "id": "japji", "name": "Japji Sahib — Selections", "chapters": 3 }
+  ]
+}

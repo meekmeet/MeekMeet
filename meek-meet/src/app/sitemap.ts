@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getActiveCircles } from "@/lib/public-data";
+import { SACRED_LIBRARY } from "@/data/sacred-library";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://meekmeet.com";
@@ -15,6 +16,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/shepherd/apply` },
     { url: `${baseUrl}/voice` },
     { url: `${baseUrl}/media` },
+    { url: `${baseUrl}/library` },
     { url: `${baseUrl}/code-of-love`, lastModified: new Date("2026-11-25") },
     {
       url: `${baseUrl}/privacy`,
@@ -47,5 +49,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     circleRoutes = [];
   }
 
-  return [...staticRoutes, ...circleRoutes];
+  // Every tradition and every book in the Sacred Library is a static,
+  // indexable reading page.
+  const libraryRoutes: MetadataRoute.Sitemap = [
+    ...SACRED_LIBRARY.map((entry) => ({
+      url: `${baseUrl}/library/${entry.id}`,
+    })),
+    ...SACRED_LIBRARY.flatMap((entry) =>
+      entry.books.map((b) => ({
+        url: `${baseUrl}/library/${entry.id}/${b.id}`,
+      }))
+    ),
+  ];
+
+  return [...staticRoutes, ...libraryRoutes, ...circleRoutes];
 }

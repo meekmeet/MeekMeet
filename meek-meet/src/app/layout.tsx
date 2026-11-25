@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { AuthProvider } from "@/components/auth-provider";
+import InstallBanner from "@/components/pwa/install-banner";
 import "./globals.css";
 
 // Self-hosted fonts (src/app/fonts/, downloaded by scripts/download-fonts.mjs)
@@ -53,6 +54,9 @@ export const metadata: Metadata = {
   verification: {
     google: "zKim6gzkkssIQao4l_3Nw4AfGwa9BkhvA7s0vFkAKpY",
   },
+  icons: {
+    apple: "/icons/apple-touch-icon.png",
+  },
   title: "Meek Meet | Blessed Are The Meek",
   description:
     "A warm community of faith where the meek gather, share, and build something beautiful together. Join us under the new moon.",
@@ -85,6 +89,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col font-sans bg-cream text-charcoal">
         <AuthProvider>
           {children}
+          <InstallBanner />
         </AuthProvider>
       </body>
     </html>

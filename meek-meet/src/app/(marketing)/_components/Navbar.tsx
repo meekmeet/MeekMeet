@@ -10,7 +10,7 @@ import { useAuth } from "@/components/auth-provider";
 const navLinks = [
   { href: "/about", label: "Who We Are" },
   { href: "/voice", label: "The Voice" },
-  { href: "/media", label: "Media" },
+  { href: "/library", label: "Library" },
   { href: "/circles", label: "Circles" },
   { href: "/#new-moon", label: "New Moon" },
 ];

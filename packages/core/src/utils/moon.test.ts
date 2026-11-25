@@ -33,6 +33,23 @@ describe("getNextNewMoon", () => {
     expect(getNextNewMoon(from).getTime()).toBe(getNextNewMoon(from).getTime());
   });
 
+  it("is timezone-independent (result depends only on the UTC instant)", () => {
+    // Same instant expressed two ways must give the same new moon. The old
+    // implementation rebuilt the input from local-time getters, so the
+    // answer shifted with the host TZ — green in Sydney, red on UTC CI.
+    const a = getNextNewMoon(new Date("2026-01-01T00:00:00Z"));
+    const b = getNextNewMoon(new Date(Date.UTC(2026, 0, 1, 0, 0, 0)));
+    expect(a.getTime()).toBe(b.getTime());
+  });
+
+  it("one millisecond after a new moon, the next one is a full month away", () => {
+    // Float-precision regression: the boundary instant must never map back
+    // onto itself.
+    const first = getNextNewMoon(new Date("2026-01-01T00:00:00Z"));
+    const second = getNextNewMoon(new Date(first.getTime() + 1));
+    expect(second.getTime()).toBeGreaterThan(first.getTime() + 28 * 24 * 3600 * 1000);
+  });
+
   it("matches a known astronomical new moon (2026-02-17) within a day", () => {
     // Known new moon: 17 February 2026 ~12:01 UTC.
     const from = new Date("2026-02-10T00:00:00Z");

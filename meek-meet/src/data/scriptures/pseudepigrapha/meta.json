@@ -1,0 +1,10 @@
+{
+  "tradition": "pseudepigrapha",
+  "name": "The Pseudepigrapha",
+  "translation": "1 Enoch, R.H. Charles (1917)",
+  "language": "en",
+  "note": "Jewish writings of the Second Temple period (c. 300 BCE - 100 CE) that were revered for centuries yet never entered the Bible of any major church. The Book of Enoch is quoted in the New Testament epistle of Jude and was sacred scripture in Ethiopia to this day.",
+  "books": [
+    { "id": "1_enoch", "name": "The Book of Enoch (1 Enoch)", "chapters": 5 }
+  ]
+}
