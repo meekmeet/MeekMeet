@@ -21,6 +21,17 @@ function isIos(): boolean {
   );
 }
 
+/**
+ * The banner is for phones and tablets only — a desktop visitor gets nothing.
+ * The install copy ("keep it on your phone") makes no sense on a laptop, and
+ * desktop Chrome fires beforeinstallprompt all the same.
+ */
+function isMobileDevice(): boolean {
+  if (typeof navigator === "undefined") return false;
+  if (isIos()) return true;
+  return /Android|Mobile|Tablet/i.test(navigator.userAgent);
+}
+
 function isInStandaloneMode(): boolean {
   if (typeof window === "undefined") return false;
   return (
@@ -30,9 +41,10 @@ function isInStandaloneMode(): boolean {
 }
 
 /**
- * PWA install prompt. Registers the (cache-free) service worker, then:
- *  - Android/desktop: captures `beforeinstallprompt` and offers a native
- *    one-tap install.
+ * PWA install prompt — phones and tablets only. Registers the (cache-free)
+ * service worker, then:
+ *  - Android: captures `beforeinstallprompt` and offers a native one-tap
+ *    install.
  *  - iOS (no programmatic install exists): shows Share → Add to Home Screen
  *    instructions instead.
  * Dismissal is remembered; the banner never shows when already installed.
@@ -52,7 +64,7 @@ export default function InstallBanner() {
   }, []);
 
   useEffect(() => {
-    if (isInStandaloneMode()) return;
+    if (isInStandaloneMode() || !isMobileDevice()) return;
     try {
       if (localStorage.getItem(DISMISS_KEY)) return;
     } catch {

@@ -28,11 +28,24 @@ function stubMatchMedia(standalone: boolean) {
   );
 }
 
+const MOBILE_UA =
+  "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Mobile Safari/537.36";
+const DESKTOP_UA =
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36";
+
+function stubUserAgent(ua: string) {
+  Object.defineProperty(navigator, "userAgent", {
+    value: ua,
+    configurable: true,
+  });
+}
+
 describe("InstallBanner", () => {
   beforeEach(() => {
     vi.useFakeTimers();
     localStorage.clear();
     stubMatchMedia(false);
+    stubUserAgent(MOBILE_UA);
   });
 
   afterEach(() => {
@@ -85,6 +98,16 @@ describe("InstallBanner", () => {
     fireEvent.click(screen.getByRole("button", { name: /dismiss/i }));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(localStorage.getItem(DISMISS_KEY)).toBe("1");
+  });
+
+  it("never shows on desktop, even when beforeinstallprompt fires", () => {
+    stubUserAgent(DESKTOP_UA);
+    render(<InstallBanner />);
+    fireBeforeInstallPrompt();
+    act(() => {
+      vi.advanceTimersByTime(20000);
+    });
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
   it("never shows when previously dismissed", () => {
