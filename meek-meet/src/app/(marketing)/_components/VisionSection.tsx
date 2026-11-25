@@ -31,7 +31,7 @@ const pillars = [
     icon: Globe,
     title: "We Unite",
     description:
-      "Catholic, Protestant, Jehovah's Witness, Orthodox — all who hold the Bible dear find common ground in loving their neighbour.",
+      "Catholic and Protestant, Muslim and Jewish, Buddhist, Hindu and Sikh — every faith and none find common ground in loving their neighbour.",
     verse: "There is one body and one Spirit... one Lord, one faith, one baptism. — Ephesians 4:4-5",
   },
 ];

@@ -68,7 +68,7 @@ export default function LeaderCTA() {
                 "Automatic new moon scheduling for your location",
                 "Warm dashboard to shepherd your community",
                 "Curated question library across every domain",
-                "Beautiful, anonymised response summaries",
+                "Beautiful summaries of your circle's voices",
                 "Direct support from the Meek Meet family",
               ].map((item, i) => (
                 <motion.div
@@ -83,6 +83,12 @@ export default function LeaderCTA() {
                 </motion.div>
               ))}
             </div>
+
+            <p className="text-xs text-cream/40 leading-relaxed mt-6">
+              You can read every response shared in your circle — that is part of
+              shepherding well. What leaves the circle, to councils or the public,
+              is always anonymised and aggregated.
+            </p>
           </motion.div>
 
           {/* Right: CTA Card */}

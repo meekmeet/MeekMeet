@@ -70,7 +70,7 @@ export default function WhoWeAre() {
             <span className="text-wheat text-lg">&#10022;</span>
           </div>
           <p className="text-lg text-charcoal-muted max-w-3xl mx-auto leading-relaxed font-light">
-            Meek Meet is not an organisation. It is a movement of gentle hearts. 
+            Meek Meet began not as an organisation, but as a movement of gentle hearts. 
             We are the ones who have been overlooked, the ones who serve in silence, 
             the ones who believe that love — not loudness — changes the world.
           </p>

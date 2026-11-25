@@ -19,7 +19,7 @@ const steps = [
     icon: MapPin,
     title: "A Place is Chosen",
     description:
-      "A park bench, a church hall, a community centre — somewhere warm and welcoming where anyone can find a seat and be heard.",
+      "A park bench, a church hall, a mosque's meeting room, a temple courtyard, a community centre — somewhere warm and welcoming where anyone can find a seat and be heard.",
     verse: "For where two or three gather in my name, there am I with them. — Matthew 18:20",
   },
   {
@@ -51,7 +51,7 @@ const steps = [
     icon: Landmark,
     title: "Gentleness Moves Mountains",
     description:
-      "The data becomes a story too loud to ignore. Reports reach councils, leaders, and decision-makers. The meek do not shout — they prove.",
+      "The data becomes a story too loud to ignore. Reports will reach councils, leaders, and decision-makers. The meek do not shout — they prove.",
     verse: "Truly I tell you, if you have faith as small as a mustard seed, you can say to this mountain, 'Move.' — Matthew 17:20",
   },
 ];

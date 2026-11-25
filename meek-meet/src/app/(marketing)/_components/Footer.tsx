@@ -63,7 +63,7 @@ export default function Footer() {
             <ul className="space-y-4">
               <li className="flex items-center gap-3">
                 <Mail className="w-4 h-4 text-charcoal-muted" strokeWidth={1.5} />
-                <span className="text-sm text-charcoal-muted">hello@meekmeet.org</span>
+                <span className="text-sm text-charcoal-muted">hello@meekmeet.com</span>
               </li>
               <li className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 text-charcoal-muted mt-0.5" strokeWidth={1.5} />
@@ -81,11 +81,19 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="py-8 border-t border-border-soft mb-8">
-          <p className="font-script text-2xl md:text-3xl text-center text-wheat-dark/40">
-            &ldquo;And now these three remain: faith, hope and love. But the greatest of these is love.&rdquo;
-          </p>
-          <p className="text-xs text-center text-charcoal-muted mt-2 tracking-wide">— 1 Corinthians 13:13</p>
+        <div className="py-8 border-t border-border-soft mb-8 grid md:grid-cols-2 gap-8">
+          <div>
+            <p className="font-script text-2xl md:text-3xl text-center text-wheat-dark/40">
+              &ldquo;And now these three remain: faith, hope and love. But the greatest of these is love.&rdquo;
+            </p>
+            <p className="text-xs text-center text-charcoal-muted mt-2 tracking-wide">— 1 Corinthians 13:13</p>
+          </div>
+          <div>
+            <p className="font-script text-2xl md:text-3xl text-center text-wheat-dark/40">
+              &ldquo;The earth is but one country, and mankind its citizens.&rdquo;
+            </p>
+            <p className="text-xs text-center text-charcoal-muted mt-2 tracking-wide">— Bahá&apos;u&apos;lláh</p>
+          </div>
         </div>
 
         <div className="pt-6 border-t border-border-soft">
@@ -93,15 +101,21 @@ export default function Footer() {
             <p className="text-xs text-charcoal-muted tracking-wider">
               &copy; {new Date().getFullYear()} Meek Meet. Made with love.
             </p>
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-6 flex-wrap justify-center">
               <Link href="/privacy" className="text-xs text-charcoal-muted hover:text-terracotta transition-colors">
                 Privacy
               </Link>
               <Link href="/terms" className="text-xs text-charcoal-muted hover:text-terracotta transition-colors">
                 Terms
               </Link>
-              <Link href="/terms" className="text-xs text-charcoal-muted hover:text-terracotta transition-colors">
+              <Link href="/code-of-love" className="text-xs text-charcoal-muted hover:text-terracotta transition-colors">
                 Code of Love
+              </Link>
+              <Link href="/child-safety" className="text-xs text-charcoal-muted hover:text-terracotta transition-colors">
+                Child Safety
+              </Link>
+              <Link href="/delete-account" className="text-xs text-charcoal-muted hover:text-terracotta transition-colors">
+                Delete Account
               </Link>
             </div>
           </div>

@@ -1,5 +1,6 @@
 import WhoWeAre from "../_components/WhoWeAre";
 import VisionSection from "../_components/VisionSection";
+import ManyNamesSection from "../_components/ManyNamesSection";
 import HowItWorks from "../_components/HowItWorks";
 import SafetyTrust from "../_components/SafetyTrust";
 
@@ -15,6 +16,9 @@ export default function AboutPage() {
       </section>
       <section id="heart" className="scroll-mt-20">
         <VisionSection />
+      </section>
+      <section id="many-names" className="scroll-mt-20">
+        <ManyNamesSection />
       </section>
       <section id="journey" className="scroll-mt-20">
         <HowItWorks />

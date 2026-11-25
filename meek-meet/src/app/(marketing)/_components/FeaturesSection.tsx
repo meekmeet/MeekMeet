@@ -123,6 +123,20 @@ export default function FeaturesSection() {
             </motion.div>
           ))}
         </div>
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          transition={{ duration: 0.8, delay: 0.8 }}
+          className="text-center text-sm text-charcoal-muted mt-12 max-w-2xl mx-auto"
+        >
+          Monthly circle questions and The Voice are live today. The Journal and
+          Meek Meet Media are in development —{" "}
+          <a href="/media" className="text-terracotta hover:underline">
+            see the honest pipeline
+          </a>
+          .
+        </motion.p>
       </div>
     </section>
   );
