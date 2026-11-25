@@ -40,6 +40,8 @@ interface MeetingRow {
   id: string;
   circle_id: string;
   scheduled_at: string;
+  location_name: string | null;
+  meeting_type: string | null;
   leader_pack_sent_at: string | null;
   circles?: { name: string | null } | { name: string | null }[] | null;
   rsvps?: RsvpRel[] | null;
@@ -74,7 +76,7 @@ export async function GET(request: NextRequest) {
 
   const { data: meetings, error: meetingsError } = await supabase
     .from("meetings")
-    .select("id, circle_id, scheduled_at, leader_pack_sent_at, circles(name), rsvps(user_id, status, profiles(email, full_name))")
+    .select("id, circle_id, scheduled_at, location_name, meeting_type, leader_pack_sent_at, circles(name), rsvps(user_id, status, profiles(email, full_name))")
     .gte("scheduled_at", windowStart.toISOString())
     .lt("scheduled_at", windowEnd.toISOString())
     .eq("is_cancelled", false)
@@ -174,6 +176,9 @@ export async function GET(request: NextRequest) {
         recipientName: profile?.full_name ?? "Friend",
         circleName,
         scheduledAt: meeting.scheduled_at,
+        meetingType: meeting.meeting_type,
+        locationName: meeting.location_name,
+        attendingCount: goingRsvps.length,
         variant,
         handbookUrl: `https://meekmeet.com/dashboard/handbook/${meeting.id}`,
       });
@@ -220,6 +225,8 @@ export async function GET(request: NextRequest) {
             leaderName: leaderProfile?.full_name ?? "Leader",
             circleName,
             scheduledAt: meeting.scheduled_at,
+            meetingType: meeting.meeting_type,
+            locationName: meeting.location_name,
             expectedCount,
             leaderRoomUrl: `https://meekmeet.com/dashboard/shepherd/${meeting.circle_id}/meetings/${meeting.id}`,
           });

@@ -168,9 +168,10 @@ describe("GET /api/handbook-dispatch", () => {
 
     const memberEmail = sendMock.mock.calls.find((c) => c[0].to === "miriam@example.com")?.[0];
     expect(memberEmail).toBeDefined();
-    expect(memberEmail.subject).toBe("The lot has fallen");
-    expect(memberEmail.html).toContain("SEE WHAT WAS DRAWN");
+    expect(memberEmail.subject).toContain("Gosford Circle");
+    expect(memberEmail.html).toContain("ENTER YOUR HANDBOOK");
     expect(memberEmail.html).toContain(`/dashboard/handbook/${MEETING.id}`);
+    expect(memberEmail.html).toContain("You are the first name down"); // 1 going RSVP
     // Sealed means sealed: no theme, no questions — not even the leader's
     // custom question — and no join link may appear in the email.
     expect(memberEmail.html).not.toContain(
@@ -195,8 +196,8 @@ describe("GET /api/handbook-dispatch", () => {
 
     const leaderEmail = sendMock.mock.calls.find((c) => c[0].to === "leah@example.com")?.[0];
     expect(leaderEmail).toBeDefined();
-    expect(leaderEmail.html).toContain("The room is yours to keep.");
-    expect(leaderEmail.html).toContain("1 soul is expected"); // the count, never the names
+    expect(leaderEmail.html).toContain("You hold the order. You read last.");
+    expect(leaderEmail.html).toContain("1 reserved"); // the count, never the names
     expect(leaderEmail.html).not.toContain("Miriam");
     expect(leaderEmail.html).toContain(
       `/dashboard/shepherd/${MEETING.circle_id}/meetings/${MEETING.id}`
@@ -255,8 +256,8 @@ describe("GET /api/handbook-dispatch", () => {
     const insert = mockSupa.inserts[0] as { variant: string };
     expect(insert.variant).toBe("returning");
     const memberEmail = sendMock.mock.calls.find((c) => c[0].to === "miriam@example.com")?.[0];
-    expect(memberEmail.subject).toContain("the lot has fallen");
-    expect(memberEmail.html).toContain("The draw");
+    expect(memberEmail.subject).toContain("Gosford Circle");
+    expect(memberEmail.html).toContain("The summons");
   });
 
   it("never carries the join link, even for digital meetings — the way in lives behind sign-in", async () => {

@@ -127,7 +127,40 @@ export function formatMeetingWhen(scheduledAt: string): string {
   return `${date} · ${time}`;
 }
 
-/** 1 → I, 3 → III, 4 → IV … for the seal. */
+/** The short form for subject lines: "Sun 6 Dec · 6:30 pm". */
+export function formatMeetingShort(scheduledAt: string): string {
+  const d = new Date(scheduledAt);
+  const date = d.toLocaleDateString("en-AU", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    timeZone: "Australia/Sydney",
+  });
+  const time = d.toLocaleTimeString("en-AU", {
+    hour: "numeric",
+    minute: "2-digit",
+    timeZone: "Australia/Sydney",
+  });
+  return `${date} · ${time}`;
+}
+
+/**
+ * How the circle meets, as a phrase that fits after "meets {date} · ":
+ * "online", "at {place}", or both. Null when nothing is known — the
+ * sentence simply ends at the date. Every branch is variable-driven so the
+ * template scales across every mode without rewriting.
+ */
+export function meetingModePhrase(
+  meetingType: string | null | undefined,
+  locationName: string | null | undefined
+): string | null {
+  const place = locationName?.trim() || null;
+  if (meetingType === "digital") return "online";
+  if (meetingType === "hybrid") return place ? `at ${place}, and online` : "online";
+  return place ? `at ${place}` : null;
+}
+
+/** 1 → I, 3 → III, 4 → IV … (used by the handbook and leader room pages). */
 export function toRoman(n: number): string {
   const table: [number, string][] = [
     [10, "X"], [9, "IX"], [5, "V"], [4, "IV"], [1, "I"],
@@ -144,116 +177,84 @@ export function toRoman(n: number): string {
 }
 
 // ── The summons chrome ─────────────────────────────────────────
-// Custom, minimal, ceremonial. Not the generic helpers — these emails are a
-// different species from every other send.
+// Deliberately austere: the sacred emblem, lines, one button. The power is
+// in the structure and the facts, and every sentence is built from
+// variables so it scales to any date, any circle, any mode, at any volume.
 
-/** The headline — large serif, the only loud thing in the email. */
-function headline(text: string): string {
-  const t = EMAIL_THEMES.sanctum;
-  return `<h1 style="font-family:${t.headingFont}; font-size:34px; line-height:1.25; font-weight:normal; color:${t.ink}; margin:6px 0 22px;">${text}</h1>`;
-}
+/** The Seed of Life — seven circles (the circle week), twelve points (the
+ *  seats). Hosted PNG; email clients cannot be trusted with SVG. */
+export const SANCTUM_EMBLEM_URL = "https://meekmeet.com/sacred/seed-of-life.png";
 
-/** A short line of body copy — never more than a breath long. */
-function line(text: string): string {
-  const t = EMAIL_THEMES.sanctum;
-  return `<p style="font-family:${t.bodyFont}; font-size:15px; line-height:1.8; color:${t.muted}; margin:0 0 14px;">${text}</p>`;
-}
-
-/** The date, set in a thin plate — the one hard fact the email carries. */
-function datePlate(text: string): string {
-  const t = EMAIL_THEMES.sanctum;
+/** The sacred geometry at the head of every summons. */
+function emblem(): string {
   return `
-  <table role="presentation" cellpadding="0" cellspacing="0" align="center" style="margin:0 auto 26px;">
+  <table role="presentation" cellpadding="0" cellspacing="0" align="center" style="margin:0 auto 20px;">
     <tr>
-      <td align="center" style="border:1px solid ${t.rule}; border-radius:10px; padding:12px 26px;">
-        <span style="font-family:${t.bodyFont}; font-size:12px; letter-spacing:0.28em; text-transform:uppercase; color:${t.accent};">${text}</span>
+      <td align="center">
+        <img src="${SANCTUM_EMBLEM_URL}" alt="" width="120" height="120" style="display:block; width:120px; height:120px; border:0;" />
       </td>
     </tr>
   </table>`;
 }
 
-/** The mark of the draw — the numerals between hairlines, nothing more. */
-function sealMark(topicCount: number, thresholdCount: number): string {
+/** A short line of body copy. */
+function line(text: string): string {
   const t = EMAIL_THEMES.sanctum;
-  return `
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:28px 0;">
-    <tr>
-      <td style="border-top:1px solid ${t.rule}; font-size:1px; line-height:1px;">&nbsp;</td>
-      <td align="center" width="130" style="font-family:${t.headingFont}; font-size:20px; letter-spacing:0.3em; color:${t.accent}; white-space:nowrap;">${toRoman(topicCount)}&nbsp;&middot;&nbsp;${toRoman(thresholdCount)}</td>
-      <td style="border-top:1px solid ${t.rule}; font-size:1px; line-height:1px;">&nbsp;</td>
-    </tr>
-  </table>`;
+  return `<p style="font-family:${t.bodyFont}; font-size:15px; line-height:1.8; color:${t.muted}; margin:0 0 14px;">${text}</p>`;
 }
 
-/** A thin rule with the ornament — the pause between movements. */
-function ornamentRule(): string {
+/** The final small line — the fact that makes it exclusive. */
+function signoff(text: string): string {
   const t = EMAIL_THEMES.sanctum;
-  return `
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:26px 0;">
-    <tr>
-      <td style="border-top:1px solid ${t.rule}; font-size:1px; line-height:1px;">&nbsp;</td>
-      <td align="center" width="60" style="color:${t.accent}; font-size:13px; letter-spacing:6px;">&#8258;</td>
-      <td style="border-top:1px solid ${t.rule}; font-size:1px; line-height:1px;">&nbsp;</td>
-    </tr>
-  </table>`;
-}
-
-/** The single line beneath everything — quiet, final. */
-function lastWord(text: string): string {
-  const t = EMAIL_THEMES.sanctum;
-  return `<p style="font-family:${t.bodyFont}; font-size:12px; line-height:1.7; color:${t.faint}; margin:24px 0 0; text-align:center;">${text}</p>`;
-}
-
-/** The whisper at the end — one sentence, with teeth. */
-function whisper(text: string): string {
-  const t = EMAIL_THEMES.sanctum;
-  return `<p style="font-family:${t.headingFont}; font-style:italic; font-size:14px; line-height:1.7; color:${t.muted}; margin:26px 0 0;"><strong style="color:${t.accent};">P.S.</strong> ${text}</p>`;
+  return `<p style="font-family:${t.bodyFont}; font-size:12.5px; line-height:1.7; color:${t.faint}; margin:22px 0 0;">${text}</p>`;
 }
 
 /**
- * The summons. Its power is truth, not theatre: tonight a draw actually
- * ran — sortition, the oldest fair instrument there is — and these specific
- * questions now exist under this member's name. No one chose them. The
- * theme, the place, the way in: all sealed behind sign-in.
+ * The summons. A standing form — the same words every time, only the
+ * variables change: that is what makes it a ritual instead of a newsletter.
  */
 export function buildHandbookEmail(options: {
   recipientName: string;
   circleName: string;
   scheduledAt: string;
+  meetingType?: string | null;
+  locationName?: string | null;
+  /** How many are attending this meeting (reserved seats, live count). */
+  attendingCount: number;
   variant: HandbookVariant;
   handbookUrl: string;
 }): { subject: string; html: string } {
   const h = themed(EMAIL_THEMES.sanctum);
   const firstCircle = options.variant === "first_circle";
   const name = escapeHtml(options.recipientName || "Friend");
+  const circle = escapeHtml(options.circleName);
   const when = formatMeetingWhen(options.scheduledAt);
+  const mode = meetingModePhrase(options.meetingType, options.locationName);
+
+  const attendance =
+    options.attendingCount <= 1
+      ? "You are the first name down — the way in opens for you alone."
+      : `${options.attendingCount} are attending — your seat is held under your name. The way in opens for you alone.`;
 
   const content = `
-    ${h.eyebrow("The draw — four nights before the circle")}
-    ${headline(firstCircle ? "Your questions exist now." : "The lot has fallen again.")}
-    ${datePlate(when)}
+    ${emblem()}
+    ${h.eyebrow("The summons")}
     ${line(`${name} &mdash;`)}
-    ${line("Tonight the lot ran for every circle gathering this week.")}
-    ${line("From the theme of the night, <strong>three</strong> questions fell to you. A fourth crosses every circle in the country &mdash; the same question, everywhere, the same night.")}
-    ${line("No one chose them. Not us, not your leader. The lot did &mdash; as it has been done since Athens, since the cloisters. What is asked of you was written for no one in particular. What you write back will be yours alone.")}
-    ${sealMark(HANDBOOK_QUESTION_COUNT, HANDBOOK_THRESHOLD_COUNT)}
-    ${line("Your questions are sealed under your name. So are the theme, the place, and the way in.")}
-    ${h.button(options.handbookUrl, "SEE WHAT WAS DRAWN")}
-    ${lastWord("Answer in writing before you arrive. In the room, you read what you wrote &mdash; nothing else is asked.")}
-    ${whisper(
+    ${line(`${circle} meets ${when}${mode ? ` &middot; ${escapeHtml(mode)}` : ""}.`)}
+    ${line("Your questions are waiting inside. Answer them before you join &mdash; in the circle, you read what you wrote.")}
+    ${
       firstCircle
-        ? "The circle knows your name. It does not yet know your answers."
-        : "Someone on your street has never heard of us. After the fourth night, they are yours."
-    )}
+        ? line("Nothing will be asked of you on the spot &mdash; everything you will say, you have already written.")
+        : ""
+    }
+    ${h.button(options.handbookUrl, "ENTER YOUR HANDBOOK")}
+    ${signoff(attendance)}
   `;
 
   return {
-    subject: firstCircle
-      ? "The lot has fallen"
-      : `${escapeHtml(options.circleName)} — the lot has fallen`,
+    subject: `${options.circleName} — ${formatMeetingShort(options.scheduledAt)}`,
     html: emailShell({
-      preheader: "Three questions drawn by lot. One that crosses the country. Sealed under your name.",
-      eyebrow: "The draw",
+      preheader: "Your questions are inside. Answer before you join.",
       contentHtml: content,
       theme: "sanctum",
     }),
@@ -301,41 +302,38 @@ export const LEADER_RUN_SHEET: { title: string; body: string }[] = [
 ];
 
 /**
- * The leader's summons. The truth of their position, plainly: the draw is
- * done, the words are written, and the room needs an order-keeper — never a
- * clock-keeper. The roster, the run sheet, the liturgies and the way in
- * live behind their sign-in.
+ * The leader's summons — the same standing form. Count, role, door. The
+ * roster, the run sheet, the liturgies and the way in live behind sign-in.
  */
 export function buildLeaderPackEmail(options: {
   leaderName: string;
   circleName: string;
   scheduledAt: string;
+  meetingType?: string | null;
+  locationName?: string | null;
   expectedCount: number;
   leaderRoomUrl: string;
 }): { subject: string; html: string } {
   const h = themed(EMAIL_THEMES.sanctum);
   const name = escapeHtml(options.leaderName || "Leader");
+  const circle = escapeHtml(options.circleName);
   const when = formatMeetingWhen(options.scheduledAt);
-  const souls = `${options.expectedCount} ${options.expectedCount === 1 ? "soul" : "souls"}`;
+  const mode = meetingModePhrase(options.meetingType, options.locationName);
 
   const content = `
-    ${h.eyebrow("The draw — four nights before the circle")}
-    ${headline("The room is yours to keep.")}
-    ${datePlate(when)}
+    ${emblem()}
+    ${h.eyebrow("The summons — for the one who keeps the room")}
     ${line(`${name} &mdash;`)}
-    ${line(`${souls} ${options.expectedCount === 1 ? "is" : "are"} expected at ${escapeHtml(options.circleName)} in four nights. Their questions have been drawn &mdash; each by lot, each different from their neighbour&rsquo;s, each already answered in their own hand.`)}
-    ${line("You will not teach them. You will not time them. You will hold the order while each voice lands &mdash; and you will read last.")}
-    ${ornamentRule()}
-    ${h.button(options.leaderRoomUrl, "ENTER THE LEADER ROOM")}
-    ${lastWord("The roster, the words, the run sheet, the way in &mdash; inside, under your sign-in.")}
-    ${whisper("First among shepherds. The tending is theirs; the order is yours.")}
+    ${line(`${circle} meets ${when}${mode ? ` &middot; ${escapeHtml(mode)}` : ""} &middot; ${options.expectedCount} reserved.`)}
+    ${line("Their questions are drawn and answered in writing. You hold the order. You read last. It ends when everyone has been heard.")}
+    ${h.button(options.leaderRoomUrl, "OPEN THE LEADER ROOM")}
+    ${signoff("The roster, the words, and the way in are inside &mdash; under your sign-in alone.")}
   `;
 
   return {
-    subject: `${escapeHtml(options.circleName)} — the room is yours`,
+    subject: `${options.circleName} — ${formatMeetingShort(options.scheduledAt)}`,
     html: emailShell({
       preheader: "The draw is done. The roster and the words wait inside.",
-      eyebrow: "The leader's draw",
       contentHtml: content,
       theme: "sanctum",
     }),

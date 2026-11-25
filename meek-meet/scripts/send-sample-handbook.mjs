@@ -58,6 +58,9 @@ for (const variant of ["first_circle", "returning"]) {
     recipientName: "Martin",
     circleName: "Gosford Circle (sample)",
     scheduledAt: meeting.toISOString(),
+    meetingType: "digital",
+    locationName: null,
+    attendingCount: 7,
     variant,
     handbookUrl: "https://meekmeet.com/dashboard",
   });
@@ -68,6 +71,8 @@ const pack = buildLeaderPackEmail({
   leaderName: "Martin",
   circleName: "Gosford Circle (sample)",
   scheduledAt: meeting.toISOString(),
+  meetingType: "digital",
+  locationName: null,
   expectedCount: 7,
   leaderRoomUrl: "https://meekmeet.com/dashboard",
 });
