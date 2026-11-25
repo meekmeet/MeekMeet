@@ -1,4 +1,5 @@
-import { getApplications } from "../actions";
+import { getApplications, getTerritoryStatuses, type AreaStatus } from "../actions";
+import { normalizeAreaKey } from "@/lib/circles/territory";
 import { CheckCircle, XCircle, Clock, User, Mail, MapPin, Church } from "lucide-react";
 import { ApproveButton, RejectButton } from "./_components/action-buttons";
 
@@ -31,10 +32,14 @@ export default async function AdminApplicationsPage({
   const { status } = await searchParams;
 
   let applications: ShepherdApplication[] = [];
+  let territory: Record<string, AreaStatus> = {};
   let error: string | null = null;
 
   try {
     applications = (await getApplications(status)) as ShepherdApplication[];
+    territory = await getTerritoryStatuses(
+      applications.map((a) => a.location).filter(Boolean)
+    );
   } catch (err) {
     error = err instanceof Error ? err.message : String(err);
   }
@@ -139,6 +144,21 @@ export default async function AdminApplicationsPage({
                     <div className="flex items-center gap-2">
                       <MapPin className="w-4 h-4 text-sage" strokeWidth={1.5} />
                       <span className="text-sm text-charcoal">{app.location}</span>
+                      {(() => {
+                        const area = territory[normalizeAreaKey(app.location ?? "")];
+                        if (!area) return null;
+                        const chip =
+                          area.status === "open"
+                            ? { text: "Suburb open", cls: "bg-sage/15 text-sage-dark" }
+                            : area.status === "expandable"
+                              ? { text: `Overflowing — new circle can form`, cls: "bg-terracotta-pale text-terracotta" }
+                              : { text: `Held — ${area.circles[0] ?? "existing circle"}`, cls: "bg-wheat/25 text-charcoal" };
+                        return (
+                          <span className={`px-2 py-0.5 rounded-full text-[11px] font-medium ${chip.cls}`}>
+                            {chip.text}
+                          </span>
+                        );
+                      })()}
                     </div>
                     <div className="flex items-center gap-2">
                       <Church className="w-4 h-4 text-wheat" strokeWidth={1.5} />

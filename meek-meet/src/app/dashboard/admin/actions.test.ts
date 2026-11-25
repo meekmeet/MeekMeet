@@ -14,6 +14,7 @@ import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import {
   getApplications,
+  getTerritoryStatuses,
   approveApplication,
   rejectApplication,
   getPendingDocuments,
@@ -45,6 +46,9 @@ beforeEach(() => {
   sendMock.mockReset().mockResolvedValue({ id: "email-1" });
   mockSupa.results.length = 0;
   mockSupa.tables.length = 0;
+  mockSupa.updates.length = 0;
+  mockSupa.upserts.length = 0;
+  mockSupa.inserts.length = 0;
   vi.mocked(createClient).mockResolvedValue(mockSupa as never);
 });
 
@@ -320,5 +324,145 @@ describe("toggleMessageStatus", () => {
     asAdmin();
     mockSupa.enqueue(null, { message: "db error" });
     await expect(toggleMessageStatus(applicationId, "open")).rejects.toThrow("db error");
+  });
+});
+
+describe("circle territory — the suburb claim on approval", () => {
+  const fullHouse = Array.from({ length: 12 }, (_, i) => ({ user_id: `u${i}` }));
+
+  it("creates the suburb's circle and seats the leader when the suburb is open", async () => {
+    asAdmin();
+    mockSupa.rpc.mockResolvedValueOnce({ error: null });
+    mockSupa.enqueue({ full_name: "Jane", email: "jane@example.com", location: "Gosford NSW" });
+    mockSupa.enqueue([]); // no circles claim the suburb
+    mockSupa.enqueue(null); // member_areas count → 0 waiting
+    mockSupa.enqueue(null); // slug clash check → free
+    mockSupa.enqueue({ id: "circle-1" }); // circle insert
+    mockSupa.enqueue(null); // circle_shepherds link
+
+    await approveApplication(applicationId, admin.id);
+
+    const circleInsert = mockSupa.inserts.find(
+      (i) => i && typeof i === "object" && "area_key" in i
+    ) as Record<string, unknown>;
+    expect(circleInsert).toBeDefined();
+    expect(circleInsert.name).toBe("New Moon Circle — Gosford NSW");
+    expect(circleInsert.area_key).toBe("gosford nsw");
+    expect(circleInsert.shepherd_id).toBe(admin.id);
+    expect(circleInsert.kind).toBe("local");
+
+    const link = mockSupa.inserts.find(
+      (i) => i && typeof i === "object" && (i as { circle_id?: string }).circle_id === "circle-1"
+    ) as Record<string, unknown>;
+    expect(link).toBeDefined();
+    expect(link.user_id).toBe(admin.id);
+    expect(link.role).toBe("lead");
+
+    const sent = sendMock.mock.calls[0][0];
+    expect(sent.html).toContain("New Moon Circle — Gosford NSW");
+    expect(sent.html).toContain("yours to keep");
+  });
+
+  it("locks the suburb: no rival circle while the claiming circle has room", async () => {
+    asAdmin();
+    mockSupa.rpc.mockResolvedValueOnce({ error: null });
+    mockSupa.enqueue({ full_name: "Jane", email: "jane@example.com", location: "Gosford NSW" });
+    mockSupa.enqueue([{ id: "c1", name: "New Moon Circle — Gosford NSW" }]); // claiming circle
+    mockSupa.enqueue([{ id: "m1" }]); // its meetings
+    mockSupa.enqueue([{ user_id: "u1" }, { user_id: "u2" }]); // 2 seated — room left
+    mockSupa.enqueue(null); // member_areas count → 0 waiting
+
+    await approveApplication(applicationId, admin.id);
+
+    expect(
+      mockSupa.inserts.find((i) => i && typeof i === "object" && "area_key" in i)
+    ).toBeUndefined();
+    const sent = sendMock.mock.calls[0][0];
+    expect(sent.html).toContain("currently held by an existing circle");
+  });
+
+  it("releases the suburb when the claiming circle is full — successor circle II", async () => {
+    asAdmin();
+    mockSupa.rpc.mockResolvedValueOnce({ error: null });
+    mockSupa.enqueue({ full_name: "Jane", email: "jane@example.com", location: "Gosford NSW" });
+    mockSupa.enqueue([{ id: "c1", name: "New Moon Circle — Gosford NSW" }]);
+    mockSupa.enqueue([{ id: "m1" }]);
+    mockSupa.enqueue(fullHouse); // 12 seated — full
+    mockSupa.enqueue(null); // member_areas count
+    mockSupa.enqueue(null); // slug clash check
+    mockSupa.enqueue({ id: "c2" }); // successor insert
+    mockSupa.enqueue(null); // link
+
+    await approveApplication(applicationId, admin.id);
+
+    const circleInsert = mockSupa.inserts.find(
+      (i) => i && typeof i === "object" && "area_key" in i
+    ) as Record<string, unknown>;
+    expect(circleInsert.name).toBe("New Moon Circle — Gosford NSW II");
+    const sent = sendMock.mock.calls[0][0];
+    expect(sent.html).toContain("New Moon Circle — Gosford NSW II");
+  });
+
+  it("releases the suburb on waiting demand even with seats left", async () => {
+    asAdmin();
+    mockSupa.rpc.mockResolvedValueOnce({ error: null });
+    mockSupa.enqueue({ full_name: "Jane", email: "jane@example.com", location: "Gosford NSW" });
+    mockSupa.enqueue([{ id: "c1", name: "New Moon Circle — Gosford NSW" }]);
+    mockSupa.enqueue([{ id: "m1" }]);
+    mockSupa.enqueue([{ user_id: "u1" }]); // 1 seated
+    mockSupa.results.push({ data: null, error: null, count: 10 } as never); // 10 waiting ≥ 8
+    mockSupa.enqueue(null); // slug clash
+    mockSupa.enqueue({ id: "c2" });
+    mockSupa.enqueue(null); // link
+
+    await approveApplication(applicationId, admin.id);
+
+    const circleInsert = mockSupa.inserts.find(
+      (i) => i && typeof i === "object" && "area_key" in i
+    ) as Record<string, unknown>;
+    expect(circleInsert).toBeDefined();
+    expect(circleInsert.name).toBe("New Moon Circle — Gosford NSW II");
+  });
+
+  it("still approves and emails when the application has no location", async () => {
+    asAdmin();
+    mockSupa.rpc.mockResolvedValueOnce({ error: null });
+    mockSupa.enqueue({ full_name: "Jane", email: "jane@example.com", location: null });
+
+    await approveApplication(applicationId, admin.id);
+    expect(sendMock).toHaveBeenCalledTimes(1);
+    expect(
+      mockSupa.inserts.find((i) => i && typeof i === "object" && "area_key" in i)
+    ).toBeUndefined();
+  });
+});
+
+describe("getTerritoryStatuses", () => {
+  it("throws for non-admin users", async () => {
+    asNonAdmin();
+    await expect(getTerritoryStatuses(["Gosford NSW"])).rejects.toThrow("Not authorized");
+  });
+
+  it("dedupes suburbs and reports each one's status", async () => {
+    asAdmin();
+    // Gosford: no circles → open (queried once despite two spellings)
+    mockSupa.enqueue([]);
+    mockSupa.enqueue(null);
+    // Newcastle: full circle → expandable
+    mockSupa.enqueue([{ id: "c9", name: "New Moon Circle — Newcastle NSW" }]);
+    mockSupa.enqueue([{ id: "m9" }]);
+    mockSupa.enqueue(Array.from({ length: 12 }, (_, i) => ({ user_id: `n${i}` })));
+    mockSupa.enqueue(null);
+
+    const res = await getTerritoryStatuses([
+      "Gosford NSW",
+      "gosford  nsw",
+      "Newcastle NSW",
+    ]);
+
+    expect(Object.keys(res)).toHaveLength(2);
+    expect(res["gosford nsw"].status).toBe("open");
+    expect(res["newcastle nsw"].status).toBe("expandable");
+    expect(res["newcastle nsw"].circles).toEqual(["New Moon Circle — Newcastle NSW"]);
   });
 });
