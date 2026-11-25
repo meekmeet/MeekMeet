@@ -77,7 +77,7 @@ function starSkySvg() {
 </svg>`;
 }
 
-// ── 2. The moon bearing the Seed of Life ───────────────────────
+// ── 2. The new moon bearing the Seed of Life ───────────────────
 function moonSeedSvg() {
   const S = 600;
   const cx = S / 2;
@@ -87,22 +87,31 @@ function moonSeedSvg() {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${S}" height="${S}" viewBox="0 0 ${S} ${S}">
   <defs>
     <radialGradient id="glow" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="${GOLD}" stop-opacity="0.28"/>
-      <stop offset="60%" stop-color="${GOLD}" stop-opacity="0.1"/>
+      <stop offset="0%" stop-color="${GOLD}" stop-opacity="0.2"/>
+      <stop offset="60%" stop-color="${GOLD}" stop-opacity="0.07"/>
       <stop offset="100%" stop-color="${GOLD}" stop-opacity="0"/>
     </radialGradient>
-    <radialGradient id="moonface" cx="42%" cy="38%" r="72%">
-      <stop offset="0%" stop-color="#f4e9cb"/>
-      <stop offset="62%" stop-color="#ddcda7"/>
-      <stop offset="100%" stop-color="#ac9a74"/>
+    <radialGradient id="disk" cx="46%" cy="42%" r="70%">
+      <stop offset="0%" stop-color="#1a1a26"/>
+      <stop offset="70%" stop-color="#12121c"/>
+      <stop offset="100%" stop-color="#0b0b12"/>
     </radialGradient>
+    <linearGradient id="crescent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="${GOLD}" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="${GOLD}" stop-opacity="0.3"/>
+    </linearGradient>
   </defs>
   <rect width="${S}" height="${S}" fill="${BLACK}"/>
   <circle cx="${cx}" cy="${cy}" r="${r * 1.42}" fill="url(#glow)"/>
-  <!-- the moon herself: a luminous face, lit from above -->
-  <circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#moonface)"/>
-  <!-- the Seed of Life, etched into the face so its outer ring IS the limb -->
-  ${seedOfLife(cx, cy, r / 1.98, 0.85, "#6e5a36")}
+  <!-- the new moon: a dark disk, lifted just enough from the night -->
+  <circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#disk)"/>
+  <!-- the Seed of Life, etched faintly within her, outer ring on the limb -->
+  ${seedOfLife(cx, cy, r / 1.98, 0.5)}
+  <!-- the thin gold crescent on the left limb: her defining light -->
+  <path d="M ${cx} ${cy - r}
+           A ${r} ${r} 0 1 0 ${cx} ${cy + r}
+           A ${r * 0.86} ${r * 0.98} 0 1 1 ${cx} ${cy - r} Z"
+        fill="url(#crescent)" opacity="0.95"/>
 </svg>`;
 }
 
