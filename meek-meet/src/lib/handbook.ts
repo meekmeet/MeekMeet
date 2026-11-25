@@ -186,10 +186,17 @@ export function toRoman(n: number): string {
 /** The Seed of Life emblem (used on the site and in dark contexts). */
 export const SANCTUM_EMBLEM_URL = "https://meekmeet.com/sacred/seed-of-life.png";
 
-/** The full-bleed black-letter background: sacred geometry, gold on black. */
-export const SANCTUM_LETTER_BG_URL = "https://meekmeet.com/sacred/letter-bg.png";
+/** The top band: the new moon the whole platform turns on. */
+export const SANCTUM_MOON_BG_URL = "https://meekmeet.com/sacred/new-moon-bg.png";
 
-/** The black-letter shell: sacred geometry as the entire background. */
+/** The bottom band: the Seed of Life blooming from below the button and
+ *  overflowing off the bottom edge of the letter. */
+export const SANCTUM_SEED_BG_URL = "https://meekmeet.com/sacred/seed-bottom.png";
+
+/** The black-letter shell: the new moon presides over the top of the
+ *  letter; the Seed of Life blooms beneath the button and overflows off
+ *  the bottom edge. Two anchored bands, so the composition holds at any
+ *  email height. */
 function sanctumShell(options: { preheader: string; contentHtml: string }): string {
   const t = EMAIL_THEMES.sanctum;
   return `
@@ -205,7 +212,7 @@ function sanctumShell(options: { preheader: string; contentHtml: string }): stri
     <div style="display:none; max-height:0; overflow:hidden; mso-hide:all;">${options.preheader}</div>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:${t.pageBg};">
       <tr>
-        <td align="center" bgcolor="${t.pageBg}" background="${SANCTUM_LETTER_BG_URL}" style="background-color:${t.pageBg}; background-image:url('${SANCTUM_LETTER_BG_URL}'); background-position:center top; background-repeat:repeat-y; background-size:cover;">
+        <td align="center" bgcolor="${t.pageBg}" background="${SANCTUM_MOON_BG_URL}" style="background-color:${t.pageBg}; background-image:url('${SANCTUM_MOON_BG_URL}'); background-position:center top; background-repeat:no-repeat;">
           <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px; width:100%;">
             <tr>
               <td align="center" style="padding:52px 40px 14px;">
@@ -218,15 +225,23 @@ function sanctumShell(options: { preheader: string; contentHtml: string }): stri
               </td>
             </tr>
             <tr>
-              <td style="padding:10px 44px 48px; font-family:${t.bodyFont}; color:${t.ink};">
+              <td style="padding:10px 44px 40px; font-family:${t.bodyFont}; color:${t.ink};">
                 ${options.contentHtml}
               </td>
             </tr>
+          </table>
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
             <tr>
-              <td align="center" style="padding:0 40px 56px; font-family:${t.bodyFont}; font-size:11.5px; color:${t.faint}; line-height:2;">
-                <em style="font-size:13px; color:${t.accent};">&ldquo;Blessed are the meek, for they shall inherit the earth.&rdquo;</em><br />
-                <span style="font-size:10.5px;">The promise has many names: Matthew 5:5 &middot; Psalm 37:11 &middot; Qur&rsquo;an 21:105 &middot; Tao Te Ching 66</span><br />
-                <a href="https://meekmeet.com" style="color:${t.muted}; text-decoration:underline;">meekmeet.com</a>
+              <td align="center" valign="top" height="460" background="${SANCTUM_SEED_BG_URL}" style="background-image:url('${SANCTUM_SEED_BG_URL}'); background-position:center bottom; background-repeat:no-repeat; padding-top:24px;">
+                <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px; width:100%;">
+                  <tr>
+                    <td align="center" style="padding:0 40px; font-family:${t.bodyFont}; font-size:11.5px; color:${t.faint}; line-height:2;">
+                      <em style="font-size:13px; color:${t.accent};">&ldquo;Blessed are the meek, for they shall inherit the earth.&rdquo;</em><br />
+                      <span style="font-size:10.5px;">The promise has many names: Matthew 5:5 &middot; Psalm 37:11 &middot; Qur&rsquo;an 21:105 &middot; Tao Te Ching 66</span><br />
+                      <a href="https://meekmeet.com" style="color:${t.muted}; text-decoration:underline;">meekmeet.com</a>
+                    </td>
+                  </tr>
+                </table>
               </td>
             </tr>
           </table>

@@ -17,7 +17,8 @@ import {
   handbookComplete,
   handbookVariant,
   meetingModePhrase,
-  SANCTUM_LETTER_BG_URL,
+  SANCTUM_MOON_BG_URL,
+  SANCTUM_SEED_BG_URL,
   toRoman,
 } from "./handbook";
 import { getTopicForWeekday, CIRCLE_TOPICS, THRESHOLD_TOPIC } from "@meekmeet/core/questions";
@@ -272,7 +273,8 @@ describe("buildHandbookEmail — the summons", () => {
 
   it("wears the sacred geometry: one pattern fills the whole black letter", () => {
     const { html } = buildHandbookEmail({ ...base, variant: "returning" });
-    expect(html).toContain(SANCTUM_LETTER_BG_URL);
+    expect(html).toContain(SANCTUM_MOON_BG_URL);
+    expect(html).toContain(SANCTUM_SEED_BG_URL);
     expect(html).toContain("background-image");
     expect(html).toContain("logo.png"); // the mark still crowns the letter
     expect(html).toContain("#060608"); // true black
@@ -379,7 +381,8 @@ describe("buildLeaderPackEmail — the leader's summons", () => {
 
   it("wears the sacred geometry in gold on true black", () => {
     const { html } = buildLeaderPackEmail(base);
-    expect(html).toContain(SANCTUM_LETTER_BG_URL);
+    expect(html).toContain(SANCTUM_MOON_BG_URL);
+    expect(html).toContain(SANCTUM_SEED_BG_URL);
     expect(html).toContain("#060608");
     expect(html).toContain("#c9a45c");
     expect(html).not.toContain("—");
