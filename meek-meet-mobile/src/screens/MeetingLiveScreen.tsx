@@ -243,7 +243,7 @@ export default function MeetingLiveScreen() {
             </div>
             <h2 className="font-serif text-2xl text-midnight mb-3">The meet will begin shortly</h2>
             <p className="text-sm text-charcoal-muted leading-relaxed max-w-xs mx-auto mb-2">
-              The shepherd will start the meet when everyone has gathered.
+              The leader will start the meet when everyone has gathered.
             </p>
             <p className="text-xs text-charcoal-muted/60">
               Scheduled: {new Date(meeting.scheduled_at).toLocaleString('en-AU')}

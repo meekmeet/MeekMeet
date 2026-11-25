@@ -47,7 +47,7 @@ export default function TermsScreen() {
         <section>
           <h2 className="font-medium text-midnight mb-2">Eligibility</h2>
           <p className="text-sm text-charcoal-muted leading-relaxed">
-            You must be at least 13 years old to use Meek Meet. Shepherd applicants must be
+            You must be at least 13 years old to use Meek Meet. Leader applicants must be
             adults and complete our verification process.
           </p>
         </section>
@@ -71,9 +71,9 @@ export default function TermsScreen() {
         </section>
 
         <section>
-          <h2 className="font-medium text-midnight mb-2">Shepherd Verification</h2>
+          <h2 className="font-medium text-midnight mb-2">Leader Verification</h2>
           <p className="text-sm text-charcoal-muted leading-relaxed">
-            Shepherds are trusted community leaders. By applying, you consent to identity
+            Leaders are trusted community members. By applying, you consent to identity
             and safeguarding verification. False information will result in permanent
             disqualification.
           </p>

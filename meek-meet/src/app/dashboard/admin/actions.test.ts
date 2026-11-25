@@ -187,7 +187,7 @@ describe("rejectApplication", () => {
       p_decision: "rejected",
     });
     const sent = sendMock.mock.calls[0][0];
-    expect(sent.subject).toMatch(/update on your shepherd application/i);
+    expect(sent.subject).toMatch(/update on your leader application/i);
   });
 
   it("throws when the RPC fails", async () => {

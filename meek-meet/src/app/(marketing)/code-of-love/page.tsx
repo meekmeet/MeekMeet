@@ -29,7 +29,7 @@ const pledges = [
   },
   {
     title: "We keep each other safe",
-    body: "No harassment, no hate, no pressure. Safeguarding concerns are raised immediately with the shepherd or through the platform's reporting tools. Children and vulnerable people are protected above all else.",
+    body: "No harassment, no hate, no pressure. Safeguarding concerns are raised immediately with the leader or through the platform's reporting tools. Children and vulnerable people are protected above all else.",
   },
   {
     title: "We show up",
@@ -81,7 +81,7 @@ export default function CodeOfLovePage() {
 
         <p className="text-sm text-charcoal-muted mt-12 leading-relaxed">
           Breaches of this covenant are handled gently but seriously — first in
-          conversation with your shepherd, and where safety is at stake,
+          conversation with your leader, and where safety is at stake,
           immediately through our{" "}
           <a href="/child-safety" className="text-terracotta hover:underline">
             safeguarding channels

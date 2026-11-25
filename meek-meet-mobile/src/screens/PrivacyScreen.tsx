@@ -52,7 +52,7 @@ export default function PrivacyScreen() {
             <li>Circle membership and meeting participation</li>
             <li>Community responses submitted during gatherings</li>
             <li>Location data when you explicitly use Circles</li>
-            <li>Verification documents if you apply to become a shepherd</li>
+            <li>Verification documents if you apply to become a leader</li>
           </ul>
         </section>
 
@@ -60,7 +60,7 @@ export default function PrivacyScreen() {
           <h2 className="font-medium text-midnight mb-2">How We Use Data</h2>
           <ul className="space-y-1.5 text-sm text-charcoal-muted list-disc list-inside">
             <li>To provide and improve the Meek Meet platform</li>
-            <li>To verify shepherd applicants and protect communities</li>
+            <li>To verify leader applicants and protect communities</li>
             <li>To generate anonymised, aggregated community insights</li>
             <li>To send meeting reminders and important updates</li>
           </ul>
@@ -79,7 +79,7 @@ export default function PrivacyScreen() {
           <h2 className="font-medium text-midnight mb-2">Who Can See Your Data</h2>
           <ul className="space-y-1.5 text-sm text-charcoal-muted list-disc list-inside">
             <li>You can see your own responses and profile</li>
-            <li>Circle shepherds can see responses in their circle</li>
+            <li>Circle leaders can see responses in their circle</li>
             <li>Admins can see data needed for safety and support</li>
             <li>Anonymised insights may be shown publicly</li>
           </ul>

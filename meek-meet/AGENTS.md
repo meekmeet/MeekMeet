@@ -7,7 +7,20 @@ This version has breaking changes — APIs, conventions, and file structure may 
 # Meek Meet — Project Context
 
 ## Overview
-Meek Meet is a faith-rooted, interfaith community organizing platform. The core mission: "The meek shall inherit the earth" (Matthew 5:5) — the spark is Christian, but the promise is claimed by every major tradition (Psalm 37:11, Qur'an 21:105, Bhagavad Gita 5:18, Dhammapada 223, Japji Sahib 27, Tao Te Ching 66), and the public site says so explicitly (`(marketing)/_components/ManyNamesSection.tsx` — the "One Promise, Many Names" section, echoed in the email-shell footer and the flyer footer). Members gather in local **circles** led by **shepherds**, answer discussion questions in regular meetings, and the platform synthesizes their responses into anonymized insights and reports for civic authorities.
+Meek Meet is a faith-rooted, interfaith community organizing platform. The core mission: "The meek shall inherit the earth" (Matthew 5:5) — the spark is Christian, but the promise is claimed by every major tradition (Psalm 37:11, Qur'an 21:105, Bhagavad Gita 5:18, Dhammapada 223, Japji Sahib 27, Tao Te Ching 66), and the public site says so explicitly (`(marketing)/_components/ManyNamesSection.tsx` — the "One Promise, Many Names" section, echoed in the email-shell footer and the flyer footer). Members gather in local **circles** led by **leaders**, answer discussion questions in regular meetings, and the platform synthesizes their responses into anonymized insights and reports for civic authorities.
+
+## Terminology — the shepherd doctrine (do not regress)
+- **The facilitator is a "leader", never a "shepherd", in all user-facing copy.** Calling one member the shepherd implies the rest are sheep; the platform's doctrine is the opposite.
+- **Every member is a shepherd** — of the neighbours and friends not yet in the circle. The leader is first among shepherds: they keep the order of the room, they are not above it. This thread is deliberate in the FeaturesSection card ("Everyone Is a Shepherd", hadith + Psalm 23), the handbook email P.S., and the invite_shepherd email pitches.
+- **Internal identifiers keep the old name** (`profiles.role = 'shepherd'`, `circle_shepherds`, `shepherd_applications`, `/shepherd` and `/dashboard/shepherd` routes, `invite_shepherd` template key). Renaming them is a DB migration with zero user benefit — change copy, not identifiers.
+
+## The session handbook (the meeting engine)
+- **No reservation, no participation**: `join_url` renders only for signed-in users with an active `going` RSVP — already an invariant, and the foundation of the model.
+- **Four days before a meeting**, `/api/handbook-dispatch` (daily cron, 19:00 UTC) creates a `session_handbooks` row (migration 000038) for every `going` RSVP and emails them the whole session as a form: introduction + every meeting question, pre-answerable. Idempotent via the `(meeting_id, profile_id)` unique constraint and `emailed_at`.
+- **The form is variable**: `variant = 'first_circle'` (no completed handbook in this circle before — warmer intro, their introduction is read aloud) or `'returning'`. Logic in `src/lib/handbook.ts`; members fill it at `/dashboard/handbook/[meetingId]` (save draft / mark complete; `completed_at` set only when every question has a written answer).
+- **In the room**, members read what they already wrote; the leader holds the order and carries intentions/notes forward. Completed handbooks are the primary data source for synthesis and the anonymised reports to authorities.
+- Leaders (and admins) can read all handbooks in their circles via RLS; members only ever see their own.
+- Sample renderer: `node meek-meet/scripts/send-sample-handbook.mjs [email]` (jiti; renders the real template).
 
 ## Design Language
 - **Aesthetic**: warm, reverent, editorial — parchment/paper feel rather than institutional navy

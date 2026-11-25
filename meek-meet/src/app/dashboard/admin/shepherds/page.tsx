@@ -25,14 +25,14 @@ export default async function AdminShepherdsPage() {
 
   return (
     <div>
-      <h1 className="font-serif text-3xl text-charcoal mb-2">Shepherds</h1>
+      <h1 className="font-serif text-3xl text-charcoal mb-2">Leaders</h1>
       <p className="text-charcoal-muted mb-8">
         Everyone currently leading circles in the community.
       </p>
 
       {!shepherds || shepherds.length === 0 ? (
         <div className="text-center py-20 bg-cream-warm rounded-2xl border border-border-soft">
-          <p className="text-charcoal-muted">No shepherds yet.</p>
+          <p className="text-charcoal-muted">No leaders yet.</p>
         </div>
       ) : (
         <div className="space-y-4">

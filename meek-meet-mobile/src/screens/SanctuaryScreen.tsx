@@ -111,7 +111,7 @@ export default function SanctuaryScreen() {
       ? [
           {
             icon: Shield,
-            label: 'Shepherd Dashboard',
+            label: 'Leader Dashboard',
             onClick: () => navigate('/shepherd'),
           },
         ]
@@ -132,7 +132,7 @@ export default function SanctuaryScreen() {
     },
     {
       icon: Sparkles,
-      label: 'Become a Shepherd',
+      label: 'Become a Leader',
       onClick: () => navigate('/shepherd/apply'),
     },
     {

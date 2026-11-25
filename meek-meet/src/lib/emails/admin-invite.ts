@@ -25,10 +25,10 @@ export function buildAdminInviteEmail(options: { inviterName: string; invitedEma
   const safeEmail = escapeHtml(options.invitedEmail);
 
   const content = `
-    ${emailHeading("You've been invited to shepherd Meek Meet")}
+    ${emailHeading("You've been invited to help lead Meek Meet")}
     ${emailParagraph(`Hello,`)}
     ${emailParagraph(
-      `<strong>${safeName}</strong> has invited you to join the Meek Meet leadership team as a <strong>platform administrator</strong>. You will have full access to the admin area — reviewing shepherd applications, verifying documents, tending circles, and carrying the community's voice to decision-makers.`
+      `<strong>${safeName}</strong> has invited you to join the Meek Meet leadership team as a <strong>platform administrator</strong>. You will have full access to the admin area — reviewing leader applications, verifying documents, tending circles, and carrying the community's voice to decision-makers.`
     )}
     ${emailCallout(
       `This invitation was sent to <strong>${safeEmail}</strong>. Sign in with that address and your admin access will be waiting.`
@@ -64,7 +64,7 @@ export function buildAdminGrantedEmail(options: { invitedEmail: string }): {
     ${emailHeading("Admin access granted")}
     ${emailParagraph(`Hello,`)}
     ${emailParagraph(
-      `Your Meek Meet account (<strong>${safeEmail}</strong>) has been granted <strong>platform administrator</strong> access. You now have full access to the admin area — reviewing shepherd applications, verifying documents, tending circles, and carrying the community's voice to decision-makers.`
+      `Your Meek Meet account (<strong>${safeEmail}</strong>) has been granted <strong>platform administrator</strong> access. You now have full access to the admin area — reviewing leader applications, verifying documents, tending circles, and carrying the community's voice to decision-makers.`
     )}
     ${emailButton(`${SITE_URL}/dashboard/admin`, "OPEN THE ADMIN AREA")}
     ${emailDivider()}
@@ -75,7 +75,7 @@ export function buildAdminGrantedEmail(options: { invitedEmail: string }): {
     subject: "You now have admin access to Meek Meet",
     html: emailShell({
       preheader: "Your Meek Meet account now has admin access.",
-      eyebrow: "Welcome, shepherd",
+      eyebrow: "Welcome, leader",
       contentHtml: content,
     }),
   };

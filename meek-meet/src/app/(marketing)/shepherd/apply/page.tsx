@@ -174,10 +174,10 @@ export default function ShepherdApplyPage() {
             Step Forward
           </span>
           <h1 className="font-serif text-4xl text-charcoal mb-6">
-            Become a Shepherd
+            Become a Leader
           </h1>
           <p className="text-charcoal-muted mb-8">
-            Please sign in to submit your shepherd application. We need to verify your identity as part of our safety process.
+            Please sign in to submit your leader application. We need to verify your identity as part of our safety process.
           </p>
           <Link
             href="/login"
@@ -203,10 +203,10 @@ export default function ShepherdApplyPage() {
             Step Forward
           </span>
           <h1 className="font-serif text-4xl md:text-5xl text-charcoal mb-6">
-            Become a Shepherd
+            Become a Leader
           </h1>
           <p className="text-lg text-charcoal-muted max-w-2xl mx-auto">
-            Every movement begins with one person who says <em>yes</em>. Apply to shepherd your community with gentleness and integrity.
+            Every movement begins with one person who says <em>yes</em>. Apply to lead your community with gentleness and integrity.
           </p>
         </motion.div>
 
@@ -564,7 +564,7 @@ export default function ShepherdApplyPage() {
               </button>
 
               <p className="text-xs text-charcoal-muted text-center leading-relaxed">
-                By submitting, you commit to shepherding your community with
+                By submitting, you commit to leading your community with
                 gentleness and integrity. We review every application with prayer
                 and thorough verification.
               </p>

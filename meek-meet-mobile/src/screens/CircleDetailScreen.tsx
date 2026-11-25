@@ -227,7 +227,7 @@ export default function CircleDetailScreen() {
         {shepherd?.full_name && (
           <div className="flex items-center gap-1.5 mt-2">
             <User className="w-3.5 h-3.5 text-charcoal-muted" strokeWidth={1.5} />
-            <span className="text-xs text-charcoal-muted">Shepherded by {shepherd.full_name}</span>
+            <span className="text-xs text-charcoal-muted">Led by {shepherd.full_name}</span>
           </div>
         )}
         {circle.description && (

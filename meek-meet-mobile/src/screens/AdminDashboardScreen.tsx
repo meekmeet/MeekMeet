@@ -461,7 +461,7 @@ export default function AdminDashboardScreen() {
   const tabs: { key: AdminTab; label: string; icon: typeof Shield; searchable?: boolean; badge?: number }[] = [
     { key: 'overview', label: 'Overview', icon: TrendingUp },
     { key: 'applications', label: 'Applications', icon: Mail },
-    { key: 'shepherds', label: 'Shepherds', icon: Crown, searchable: true },
+    { key: 'shepherds', label: 'Leaders', icon: Crown, searchable: true },
     { key: 'circles', label: 'Circles', icon: MapPin, searchable: true },
     { key: 'meetings', label: 'Meetings', icon: Calendar, searchable: true },
     { key: 'inbox', label: 'Inbox', icon: Inbox, searchable: true, badge: openMessageCount },
@@ -591,7 +591,7 @@ export default function AdminDashboardScreen() {
                 {stats ? (
                   <>
                     <div className="grid grid-cols-2 gap-3">
-                      <StatCard icon={<Crown className="w-4 h-4 text-terracotta" strokeWidth={1.5} />} label="Shepherds" value={String(stats.total_shepherds)} />
+                      <StatCard icon={<Crown className="w-4 h-4 text-terracotta" strokeWidth={1.5} />} label="Leaders" value={String(stats.total_shepherds)} />
                       <StatCard icon={<MapPin className="w-4 h-4 text-sage" strokeWidth={1.5} />} label="Circles" value={String(stats.total_circles)} />
                       <StatCard icon={<Calendar className="w-4 h-4 text-wheat-dark" strokeWidth={1.5} />} label="Scheduled" value={String(stats.total_scheduled_meetings)} />
                       <StatCard icon={<CheckCircle className="w-4 h-4 text-midnight" strokeWidth={1.5} />} label="Completed" value={String(stats.total_completed_meetings)} />
@@ -605,7 +605,7 @@ export default function AdminDashboardScreen() {
                       <h3 className="text-sm font-medium text-charcoal mb-3">Quick Links</h3>
                       <div className="space-y-2">
                         <QuickLink label="Review Applications" count={stats.pending_applications} onClick={() => setActiveTab('applications')} />
-                        <QuickLink label="View All Shepherds" onClick={() => setActiveTab('shepherds')} />
+                        <QuickLink label="View All Leaders" onClick={() => setActiveTab('shepherds')} />
                         <QuickLink label="View All Circles" onClick={() => setActiveTab('circles')} />
                         <QuickLink label="View All Meetings" onClick={() => setActiveTab('meetings')} />
                       </div>
@@ -636,7 +636,7 @@ export default function AdminDashboardScreen() {
                   <EmptyState
                     icon={<Inbox className="w-10 h-10" strokeWidth={1.5} />}
                     title={`No ${appFilter} applications`}
-                    subtitle={appFilter === 'pending' ? 'Check back later for new shepherd applications.' : 'Try a different filter.'}
+                    subtitle={appFilter === 'pending' ? 'Check back later for new leader applications.' : 'Try a different filter.'}
                     action={appFilter !== 'all' ? { label: 'View All', onClick: () => setAppFilter('all') } : undefined}
                   />
                 ) : (

@@ -62,7 +62,7 @@ export default function ChildSafetyPage() {
           <h2>3. Prevention</h2>
           <ul>
             <li>
-              <strong>Verified leaders:</strong> every circle shepherd undergoes
+              <strong>Verified leaders:</strong> every circle leader undergoes
               identity verification and background checks, including Working With
               Children Checks and national police checks, before they can lead a
               community.
@@ -71,7 +71,7 @@ export default function ChildSafetyPage() {
               <strong>Platform design:</strong> Meek Meet has no open public chat
               rooms, no stranger direct-messaging, and no anonymous photo sharing to
               unknown users. Community responses within circles are visible to
-              shepherds and administrators for accountability.
+              leaders and administrators for accountability.
             </li>
             <li>
               <strong>Enforcement:</strong> accounts violating these standards are

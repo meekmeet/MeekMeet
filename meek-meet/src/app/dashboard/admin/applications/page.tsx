@@ -56,7 +56,7 @@ export default async function AdminApplicationsPage({
 
   return (
     <div>
-      <h1 className="font-serif text-3xl text-charcoal mb-2">Shepherd Applications</h1>
+      <h1 className="font-serif text-3xl text-charcoal mb-2">Leader Applications</h1>
       <p className="text-charcoal-muted mb-8">
         Review and verify applications from those called to lead.
       </p>

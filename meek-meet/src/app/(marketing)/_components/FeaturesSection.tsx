@@ -29,10 +29,10 @@ const features = [
   },
   {
     icon: ShieldCheck,
-    title: "Leaders Are Shepherds",
+    title: "Everyone Is a Shepherd",
     description:
-      "Verified leaders receive a warm dashboard to manage their community, select questions, adjust timelines, and review responses with care.",
-    verse: "Be shepherds of God's flock that is under your care. — 1 Peter 5:2",
+      "The leader only keeps the room in order — every member shepherds someone: the neighbour not yet in the circle, the friend who hasn't heard. Verified leaders receive a warm dashboard to hold it all with care.",
+    verse: "Each of you is a shepherd, and each is responsible for his flock. — hadith, with Psalm 23",
   },
   {
     icon: Settings,

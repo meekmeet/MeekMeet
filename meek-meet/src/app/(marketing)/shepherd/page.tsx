@@ -1,7 +1,7 @@
 import LeaderCTA from "../_components/LeaderCTA";
 
 export const metadata = {
-  title: "Become a Shepherd | Meek Meet",
+  title: "Become a Leader | Meek Meet",
 };
 
 export default function ShepherdPage() {

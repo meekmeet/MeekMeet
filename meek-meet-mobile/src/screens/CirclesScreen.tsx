@@ -518,10 +518,10 @@ export default function CirclesScreen() {
                   <Shield className="w-7 h-7 text-terracotta" strokeWidth={1.5} />
                 </div>
                 <h2 className="font-serif text-xl text-midnight mb-2">
-                  Become a Shepherd of Your Region
+                  Become a Leader of Your Region
                 </h2>
                 <p className="text-sm text-charcoal-muted leading-relaxed mb-6">
-                  We're seeking shepherds — quiet guides who can hold space
+                  We're seeking leaders — quiet guides who can hold space
                   for circles in their community. If you feel called, we'd love to hear from you.
                 </p>
                 <motion.button

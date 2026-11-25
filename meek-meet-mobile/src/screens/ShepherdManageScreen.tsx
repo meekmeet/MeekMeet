@@ -1025,9 +1025,9 @@ function CoShepherdsSection({ circleId }: { circleId: string }) {
       .insert({ circle_id: circleId, user_id: userId, role: 'assistant' })
 
     if (error) {
-      showToast(error.message.includes('duplicate') ? 'User is already a shepherd' : 'Could not invite shepherd', 'error')
+      showToast(error.message.includes('duplicate') ? 'User is already a co-leader' : 'Could not invite co-leader', 'error')
     } else {
-      showToast('Co-shepherd invited', 'success')
+      showToast('Co-leader invited', 'success')
       setInviteEmail('')
       await loadShepherds()
     }
@@ -1045,18 +1045,18 @@ function CoShepherdsSection({ circleId }: { circleId: string }) {
       .delete()
       .eq('id', shepherdId)
     if (!error) {
-      showToast('Shepherd removed', 'success')
+      showToast('Co-leader removed', 'success')
       setShepherds(shepherds.filter((s) => s.id !== shepherdId))
     }
   }
 
-  if (loading) return <div className="py-6 text-center text-charcoal-muted text-sm">Loading shepherds...</div>
+  if (loading) return <div className="py-6 text-center text-charcoal-muted text-sm">Loading co-leaders...</div>
 
   return (
     <div className="bg-cream-warm rounded-xl border border-border-soft p-5 space-y-4">
       <div className="flex items-center gap-2">
         <Shield className="w-4 h-4 text-sage" strokeWidth={1.5} />
-        <h3 className="text-sm font-medium text-charcoal">Co-Shepherds</h3>
+        <h3 className="text-sm font-medium text-charcoal">Co-Leaders</h3>
       </div>
 
       {isLead && (
@@ -1100,7 +1100,7 @@ function CoShepherdsSection({ circleId }: { circleId: string }) {
               <button
                 onClick={() => removeShepherd(s.id, s.user_id)}
                 className="p-1.5 text-charcoal-muted hover:text-terracotta flex-shrink-0"
-                title="Remove shepherd"
+                title="Remove co-leader"
               >
                 <UserMinus className="w-4 h-4" strokeWidth={1.5} />
               </button>
@@ -1108,7 +1108,7 @@ function CoShepherdsSection({ circleId }: { circleId: string }) {
           </div>
         ))}
         {shepherds.length === 0 && (
-          <p className="text-xs text-charcoal-muted text-center py-2">No shepherds assigned yet.</p>
+          <p className="text-xs text-charcoal-muted text-center py-2">No co-leaders assigned yet.</p>
         )}
       </div>
     </div>

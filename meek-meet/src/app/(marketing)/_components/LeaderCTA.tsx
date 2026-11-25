@@ -39,7 +39,7 @@ export default function LeaderCTA() {
             </span>
             <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl text-cream mb-6 leading-tight">
               Become a{" "}
-              <span className="text-gradient-warm italic">Shepherd</span>
+              <span className="text-gradient-warm italic">Leader</span>
             </h2>
             <div className="ornament-divider max-w-xs mb-8">
               <Heart className="w-4 h-4 text-wheat" strokeWidth={1.5} fill="currentColor" fillOpacity={0.3} />
@@ -66,7 +66,7 @@ export default function LeaderCTA() {
             <div className="space-y-3">
               {[
                 "Automatic new moon scheduling for your location",
-                "Warm dashboard to shepherd your community",
+                "Warm dashboard to lead your community",
                 "Curated question library across every domain",
                 "Beautiful summaries of your circle's voices",
                 "Direct support from the Meek Meet family",
@@ -86,7 +86,7 @@ export default function LeaderCTA() {
 
             <p className="text-xs text-cream/40 leading-relaxed mt-6">
               You can read every response shared in your circle — that is part of
-              shepherding well. What leaves the circle, to councils or the public,
+              leading well. What leaves the circle, to councils or the public,
               is always anonymised and aggregated.
             </p>
           </motion.div>

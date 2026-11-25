@@ -330,28 +330,28 @@ function pitchShepherd(p: PitchCtx): Pitch {
           "The other kind of leader still exists. The kind who notices who hasn't spoken. The kind whose table people gather around without being invited twice. The kind who holds a room instead of working it. They haven't gone anywhere — they've just never been asked to lead anything that matters."
         )}
         ${h.paragraph(
-          "Meek Meet shepherds are that second kind. No stage, no megaphone — one room, one question, and the discipline to make sure the quietest voice is the one everyone leans in to hear. We supply the questions and the structure; your neighbourhood supplies what's been missing."
+          "Meek Meet leaders are that second kind. No stage, no megaphone — one room, one question, and the discipline to make sure the quietest voice is the one everyone leans in to hear. We supply the questions and the structure; your neighbourhood supplies what's been missing."
         )}
         ${h.button(tracked("/shepherd"), "LEAD QUIETLY")}
         ${h.divider()}
         ${h.finePrint("Sent by the Meek Meet community. If this isn't for you, no action is needed.")}
-        ${h.ps("The loud already have every platform. The quiet only need one — and it needs a shepherd.")}
+        ${h.ps("The loud already have every platform. The quiet only need one — and it needs a leader.")}
       `,
     };
   }
 
   if (themeKey === "terracotta") {
     return {
-      subject: "We found your street. It needs a shepherd.",
+      subject: "We found your street. It needs a leader.",
       eyebrow: "Found you",
       content: `
-        ${h.heading("Your street has never had a shepherd. It shows.")}
+        ${h.heading("Your street has never had a quiet leader. It shows.")}
         ${greeting(h, ctx)}
         ${h.paragraph(
           "Every neighbourhood has one — the person who'd be perfect for this, if anyone ever thought to ask. Someone the grandparents trust. Someone the newcomers find without trying. Someone who could hold a room of neighbours and make every single one of them feel heard."
         )}
         ${h.paragraph(
-          "When we look at your street, you're who comes to mind. And the need is not abstract: circles are forming near you that need someone to open the room, ask the question, and keep the quiet voices from being talked over. Not a teacher. Not a preacher. A shepherd."
+          "When we look at your street, you're who comes to mind. And the need is not abstract: circles are forming near you that need someone to open the room, ask the question, and keep the quiet voices from being talked over. Not a teacher. Not a preacher. A leader — and a shepherd to every neighbour who isn't in the room yet."
         )}
         ${h.callout(
           "An hour or two a month. We handle the questions, the structure, the dashboard — and your circle's voice goes, anonymised, straight to the people who decide your street's future."
@@ -374,13 +374,13 @@ function pitchShepherd(p: PitchCtx): Pitch {
         "We think that person might be you. Not because you're the loudest — because you're the one people already call. The one who notices who hasn't spoken. The one whose kitchen table has hosted more honest conversations than most parliaments."
       )}
       ${h.paragraph(
-        "Meek Meet shepherds don't preach and don't perform. They open their home or their online room, ask the question, and make sure the quietest voice in the circle is the one everyone leans in to hear. We give you the questions, the structure, and a dashboard — and your circle's insights go, anonymised, straight to the people who decide your community's future."
+        "Meek Meet leaders don't preach and don't perform. They open their home or their online room, ask the question, and make sure the quietest voice in the circle is the one everyone leans in to hear. We give you the questions, the structure, and a dashboard — and your circle's insights go, anonymised, straight to the people who decide your community's future."
       )}
       ${h.scriptureQuote("He leads me beside still waters. He restores my soul.", "Psalm 23")}
       ${h.paragraph(
-        "There are streets waiting for a shepherd who will never know their name unless someone asks them to lead."
+        "There are streets waiting for a leader who will never know their name — unless someone asks them to step forward."
       )}
-      ${h.button(tracked("/shepherd"), "BECOME A SHEPHERD")}
+      ${h.button(tracked("/shepherd"), "BECOME A LEADER")}
       ${h.divider()}
       ${h.finePrint("Sent by the Meek Meet community. If this isn't for you, no action is needed.")}
       ${h.ps("You don't need permission to care for your street. You never did. This is just the formal invitation.")}
@@ -409,7 +409,7 @@ function pitchOrg(p: PitchCtx): Pitch {
     `<p style="font-family:'Source Sans 3','Segoe UI',Arial,sans-serif; font-size:13px; letter-spacing:0.08em; text-transform:uppercase; color:${getEmailTheme(themeKey).faint}; margin:0 0 24px;">${text}</p>`;
 
   const safeguard = h.callout(
-    "<strong>Safeguarding, in plain terms.</strong> Every Meek Meet shepherd is identity-verified and provides a Working with Children Check and police check, reviewed by our administrators before they lead anything. Responses in circles are anonymised before they ever leave the room; no individual is ever named or identifiable in a report."
+    "<strong>Safeguarding, in plain terms.</strong> Every Meek Meet leader is identity-verified and provides a Working with Children Check and police check, reviewed by our administrators before they lead anything. Responses in circles are anonymised before they ever leave the room; no individual is ever named or identifiable in a report."
   );
   const signoff = h.paragraph(
     'With respect and hope,<br /><strong>The Meek Meet team</strong><br /><span style="font-size:13px; color:#6b6b6b;">hello@meekmeet.com &middot; meekmeet.com</span>'

@@ -95,12 +95,12 @@ export async function submitApplication(data: ApplicationData) {
     await getResend().emails.send({
       from: "Meek Meet <hello@meekmeet.com>",
       to: email,
-      subject: "Your Shepherd Application — Meek Meet",
+      subject: "Your Leader Application — Meek Meet",
       html: `
         <div style="font-family: Georgia, serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #faf6ee; color: #2c2c2c;">
           <h1 style="font-size: 24px; margin-bottom: 8px;">Hello ${safeName},</h1>
           <p style="font-size: 16px; line-height: 1.6;">
-            Thank you for applying to become a Meek Meet shepherd. We have received your application and will review it with prayer and care.
+            Thank you for applying to become a Meek Meet leader. We have received your application and will review it with prayer and care.
           </p>
           <div style="background: #f5efe0; border-radius: 12px; padding: 20px; margin: 20px 0;">
             <p style="margin: 0;"><strong>Location:</strong> ${safeLocation}</p>

@@ -20,7 +20,7 @@ const navItems = [
   { href: "/dashboard/meetings", label: "My Meetings", icon: Calendar },
   { href: "/dashboard/circles", label: "My Circles", icon: MapPin },
   { href: "/dashboard/profile", label: "Profile", icon: User },
-  { href: "/dashboard/shepherd", label: "Shepherd", icon: Shield },
+  { href: "/dashboard/shepherd", label: "Leader", icon: Shield },
 ];
 
 interface SidebarProps {

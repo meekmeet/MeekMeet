@@ -39,7 +39,7 @@ export default function PrivacyPage() {
               and membership details.
             </li>
             <li>
-              <strong>Verification documents:</strong> if you apply to become a shepherd, we
+              <strong>Verification documents:</strong> if you apply to become a leader, we
               collect a government-issued photo ID, Working With Children Check, police check,
               and first aid documentation to protect community safety. These documents are
               stored securely, visible only to authorised administrators, and deleted when
@@ -57,7 +57,7 @@ export default function PrivacyPage() {
           <h2>2. How We Use Your Information</h2>
           <ul>
             <li>To provide and improve the Meek Meet platform.</li>
-            <li>To verify shepherd applicants and maintain community safety.</li>
+            <li>To verify leader applicants and maintain community safety.</li>
             <li>To generate anonymised, aggregated insights for community reports.</li>
             <li>To send meeting reminders and important platform updates.</li>
             <li>To comply with legal obligations.</li>
@@ -65,7 +65,7 @@ export default function PrivacyPage() {
 
           <h2>3. Anonymisation and Aggregation</h2>
           <p>
-            Within your circle, your shepherd can see the responses submitted in that circle —
+            Within your circle, your leader can see the responses submitted in that circle —
             that visibility is part of safeguarding and accountability. What leaves the circle
             is always anonymised and aggregated: reports shared with councils, MPs, or other
             authorities, and the public Voice dashboard, contain only anonymised summaries.
@@ -81,7 +81,7 @@ export default function PrivacyPage() {
           <h2>4. Who Can See Your Data</h2>
           <ul>
             <li>You can see your own responses and profile.</li>
-            <li>Circle shepherds can see responses submitted within their circle.</li>
+            <li>Circle leaders can see responses submitted within their circle.</li>
             <li>Platform administrators can see data needed for safety, verification, and support.</li>
             <li>Anonymised, aggregated insights may be displayed publicly on our Voice dashboard.</li>
           </ul>

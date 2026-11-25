@@ -11,7 +11,7 @@ const requirements = [
     title: "Identity Verified",
     description:
       "Every leader submits government-issued photo ID. We confirm name, address, and identity before anyone is approved.",
-    why: "The meek must know exactly who is shepherding them.",
+    why: "The meek must know exactly who is leading them.",
   },
   {
     icon: Shield,
@@ -87,7 +87,7 @@ export default function SafetyTrust() {
               <p className="text-charcoal-muted text-sm leading-relaxed">
                 If a leader cannot provide all four verifications, they cannot lead a Meek Meet. 
                 This policy exists because the people who come to us — the quiet, the overlooked, 
-                the vulnerable — deserve nothing less than complete confidence in their shepherd.
+                the vulnerable — deserve nothing less than complete confidence in their leaders.
               </p>
             </div>
           </div>

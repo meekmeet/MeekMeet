@@ -53,7 +53,7 @@ export default function ShepherdDashboardScreen() {
           <ArrowLeft className="w-5 h-5 text-charcoal" strokeWidth={1.5} />
         </button>
         <div className="flex-1">
-          <h1 className="font-serif text-xl text-charcoal">Shepherd Dashboard</h1>
+          <h1 className="font-serif text-xl text-charcoal">Leader Dashboard</h1>
           <p className="text-xs text-charcoal-muted">Manage your circles</p>
         </div>
       </div>
@@ -62,7 +62,7 @@ export default function ShepherdDashboardScreen() {
         <div className="bg-cream-warm rounded-2xl border border-border-soft p-10 text-center">
           <Shield className="w-10 h-10 text-charcoal-muted mx-auto mb-3" strokeWidth={1.5} />
           <p className="text-charcoal-muted text-sm mb-4">
-            You are not shepherding any circles yet.
+            You are not leading any circles yet.
           </p>
           <button
             onClick={() => navigate('/circles')}

@@ -11,7 +11,7 @@ const steps = [
     icon: UserPlus,
     title: "A Leader Steps Forward",
     description:
-      "Someone in a suburb, town, or city feels the call. They register their heart for their community and become a shepherd of a local Meek Meet.",
+      "Someone in a suburb, town, or city feels the call. They register their heart for their community and become the leader of a local Meek Meet — first among shepherds, never above them.",
     verse: "Whoever wants to become great among you must be your servant. — Matthew 20:26",
   },
   {

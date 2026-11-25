@@ -76,15 +76,15 @@ export async function approveApplication(applicationId: string, userId: string) 
       await getResend().emails.send({
         from: "Meek Meet <hello@meekmeet.com>",
         to: application.email,
-        subject: "Welcome, Shepherd — Your Application is Approved",
+        subject: "Welcome, Leader — Your Application is Approved",
         html: `
           <div style="font-family: Georgia, serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #faf6ee; color: #2c2c2c;">
             <h1 style="font-size: 24px; margin-bottom: 8px;">Hello ${safeName},</h1>
             <p style="font-size: 16px; line-height: 1.6;">
-              It is with great joy that we welcome you as a <strong>Meek Meet Shepherd</strong>.
+              It is with great joy that we welcome you as a <strong>Meek Meet Leader</strong>.
             </p>
             <div style="background: #f5efe0; border-radius: 12px; padding: 20px; margin: 20px 0;">
-              <p style="margin: 0;">Your shepherd dashboard is now live. You can create your first circle, set your questions, and schedule your first gathering.</p>
+              <p style="margin: 0;">Your leader dashboard is now live. You can create your first circle, set your questions, and schedule your first gathering.</p>
             </div>
             <a href="https://meekmeet.com/dashboard/shepherd" style="display: inline-block; padding: 12px 24px; background: #1e2337; color: #faf6ee; text-decoration: none; border-radius: 24px; margin-top: 8px;">Go to Shepherd Dashboard</a>
             <hr style="border: 0; border-top: 1px solid #e8e0cc; margin: 24px 0;" />
@@ -143,12 +143,12 @@ export async function rejectApplication(applicationId: string) {
       await getResend().emails.send({
         from: "Meek Meet <hello@meekmeet.com>",
         to: application.email,
-        subject: "Update on Your Shepherd Application",
+        subject: "Update on Your Leader Application",
         html: `
           <div style="font-family: Georgia, serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #faf6ee; color: #2c2c2c;">
             <h1 style="font-size: 24px; margin-bottom: 8px;">Hello ${safeName},</h1>
             <p style="font-size: 16px; line-height: 1.6;">
-              Thank you for your interest in becoming a Meek Meet shepherd. After prayerful consideration, we are unable to move forward with your application at this time.
+              Thank you for your interest in becoming a Meek Meet leader. After prayerful consideration, we are unable to move forward with your application at this time.
             </p>
             <p style="font-size: 14px; color: #6b6b6b; margin-top: 16px;">
               This does not reflect on your character or calling. We encourage you to remain connected with your local community and consider reapplying in the future.

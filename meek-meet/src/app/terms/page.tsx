@@ -33,7 +33,7 @@ export default function TermsPage() {
 
           <h2>2. Eligibility</h2>
           <p>
-            You must be at least 13 years old to use Meek Meet. Shepherd applicants must be
+            You must be at least 13 years old to use Meek Meet. Leader applicants must be
             adults in their jurisdiction and must complete our verification process.
           </p>
 
@@ -56,9 +56,9 @@ export default function TermsPage() {
             <li>Spread misinformation or manipulate community insights.</li>
           </ul>
 
-          <h2>5. Shepherd Verification</h2>
+          <h2>5. Leader Verification</h2>
           <p>
-            Shepherds are trusted community leaders. By applying, you consent to verification
+            Leaders are trusted community members. By applying, you consent to verification
             of your identity and safeguarding credentials. Providing false information will
             result in permanent disqualification.
           </p>
@@ -72,7 +72,7 @@ export default function TermsPage() {
 
           <h2>7. Reports and Authority Submissions</h2>
           <p>
-            Community reports are generated from anonymised, aggregated data. Shepherds are
+            Community reports are generated from anonymised, aggregated data. Leaders are
             responsible for ensuring reports are accurate and submitted in good faith. Meek
             Meet does not guarantee any response from authorities.
           </p>

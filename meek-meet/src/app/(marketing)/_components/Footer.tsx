@@ -43,7 +43,7 @@ export default function Footer() {
                 { href: "/library", label: "The Sacred Library" },
                 { href: "/media", label: "Media & Mission" },
                 { href: "/circles", label: "Circles" },
-                { href: "/shepherd", label: "Become a Shepherd" },
+                { href: "/shepherd", label: "Become a Leader" },
               ].map((link) => (
                 <li key={link.href}>
                   <Link

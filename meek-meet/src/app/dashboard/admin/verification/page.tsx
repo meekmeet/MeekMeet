@@ -105,7 +105,7 @@ export default function VerificationPage() {
   return (
     <div className="p-6 md:p-10">
       <h1 className="font-serif text-2xl text-charcoal mb-2">Document Verification</h1>
-      <p className="text-charcoal-muted mb-6">Review and verify uploaded shepherd documents.</p>
+      <p className="text-charcoal-muted mb-6">Review and verify uploaded leader documents.</p>
 
       {error && (
         <div className="mb-6 p-4 bg-terracotta-pale rounded-xl text-terracotta text-sm flex items-start gap-2">

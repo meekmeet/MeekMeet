@@ -51,7 +51,7 @@ export default async function CircleManageLayout({ children, params }: Props) {
           href="/dashboard/shepherd"
           className="text-sm text-charcoal-muted hover:text-terracotta transition-colors mb-4 inline-block"
         >
-          ← Back to Shepherd Dashboard
+          ← Back to Leader Dashboard
         </Link>
         <h1 className="font-serif text-3xl text-charcoal">{circle.name}</h1>
         <p className="text-charcoal-muted">{circle.location}</p>

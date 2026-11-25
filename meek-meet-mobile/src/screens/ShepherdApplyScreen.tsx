@@ -104,7 +104,7 @@ export default function ShepherdApplyScreen() {
           <button onClick={() => { hapticSelect(); navigate(-1) }} className="p-2 -ml-2 active:scale-90 transition-transform">
             <ArrowLeft className="w-5 h-5 text-midnight" strokeWidth={1.5} />
           </button>
-          <h1 className="font-serif text-lg text-midnight">Become a Shepherd</h1>
+          <h1 className="font-serif text-lg text-midnight">Become a Leader</h1>
         </div>
       </div>
 
@@ -120,7 +120,7 @@ export default function ShepherdApplyScreen() {
           </div>
           <h2 className="font-medium text-midnight text-base mb-2">Feel called to lead?</h2>
           <p className="text-sm text-charcoal-muted leading-relaxed">
-            Shepherds are compassionate guides who hold space for circles in their community.
+            Leaders are compassionate guides who hold space for circles in their community.
             They do not preach doctrine — they facilitate encounter, listening, and growth across traditions.
           </p>
         </motion.div>
@@ -228,7 +228,7 @@ export default function ShepherdApplyScreen() {
             <textarea
               value={form.motivation}
               onChange={(e) => setForm((f) => ({ ...f, motivation: e.target.value }))}
-              placeholder="Share briefly what draws you to shepherd a Meek Meet circle..."
+              placeholder="Share briefly what draws you to lead a Meek Meet circle..."
               rows={4}
               className="w-full px-4 py-3 bg-white border border-border-soft rounded-xl text-sm text-charcoal placeholder:text-charcoal-muted focus:outline-none focus:ring-1 focus:ring-terracotta resize-none"
             />

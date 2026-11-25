@@ -48,7 +48,7 @@ export default async function ShepherdDashboardPage() {
 
   return (
     <div className="max-w-5xl mx-auto">
-      <h1 className="font-serif text-3xl text-charcoal mb-2">Shepherd Dashboard</h1>
+      <h1 className="font-serif text-3xl text-charcoal mb-2">Leader Dashboard</h1>
       <p className="text-charcoal-muted mb-8">
         Manage your circles, questions, routine, and meetings.
       </p>
@@ -152,13 +152,13 @@ export default async function ShepherdDashboardPage() {
       ) : (
         <div className="bg-cream-warm rounded-2xl border border-border-soft p-12 text-center">
           <p className="text-charcoal-muted mb-4">
-            You are not shepherding any circles yet.
+            You are not leading any circles yet.
           </p>
           <Link
             href="/shepherd"
             className="px-6 py-3 bg-midnight text-cream text-sm rounded-full hover:bg-midnight-soft transition-all inline-block"
           >
-            Apply to Become a Shepherd
+            Apply to Become a Leader
           </Link>
         </div>
       )}

@@ -46,7 +46,7 @@ export default function DeleteAccountPage() {
             <li>Your profile (name, email, avatar, preferences).</li>
             <li>Your individual responses and comments in circles.</li>
             <li>Your RSVPs, bookmarks, and meeting attendance records.</li>
-            <li>Your shepherd application and verification documents, if any.</li>
+            <li>Your leader application and verification documents, if any.</li>
           </ul>
 
           <h2>What data may be kept</h2>

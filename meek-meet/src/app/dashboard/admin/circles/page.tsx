@@ -78,7 +78,7 @@ export default async function AdminCirclesPage() {
                   <span className="flex items-center gap-2">
                     <Users className="w-4 h-4 text-wheat-dark" strokeWidth={1.5} />
                     {shepherdCounts.get(circle.id) ?? 0}{" "}
-                    {(shepherdCounts.get(circle.id) ?? 0) === 1 ? "shepherd" : "shepherds"}
+                    {(shepherdCounts.get(circle.id) ?? 0) === 1 ? "leader" : "leaders"}
                   </span>
                   <span>
                     Created{" "}

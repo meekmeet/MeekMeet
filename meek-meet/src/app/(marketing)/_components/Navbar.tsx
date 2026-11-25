@@ -64,7 +64,7 @@ export default function Navbar() {
                   href="/shepherd"
                   className="px-6 py-2.5 text-sm tracking-wide bg-midnight text-cream rounded-full hover:bg-midnight-soft transition-all duration-300 shadow-sm"
                 >
-                  Become a Shepherd
+                  Become a Leader
                 </Link>
                 <Link
                   href="/login"
@@ -123,7 +123,7 @@ export default function Navbar() {
                     onClick={() => setIsOpen(false)}
                     className="inline-block px-6 py-3 text-sm tracking-wide bg-midnight text-cream rounded-full hover:bg-midnight-soft transition-all duration-300"
                   >
-                    Become a Shepherd
+                    Become a Leader
                   </Link>
                   <Link
                     href="/login"

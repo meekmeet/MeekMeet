@@ -130,7 +130,7 @@ export default function AdminApplicationsScreen() {
         </button>
         <div className="flex-1">
           <h1 className="font-serif text-xl text-charcoal">Applications</h1>
-          <p className="text-xs text-charcoal-muted">Review shepherd applications</p>
+          <p className="text-xs text-charcoal-muted">Review leader applications</p>
         </div>
       </div>
 

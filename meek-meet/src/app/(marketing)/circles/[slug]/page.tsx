@@ -256,7 +256,7 @@ export default async function CircleDetailPage({ params }: Props) {
                   href="/shepherd"
                   className="px-8 py-3 border-2 border-wheat/30 text-wheat font-medium tracking-wide text-sm rounded-full hover:border-wheat hover:text-wheat-light transition-all"
                 >
-                  Become a Shepherd
+                  Become a Leader
                 </Link>
               </div>
             </>

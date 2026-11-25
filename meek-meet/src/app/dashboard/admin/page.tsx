@@ -20,7 +20,7 @@ export default async function AdminOverviewPage() {
 
   const cards = [
     {
-      label: "Shepherds",
+      label: "Leaders",
       value: stats?.total_shepherds,
       icon: Users,
       color: "text-terracotta",
@@ -79,9 +79,9 @@ export default async function AdminOverviewPage() {
   ];
 
   const quickLinks = [
-    { href: "/dashboard/admin/applications", label: "Review Applications", description: "Approve or reject shepherd applications" },
+    { href: "/dashboard/admin/applications", label: "Review Applications", description: "Approve or reject leader applications" },
     { href: "/dashboard/admin/verification", label: "Verification", description: "Review WWCC and ID documents" },
-    { href: "/dashboard/admin/shepherds", label: "Shepherds", description: "All active shepherds and their circles" },
+    { href: "/dashboard/admin/shepherds", label: "Leaders", description: "All active leaders and their circles" },
     { href: "/dashboard/admin/circles", label: "Circles", description: "Every circle across the community" },
     { href: "/dashboard/admin/meetings", label: "Meetings", description: "Recent and upcoming gatherings" },
     { href: "/dashboard/admin/members", label: "Members", description: "Everyone in the community, searchable" },
@@ -107,7 +107,7 @@ export default async function AdminOverviewPage() {
         >
           <AlertCircle className="w-5 h-5 text-terracotta flex-shrink-0" strokeWidth={1.5} />
           <span className="text-sm text-terracotta font-medium">
-            {pending} shepherd application{pending === 1 ? "" : "s"} waiting for review
+            {pending} leader application{pending === 1 ? "" : "s"} waiting for review
           </span>
           <ArrowRight className="w-4 h-4 text-terracotta ml-auto" strokeWidth={1.5} />
         </Link>

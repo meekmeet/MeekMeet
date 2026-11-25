@@ -23,7 +23,7 @@ const navItems = [
   { href: "/dashboard/admin", label: "Overview", icon: LayoutDashboard },
   { href: "/dashboard/admin/applications", label: "Applications", icon: FileText },
   { href: "/dashboard/admin/verification", label: "Verification", icon: Shield },
-  { href: "/dashboard/admin/shepherds", label: "Shepherds", icon: Users },
+  { href: "/dashboard/admin/shepherds", label: "Leaders", icon: Users },
   { href: "/dashboard/admin/circles", label: "Circles", icon: MapPin },
   { href: "/dashboard/admin/meetings", label: "Meetings", icon: Calendar },
   { href: "/dashboard/admin/members", label: "Members", icon: Heart },
