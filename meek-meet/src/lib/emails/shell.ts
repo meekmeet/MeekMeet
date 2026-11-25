@@ -4,6 +4,7 @@
 // `themed(theme)` helpers so a single send can change its entire personality.
 
 const LOGO_URL = "https://www.meekmeet.com/logo.png";
+export const SANCTUM_LOGO_URL = LOGO_URL;
 export const SITE_URL = "https://meekmeet.com";
 
 /** The tracked redirect used for every marketing CTA and QR code. */

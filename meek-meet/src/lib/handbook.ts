@@ -20,7 +20,7 @@
 // the data the platform synthesises into anonymised reports.
 
 import { escapeHtml } from "@/lib/validation";
-import { themed, EMAIL_THEMES } from "@/lib/emails/shell";
+import { themed, EMAIL_THEMES, SANCTUM_LOGO_URL } from "@/lib/emails/shell";
 import {
   drawQuestions,
   THRESHOLD_TOPIC,
@@ -208,7 +208,12 @@ function sanctumShell(options: { preheader: string; contentHtml: string }): stri
         <td align="center" bgcolor="${t.pageBg}" background="${SANCTUM_LETTER_BG_URL}" style="background-color:${t.pageBg}; background-image:url('${SANCTUM_LETTER_BG_URL}'); background-position:center top; background-repeat:repeat-y; background-size:cover;">
           <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px; width:100%;">
             <tr>
-              <td align="center" style="padding:52px 40px 30px;">
+              <td align="center" style="padding:52px 40px 14px;">
+                <img src="${SANCTUM_LOGO_URL}" alt="Meek Meet" width="52" height="52" style="display:inline-block; border-radius:13px; border:0;" />
+              </td>
+            </tr>
+            <tr>
+              <td align="center" style="padding:0 40px 30px;">
                 <span style="font-family:${t.headingFont}; font-size:19px; letter-spacing:0.26em; color:#ece8dc;">MEEK&nbsp;MEET</span>
               </td>
             </tr>

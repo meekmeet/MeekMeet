@@ -47,17 +47,19 @@ function seedOfLife(cx, cy, r, opacity) {
 }
 
 function letterSvg() {
+  // ONE Seed of Life, centred, sized so its outer ring spans the full view
+  // and bleeds off the edges — the whole background is the one pattern.
+  const r = 350;
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
   <defs>
-    <radialGradient id="vignette" cx="50%" cy="46%" r="75%">
-      <stop offset="0%" stop-color="${BLACK}" stop-opacity="0.72"/>
-      <stop offset="60%" stop-color="${BLACK}" stop-opacity="0.6"/>
-      <stop offset="100%" stop-color="${BLACK}" stop-opacity="0.08"/>
+    <radialGradient id="vignette" cx="50%" cy="50%" r="72%">
+      <stop offset="0%" stop-color="${BLACK}" stop-opacity="0.78"/>
+      <stop offset="60%" stop-color="${BLACK}" stop-opacity="0.62"/>
+      <stop offset="100%" stop-color="${BLACK}" stop-opacity="0.12"/>
     </radialGradient>
   </defs>
   <rect width="${W}" height="${H}" fill="${BLACK}"/>
-  ${seedOfLife(W / 2, 170, 260, 1)}
-  ${seedOfLife(W / 2, H - 120, 260, 0.9)}
+  ${seedOfLife(W / 2, H / 2, r, 1)}
   <rect width="${W}" height="${H}" fill="url(#vignette)"/>
 </svg>`;
 }

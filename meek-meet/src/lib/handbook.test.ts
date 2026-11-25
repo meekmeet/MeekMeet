@@ -270,10 +270,11 @@ describe("buildHandbookEmail — the summons", () => {
     expect(html).not.toContain("zoom.us");
   });
 
-  it("wears the sacred geometry: the whole email is the black letter", () => {
+  it("wears the sacred geometry: one pattern fills the whole black letter", () => {
     const { html } = buildHandbookEmail({ ...base, variant: "returning" });
     expect(html).toContain(SANCTUM_LETTER_BG_URL);
     expect(html).toContain("background-image");
+    expect(html).toContain("logo.png"); // the mark still crowns the letter
     expect(html).toContain("#060608"); // true black
     expect(html).toContain("#c9a45c"); // old gold
   });
