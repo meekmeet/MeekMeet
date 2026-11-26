@@ -69,12 +69,12 @@ describe("the gate — every question is authored from a deficit", () => {
     }
   });
 
-  it("is mathematically balanced: exactly 12 questions per deficit", () => {
+  it("is mathematically balanced: exactly 21 questions per deficit", () => {
     const counts = deficitDistribution();
     for (const d of ROOT_DEFICITS) {
-      expect(counts[d.id], `deficit ${d.id} count`).toBe(12);
+      expect(counts[d.id], `deficit ${d.id} count`).toBe(21);
     }
-    expect(Object.values(counts).reduce((a, b) => a + b, 0)).toBe(84);
+    expect(Object.values(counts).reduce((a, b) => a + b, 0)).toBe(147);
   });
 
   it("touches all seven deficits in every day-topic", () => {
@@ -86,7 +86,7 @@ describe("the gate — every question is authored from a deficit", () => {
     }
   });
 
-  it("keeps each topic's internal distribution within the rotating 2/2/2/2/2/1/1 pattern", () => {
+  it("keeps each topic perfectly even: exactly 3 questions per deficit", () => {
     for (const topic of CIRCLE_TOPICS) {
       const counts = new Map<DeficitId, number>();
       for (const q of topic.questions) {
@@ -94,7 +94,7 @@ describe("the gate — every question is authored from a deficit", () => {
         counts.set(d, (counts.get(d) ?? 0) + 1);
       }
       const values = [...counts.values()].sort((a, b) => b - a);
-      expect(values, topic.id).toEqual([2, 2, 2, 2, 2, 1, 1]);
+      expect(values, topic.id).toEqual([3, 3, 3, 3, 3, 3, 3]);
     }
   });
 

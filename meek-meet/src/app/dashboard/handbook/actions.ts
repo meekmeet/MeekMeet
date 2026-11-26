@@ -187,9 +187,30 @@ export async function regenerateHandbookQuestion(
   }
   const bank = inThreshold ? THRESHOLD_TOPIC : topic;
 
-  const [replacement] = drawQuestions(bank, 1, {
-    excludeIds: responses.map((r) => r.question_id),
-  });
+  const inPlayIds = responses.map((r) => r.question_id);
+  const pool = bank.questions.filter((q) => !inPlayIds.includes(q.id));
+  if (pool.length === 0) {
+    throw new Error("Every question in this theme is already in your handbook");
+  }
+
+  // Never twice: prefer a question the member has never been dealt — in any
+  // past handbook, in any circle. Only when every remaining question has
+  // already been seen does the cycle turn over.
+  const { data: pastHandbooks } = await supabase
+    .from("session_handbooks")
+    .select("responses")
+    .eq("profile_id", user.id)
+    .order("created_at", { ascending: false })
+    .limit(80);
+  const historyIds = new Set(
+    ((pastHandbooks ?? []) as { responses: HandbookQuestion[] | null }[])
+      .flatMap((h) => (h.responses ?? []).map((r) => r.question_id))
+  );
+  const freshPool = pool.filter((q) => !historyIds.has(q.id));
+  const [replacement] = drawQuestions(
+    { ...bank, questions: freshPool.length > 0 ? freshPool : pool },
+    1
+  );
   if (!replacement) {
     throw new Error("Every question in this theme is already in your handbook");
   }

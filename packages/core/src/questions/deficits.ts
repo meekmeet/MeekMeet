@@ -425,110 +425,168 @@ export function getDeficitById(id: string): RootDeficit | null {
 // ── The gate map ───────────────────────────────────────────────
 // Every circle-topics question id → the root deficit it was AUTHORED from.
 // The bank is written from the gate, not tagged after the fact: each
-// question is built from a (deficit → virtue) pair — the deficit is the
-// hidden root, the virtue pole is the direction the answer-space opens.
-// The distribution is mathematically balanced (12 questions per deficit,
-// every day-topic touching all seven) and enforced by test: a question
-// without a deficit, or a skewed week, cannot ship.
+// question is built from a (deficit → virtue) pair under the bridge rule —
+// chamber one names the hidden root, chamber two turns the answer toward
+// what the circle, the street, or the country can do. The distribution is
+// mathematically perfect (147 questions: 21 per deficit, exactly 3 per
+// deficit within every day-topic) and enforced by test: a question without
+// a deficit, or a skewed week, cannot ship.
 export const QUESTION_DEFICITS: Record<string, DeficitId> = {
-  // The Source (Sunday) — pairs: pride×2, greed×2, craving×2, envy×2,
-  // gluttony×2, wrath×1, sloth×1
-  "src-1": "pride",     // the unspoken conviction → humility's plain speech
-  "src-2": "pride",     // performed certainty → admitted doubt
-  "src-3": "greed",     // earning the unearnable → grace received
-  "src-4": "greed",     // self-securing → the open hand
-  "src-5": "lust",      // the chased experience → what finally lasts
-  "src-6": "lust",      // love clenched into possession → holding lightly
-  "src-7": "envy",      // comparison of faiths → celebrating another's peace
-  "src-8": "envy",      // the begrudged good → the examined hunger
-  "src-9": "gluttony",  // the false consolation → what restores
-  "src-10": "gluttony", // the comfort become cage → set down
-  "src-11": "wrath",    // anger in the spiritual story → laid down
-  "src-12": "sloth",    // the let-die practice → picked up this week
-  // Beginnings (Monday) — pairs: greed×2, craving×2, envy×2, gluttony×2,
-  // wrath×2, pride×1, sloth×1
-  "beg-1": "greed",     // clinging to the ending → release
-  "beg-2": "greed",     // the impressive beginning → the honest one
-  "beg-3": "lust",      // the chase of new → the calling discerned
-  "beg-4": "lust",      // wanting that never satisfied → its cost seen
-  "beg-5": "envy",      // the faster starter → bitterness named
-  "beg-6": "envy",      // the overlooked beginning → the applause released
-  "beg-7": "gluttony",  // consumption as avoidance → the beginning made
-  "beg-8": "gluttony",  // the comfort set down → room for the wanted thing
-  "beg-9": "wrath",     // old anger carried forward → who it punishes
-  "beg-10": "wrath",    // the forgiveness that unlocks the new
-  "beg-11": "pride",    // shame that forbids → the attempt anyway
-  "beg-12": "sloth",    // someday → the first physical step
-  // Home & Street (Tuesday) — pairs: sloth×2, craving×2, envy×2,
-  // gluttony×2, wrath×2, greed×1, pride×1
-  "hom-1": "sloth",     // the invisible neighbour → the awakened eye
+  // The Source (Sunday) — 3 each: pride, greed, craving, envy, gluttony,
+  // wrath, sloth
+  "src-1": "pride",     // the unspoken conviction → said plainly for the street
+  "src-2": "pride",     // performed certainty → admitted doubt that frees another
+  "src-3": "pride",     // the cost of faith → worth it if one finds footing
+  "src-4": "greed",     // earning the unearnable → the freed energy
+  "src-5": "greed",     // self-securing → the open hand felt on the street
+  "src-6": "greed",     // more than enough → whose week it would change
+  "src-7": "lust",      // the chased experience → what outlasts the feeling
+  "src-8": "lust",      // love clenched into possession → held lightly, given
+  "src-9": "lust",      // wanting past the got → wanting what outlasts us
+  "src-10": "envy",     // the compared faith → celebrated instead
+  "src-11": "envy",     // the begrudged good → the energy redeployed
+  "src-12": "envy",     // envying the street's missing gift → championing it
+  "src-13": "gluttony", // the depletion reach → the hour given to a neighbour
+  "src-14": "gluttony", // the comfort become cage → the hours released
+  "src-15": "gluttony", // the private consumption → the table that feeds two
+  "src-16": "wrath",    // anger in the spiritual story → freed to build
+  "src-17": "wrath",    // the grievance taught by example → a better inheritance
+  "src-18": "wrath",    // the awaited apology → the released years
+  "src-19": "sloth",    // the let-die practice → the street waiting for it
+  "src-20": "sloth",    // the abandoned showing-up → the noticed absence
+  "src-21": "sloth",    // the smallest deferred love → named and done
+  // Beginnings (Monday) — 3 each
+  "beg-1": "greed",     // clinging to the ending → what it frees for others
+  "beg-2": "greed",     // the unimpressive beginning → the suburb's gain
+  "beg-3": "greed",     // the reserve held for someday → a tenth at work now
+  "beg-4": "lust",      // the chase of new → discerned by what it does for others
+  "beg-5": "lust",      // wanting that never satisfied → its cost to the watchers
+  "beg-6": "lust",      // the restarted start → finishing as a gift
+  "beg-7": "envy",      // the faster starter → asking instead of comparing
+  "beg-8": "envy",      // the unnoticed beginning → the first to notice another's
+  "beg-9": "envy",      // spectating a neighbour's start → one hour a week
+  "beg-10": "gluttony", // consumption as avoidance → the imperfect first step
+  "beg-11": "gluttony", // the comfort set down → who benefits when you do
+  "beg-12": "gluttony", // research as hiding → learning by doing it badly once
+  "beg-13": "wrath",    // old anger carried forward → who it punishes
+  "beg-14": "wrath",    // the forgiveness that unlocks the new
+  "beg-15": "wrath",    // the burning failure → fire that warms, not scorches
+  "beg-16": "pride",    // shame that forbids → the attempt the suburb remembers
+  "beg-17": "pride",    // the shame lesson → given back
+  "beg-18": "pride",    // too qualified to start → seen starting badly
+  "beg-19": "sloth",    // someday → the first physical step
+  "beg-20": "sloth",    // the street's own beginning → who stands beside you
+  "beg-21": "sloth",    // the year of about-to → said out loud in the circle
+  // Home & Street (Tuesday) — 3 each
+  "hom-1": "sloth",     // the invisible neighbour → changed this month
   "hom-2": "sloth",     // the walked-past problem → the first fix
-  "hom-3": "lust",      // the arrival picture → whose eyes it serves
-  "hom-4": "lust",      // wanting the neighbourhood → actually meeting it
-  "hom-5": "envy",      // the compared house → the cost of comparing
-  "hom-6": "envy",      // the neighbour's good news → the honest feeling
-  "hom-7": "gluttony",  // consumption filling silence → the neighbour
-  "hom-8": "gluttony",  // the unshareable comfort → the open table
-  "hom-9": "wrath",     // the written-off neighbour → the story examined
-  "hom-10": "wrath",    // the outlived conflict → someone going first
-  "hom-11": "greed",    // enough house → need vs hunger
-  "hom-12": "pride",    // the known self → the surprising truth
-  // Work & Provision (Wednesday) — pairs: pride×2, sloth×2, craving×1,
-  // envy×2, gluttony×2, wrath×2, greed×1
+  "hom-3": "sloth",     // the unsaid street knowledge → said to who should hear
+  "hom-4": "lust",      // the arrival picture → whose eyes it serves
+  "hom-5": "lust",      // wanting the neighbourhood → actually meeting it
+  "hom-6": "lust",      // the dreamed-of elsewhere → loving here for a year
+  "hom-7": "envy",      // the compared house → the cost of comparing
+  "hom-8": "envy",      // the neighbour's good news → the honest feeling
+  "hom-9": "envy",      // the coveted neighbour's gift → asking them to teach
+  "hom-10": "gluttony", // consumption filling silence → the neighbour
+  "hom-11": "gluttony", // the unshareable comfort → the open table
+  "hom-12": "gluttony", // the wasted surplus → the family going without
+  "hom-13": "wrath",    // the written-off neighbour → the story examined
+  "hom-14": "wrath",    // the outlived conflict → someone going first
+  "hom-15": "wrath",    // the daily irritation never named → why them not you
+  "hom-16": "greed",    // enough house → need vs hunger
+  "hom-17": "greed",    // the empty room → the one who is cramped
+  "hom-18": "greed",    // the street's pooled plenty → what you'd stop buying
+  "hom-19": "pride",    // the known self → the surprising truth
+  "hom-20": "pride",    // the unshared skill → the street allowed to benefit
+  "hom-21": "pride",    // asking as normal → the offer in return
+  // Work & Provision (Wednesday) — 3 each
   "wor-1": "pride",     // the status ladder → the undervalued honoured
   "wor-2": "pride",     // the hidden struggle → known by someone
-  "wor-3": "sloth",     // the buried gift → put to use
-  "wor-4": "sloth",     // the abandoned calling → what happened
-  "wor-5": "lust",      // success as being-seen → the performance named
-  "wor-6": "envy",      // the envied career → the want beneath it
-  "wor-7": "envy",      // the rival's success → the cost of celebrating
-  "wor-8": "gluttony",  // surviving the week → what it replaces
-  "wor-9": "gluttony",  // rest refused → the real sabbath
-  "wor-10": "wrath",    // the working grudge → who pays at home
-  "wor-11": "wrath",    // anger as fuel → or as poison
-  "wor-12": "greed",    // enough — money, time, security → arrived?
-  // Healing & Wholeness (Thursday) — pairs: pride×2, sloth×2, greed×2,
-  // craving×1, gluttony×2, wrath×2, envy×1
+  "wor-3": "pride",     // the unclapped work → clapping for the invisible
+  "wor-4": "sloth",     // the buried gift → put to use on the street
+  "wor-5": "sloth",     // the abandoned calling → what happened
+  "wor-6": "sloth",     // the hard-won lesson → offered freely to the new
+  "wor-7": "lust",      // success as being-seen → the performance named
+  "wor-8": "lust",      // the invisible title → what the answer tells you
+  "wor-9": "lust",      // the endless upgrade → the work never made better
+  "wor-10": "envy",     // the envied career → the want beneath it
+  "wor-11": "envy",     // the rival's success → the cost of celebrating
+  "wor-12": "envy",     // the better rival → learned from, not measured against
+  "wor-13": "gluttony", // surviving the week → what it replaces
+  "wor-14": "gluttony", // rest refused → the real sabbath
+  "wor-15": "gluttony", // the unneeded purchase → the hours spent differently
+  "wor-16": "wrath",    // the working grudge → who pays at home
+  "wor-17": "wrath",    // anger as fuel → or as poison
+  "wor-18": "wrath",    // the watched unfairness → the silence's victim
+  "wor-19": "greed",    // enough — money, time, security → arrived?
+  "wor-20": "greed",    // the doubled income → what the community gains
+  "wor-21": "greed",    // the unshared money wisdom → the drowning neighbour
+  // Healing & Wholeness (Thursday) — 3 each
   "hea-1": "pride",     // the polite mask → the honest answer
   "hea-2": "pride",     // the hidden wound → witnessed
-  "hea-3": "sloth",     // the quiet struggle → the visit made
-  "hea-4": "sloth",     // the unprescribed healing → given time
-  "hea-5": "greed",     // the clenched grip → room to heal
-  "hea-6": "greed",     // accumulation → energy for wholeness
-  "hea-7": "lust",      // the craved escape → the cost to the reachers
-  "hea-8": "gluttony",  // the emptying comfort → what actually helps
-  "hea-9": "gluttony",  // wholeness → the thing given up
-  "hea-10": "wrath",    // forgiveness → how it changed the carrying
-  "hea-11": "wrath",    // the rehearsed hurt → the rehearsal put down
-  "hea-12": "envy",     // "not for me" → wanting without resenting
-  // Family & Generations (Friday) — pairs: pride×2, sloth×2, greed×2,
-  // craving×2, envy×1, wrath×2, gluttony×1
+  "hea-3": "pride",     // the pretended fine → who deserves the truth
+  "hea-4": "sloth",     // the quiet struggle → the visit made
+  "hea-5": "sloth",     // the unprescribed healing → the neighbour who needs it
+  "hea-6": "sloth",     // the months-deferred check-in → who waits on it
+  "hea-7": "greed",     // the clenched grip → room to heal
+  "hea-8": "greed",     // accumulation → energy for wholeness
+  "hea-9": "greed",     // the kept comfort → the faster healing given away
+  "hea-10": "lust",     // the craved escape → the cost to the reachers
+  "hea-11": "lust",     // the isolating reach → the harder one that works
+  "hea-12": "lust",     // the pain carried alone → carried together
+  "hea-13": "gluttony", // the emptying comfort → what actually helps
+  "hea-14": "gluttony", // wholeness → the thing given up
+  "hea-15": "gluttony", // the binge → what it stands guard over
+  "hea-16": "wrath",    // forgiveness → how it changed the carrying
+  "hea-17": "wrath",    // the rehearsed hurt → the rehearsal put down
+  "hea-18": "wrath",    // anger at the self → gentleness that frees others
+  "hea-19": "envy",     // "not for me" → wanting without resenting
+  "hea-20": "envy",     // the disqualified pain → allowed to matter
+  "hea-21": "envy",     // the envied strength → learnable; yours unseen
+  // Family & Generations (Friday) — 3 each
   "fam-1": "pride",     // the inheritance → what stops with you
   "fam-2": "pride",     // the avoided conversation → its cost
-  "fam-3": "sloth",     // the elder unasked → asked
-  "fam-4": "sloth",     // the dying tradition → taught forward
-  "fam-5": "greed",     // the family's need → the hardest gift given
-  "fam-6": "greed",     // saved for someday → needed now
-  "fam-7": "lust",      // the perfect-family picture → the real one
-  "fam-8": "lust",      // loved as they are → or as hoped
-  "fam-9": "envy",      // the family score → put down
-  "fam-10": "wrath",    // the handed-down anger → stopped in your hands
-  "fam-11": "wrath",    // the needed forgiveness → the first small act
-  "fam-12": "gluttony", // the shared consumption → the starved table
-  // Justice & the Common Good (Saturday) — pairs: sloth×2, pride×2,
-  // greed×2, craving×2, envy×2, wrath×1, gluttony×1
+  "fam-3": "pride",     // the shame carried alone → said in the circle
+  "fam-4": "sloth",     // the elder unasked → asked
+  "fam-5": "sloth",     // the dying tradition → taught forward
+  "fam-6": "sloth",     // the unrecorded story → recorded before it is lost
+  "fam-7": "greed",     // the family's need → the hardest gift given
+  "fam-8": "greed",     // saved for someday → needed now, on the street too
+  "fam-9": "greed",     // the non-money inheritance → built for someone
+  "fam-10": "lust",     // the perfect-family picture → the real one
+  "fam-11": "lust",     // loved as they are → or as hoped
+  "fam-12": "lust",     // the family success chase → who is exhausted by it
+  "fam-13": "envy",     // the family score → put down
+  "fam-14": "envy",     // the watched other family → building your own
+  "fam-15": "envy",     // what theirs had → what yours can give
+  "fam-16": "wrath",    // the handed-down anger → stopped in your hands
+  "fam-17": "wrath",    // the needed forgiveness → the first small act
+  "fam-18": "wrath",    // the argument older than its reason → first to put down
+  "fam-19": "gluttony", // the shared consumption → the starved table
+  "fam-20": "gluttony", // the dark screens → who resists and why
+  "fam-21": "gluttony", // the table ritual → brought back
+  // Justice & the Common Good (Saturday) — 3 each
   "jus-1": "sloth",     // the uncovered injustice → seen and said
   "jus-2": "sloth",     // the silence → its cost counted
-  "jus-3": "pride",     // the plain truth → said to power
-  "jus-4": "pride",     // the private word → said in public
-  "jus-5": "greed",     // the extracted land → spoken for
-  "jus-6": "greed",     // justice's price → honestly named
-  "jus-7": "lust",      // the difference pictured → whose face
-  "jus-8": "lust",      // the cause as image → the quiet giving
-  "jus-9": "envy",      // the resented platform → the reach imagined
-  "jus-10": "envy",     // the comparison → the joining
-  "jus-11": "wrath",    // the blinding anger → banked into building
-  "jus-12": "gluttony", // the defended comfort → who pays for it
+  "jus-3": "sloth",     // the unknown-to-power knowledge → put in front of them
+  "jus-4": "pride",     // the plain truth → said to power
+  "jus-5": "pride",     // the private word → said in public
+  "jus-6": "pride",     // the standing-protecting silence → spent anyway
+  "jus-7": "greed",     // the extracted land → spoken for
+  "jus-8": "greed",     // justice's price → honestly named
+  "jus-9": "greed",     // the commons used by few → opened to the many
+  "jus-10": "lust",     // the difference pictured → whose face
+  "jus-11": "lust",     // the cause as image → the quiet giving
+  "jus-12": "lust",     // the posted-but-never-acted → the smallest real act
+  "jus-13": "envy",     // the resented platform → the reach imagined
+  "jus-14": "envy",     // the comparison → the joining
+  "jus-15": "envy",     // the criticised good work → offered strength
+  "jus-16": "wrath",    // the blinding anger → banked into building
+  "jus-17": "wrath",    // the despised public figure → prayed for, studied
+  "jus-18": "wrath",    // the unaddressed old wrong → who still carries it
+  "jus-19": "gluttony", // the defended comfort → who pays for it
+  "jus-20": "gluttony", // the distant true cost → seen
+  "jus-21": "gluttony", // the month of giving up → the street's family breathing
 };
 
 /**

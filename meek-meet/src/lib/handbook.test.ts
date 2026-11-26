@@ -76,8 +76,43 @@ describe("drawHandbookQuestions — the questions are never fixed", () => {
   it("never redraws a question already in play", () => {
     const first = drawHandbookQuestions(TOPIC, 11);
     const second = drawHandbookQuestions(TOPIC, 3, first.map((q) => q.question_id));
-    expect(second).toHaveLength(1);
-    expect(first.map((q) => q.question_id)).not.toContain(second[0].question_id);
+    expect(second).toHaveLength(3);
+    for (const q of second) {
+      expect(first.map((f) => f.question_id)).not.toContain(q.question_id);
+    }
+  });
+
+  it("never deals a member the same question twice while fresh ones remain", () => {
+    // A member who has seen 18 of the 21 draws only from the 3 unseen.
+    const seen = TOPIC.questions.slice(0, 18).map((q) => q.id);
+    const unseen = new Set(TOPIC.questions.slice(18).map((q) => q.id));
+    for (let i = 0; i < 20; i++) {
+      const drawn = drawHandbookQuestions(TOPIC, 3, seen);
+      expect(drawn).toHaveLength(3);
+      for (const q of drawn) expect(unseen.has(q.question_id)).toBe(true);
+    }
+  });
+
+  it("recycles gracefully when the bank is exhausted — never twice within one draw", () => {
+    const all = TOPIC.questions.map((q) => q.id);
+    const drawn = drawHandbookQuestions(TOPIC, 3, all);
+    expect(drawn).toHaveLength(3);
+    const ids = drawn.map((q) => q.question_id);
+    expect(new Set(ids).size).toBe(3);
+    for (const q of drawn) {
+      expect(TOPIC.questions.some((t) => t.id === q.question_id)).toBe(true);
+    }
+  });
+
+  it("recycles only the shortfall when history nearly exhausts the bank", () => {
+    // 20 of 21 seen: the draw takes the one fresh question plus two recycled,
+    // with no duplicate inside the draw.
+    const seen = TOPIC.questions.slice(0, 20).map((q) => q.id);
+    const drawn = drawHandbookQuestions(TOPIC, 3, seen);
+    expect(drawn).toHaveLength(3);
+    const ids = drawn.map((q) => q.question_id);
+    expect(new Set(ids).size).toBe(3);
+    expect(ids).toContain(TOPIC.questions[20].id);
   });
 
   it("varies across members drawing from the same topic", () => {
@@ -104,11 +139,17 @@ describe("drawThresholdQuestions — the question that crosses every day", () =>
     expect(THRESHOLD_TOPIC.questions.some((q) => q.id === drawn[0].question_id)).toBe(true);
   });
 
-  it("never draws a threshold question twice across a member's redraws", () => {
+  it("never draws a threshold question twice while fresh ones remain, then recycles without in-draw repeats", () => {
     const first = drawThresholdQuestions(19);
     const second = drawThresholdQuestions(5, first.map((q) => q.question_id));
-    expect(second).toHaveLength(1);
-    expect(first.map((q) => q.question_id)).not.toContain(second[0].question_id);
+    expect(second).toHaveLength(5);
+    const ids = second.map((q) => q.question_id);
+    expect(new Set(ids).size).toBe(5); // no repeats within the draw
+    // Exactly one fresh question remained; the other four are recycled.
+    const fresh = ids.filter(
+      (id) => !first.map((q) => q.question_id).includes(id)
+    );
+    expect(fresh).toHaveLength(1);
   });
 
   it("never collides with the day-topic banks", () => {

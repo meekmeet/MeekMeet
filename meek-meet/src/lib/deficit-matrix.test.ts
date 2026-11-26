@@ -2,11 +2,11 @@ import { describe, it, expect } from "vitest";
 import { buildDeficitMatrix } from "./deficit-matrix";
 
 describe("buildDeficitMatrix", () => {
-  it("counts the authored banks: 12 per personal deficit, 4 per societal", () => {
+  it("counts the authored banks: 21 per personal deficit, 4 per societal", () => {
     const matrix = buildDeficitMatrix([], []);
     expect(matrix).toHaveLength(12);
     for (const row of matrix) {
-      expect(row.inBank).toBe(row.deficit.kind === "personal" ? 12 : 4);
+      expect(row.inBank).toBe(row.deficit.kind === "personal" ? 21 : 4);
       expect(row.drawn).toBe(0);
       expect(row.answered).toBe(0);
       expect(row.sentBack).toBe(0);
@@ -42,8 +42,8 @@ describe("buildDeficitMatrix", () => {
         {
           responses: [
             { question_id: "hom-1", answer: "The elderly man at number 9." }, // sloth
-            { question_id: "hom-11", answer: "" }, // greed, unanswered
-            { question_id: "wor-12", answer: "Not yet, but closer." }, // greed
+            { question_id: "hom-16", answer: "" }, // greed, unanswered
+            { question_id: "wor-19", answer: "Not yet, but closer." }, // greed
           ],
         },
       ],
@@ -73,7 +73,7 @@ describe("buildDeficitMatrix", () => {
     const matrix = buildDeficitMatrix([], [
       { old_question_id: "hom-1" }, // sloth
       { old_question_id: "hom-2" }, // sloth
-      { old_question_id: "src-3" }, // greed
+      { old_question_id: "src-4" }, // greed
     ]);
     const sloth = matrix.find((r) => r.deficit.id === "sloth")!;
     const greed = matrix.find((r) => r.deficit.id === "greed")!;
@@ -101,10 +101,10 @@ describe("buildDeficitMatrix", () => {
     const handbooks = Array.from({ length: 10 }, () => ({
       responses: [
         { question_id: "hom-1", answer: "someone" }, // sloth answered
-        { question_id: "hom-9", answer: "" }, // wrath unanswered
+        { question_id: "hom-13", answer: "" }, // wrath unanswered
       ],
     }));
-    const swaps = [{ old_question_id: "hom-9" }, { old_question_id: "hom-10" }];
+    const swaps = [{ old_question_id: "hom-13" }, { old_question_id: "hom-14" }];
     const matrix = buildDeficitMatrix(handbooks, swaps);
     const sloth = matrix.find((r) => r.deficit.id === "sloth")!;
     const wrath = matrix.find((r) => r.deficit.id === "wrath")!;

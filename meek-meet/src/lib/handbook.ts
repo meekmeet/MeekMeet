@@ -78,8 +78,30 @@ export function buildHandbookQuestions(
 }
 
 /**
- * Draw a member's questions from the day's topic. `excludeIds` keeps a
- * redraw from ever returning a question already in the member's handbook.
+ * Draw `count` questions from a bank, never repeating anything in
+ * `excludeIds` (the member's history) — unless the bank is exhausted, in
+ * which case the cycle begins again. Even then, no question repeats within
+ * the same draw. This is the never-twice guarantee: with 21 questions per
+ * theme and 3 drawn a week, a member sees seven weeks of fresh questions
+ * before the well ever turns over.
+ */
+function drawWithRecycling(
+  bank: CircleTopic,
+  count: number,
+  excludeIds: string[]
+): CircleTopicQuestion[] {
+  const fresh = drawQuestions(bank, count, { excludeIds });
+  if (fresh.length >= count) return fresh;
+  const refill = drawQuestions(bank, count - fresh.length, {
+    excludeIds: fresh.map((q) => q.id),
+  });
+  return [...fresh, ...refill];
+}
+
+/**
+ * Draw a member's questions from the day's topic. `excludeIds` carries the
+ * member's full question history (every past handbook + redraw) so no
+ * member is ever dealt the same question twice while fresh ones remain.
  */
 export function drawHandbookQuestions(
   topic: CircleTopic,
@@ -87,7 +109,7 @@ export function drawHandbookQuestions(
   excludeIds: string[] = []
 ): HandbookQuestion[] {
   return buildHandbookQuestions(
-    drawQuestions(topic, count, { excludeIds }).map((q: CircleTopicQuestion) => ({
+    drawWithRecycling(topic, count, excludeIds).map((q: CircleTopicQuestion) => ({
       question_id: q.id,
       content: q.text,
     }))

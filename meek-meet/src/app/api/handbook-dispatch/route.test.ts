@@ -118,6 +118,7 @@ describe("GET /api/handbook-dispatch", () => {
     mockSupa.enqueue(QUESTIONS); // meeting_questions
     mockSupa.enqueue([]); // existing handbooks
     mockSupa.enqueue(null); // prior completed count (none)
+    mockSupa.enqueue([]); // question history (never-twice)
     mockSupa.enqueue({ id: "hb-1" }); // insert .single()
     mockSupa.enqueue(null); // emailed_at update
     enqueueLeaderPack();
@@ -155,11 +156,41 @@ describe("GET /api/handbook-dispatch", () => {
     for (const r of insert.responses) expect(r.answer).toBe("");
   });
 
+  it("never deals a member a question they have already been given", async () => {
+    const expectedTopic = getTopicForDate(new Date(MEETING.scheduled_at));
+    // The member has already seen 18 of this topic's 21 questions.
+    const seen = expectedTopic.questions.slice(0, 18);
+    const unseen = new Set(expectedTopic.questions.slice(18).map((q) => q.id));
+
+    mockSupa.enqueue([MEETING]); // meetings
+    mockSupa.enqueue(QUESTIONS); // meeting_questions
+    mockSupa.enqueue([]); // existing handbooks
+    mockSupa.enqueue(null); // prior completed count
+    mockSupa.enqueue([{ responses: seen.map((q) => ({ question_id: q.id, question: q.text, answer: "x" })) }]); // history
+    mockSupa.enqueue({ id: "hb-1" }); // insert .single()
+    mockSupa.enqueue(null); // emailed_at update
+    enqueueLeaderPack();
+
+    const res = await GET(cronRequest("cron"));
+    const body = await res.json();
+    expect(body.sent).toBe(1);
+
+    const insert = mockSupa.inserts[0] as {
+      responses: { question_id: string }[];
+    };
+    const drawnIds = insert.responses.slice(0, HANDBOOK_QUESTION_COUNT).map((r) => r.question_id);
+    expect(drawnIds).toHaveLength(HANDBOOK_QUESTION_COUNT);
+    for (const id of drawnIds) {
+      expect(unseen.has(id), `drawn ${id} was already dealt`).toBe(true);
+    }
+  });
+
   it("emails the member their summons — theme revealed, questions sealed", async () => {
     mockSupa.enqueue([MEETING]);
     mockSupa.enqueue(QUESTIONS);
     mockSupa.enqueue([]);
     mockSupa.enqueue(null);
+    mockSupa.enqueue([]); // question history (never-twice)
     mockSupa.enqueue({ id: "hb-1" });
     mockSupa.enqueue(null);
     enqueueLeaderPack();
@@ -186,6 +217,7 @@ describe("GET /api/handbook-dispatch", () => {
     mockSupa.enqueue(QUESTIONS);
     mockSupa.enqueue([]);
     mockSupa.enqueue(null);
+    mockSupa.enqueue([]); // question history (never-twice)
     mockSupa.enqueue({ id: "hb-1" });
     mockSupa.enqueue(null);
     enqueueLeaderPack();
@@ -227,6 +259,7 @@ describe("GET /api/handbook-dispatch", () => {
     mockSupa.enqueue(QUESTIONS);
     mockSupa.enqueue([]);
     mockSupa.enqueue(null);
+    mockSupa.enqueue([]); // question history (never-twice)
     mockSupa.enqueue({ id: "hb-1" });
     mockSupa.enqueue(null);
 
@@ -246,6 +279,7 @@ describe("GET /api/handbook-dispatch", () => {
     mockSupa.enqueue(QUESTIONS);
     mockSupa.enqueue([]); // existing
     mockSupa.results.push({ data: null, error: null, count: 2 } as never); // prior completed
+    mockSupa.enqueue([]); // question history (never-twice)
     mockSupa.enqueue({ id: "hb-1" });
     mockSupa.enqueue(null);
     enqueueLeaderPack();
@@ -271,6 +305,7 @@ describe("GET /api/handbook-dispatch", () => {
     mockSupa.enqueue([]);
     mockSupa.enqueue([]);
     mockSupa.enqueue(null);
+    mockSupa.enqueue([]); // question history (never-twice)
     mockSupa.enqueue({ id: "hb-1" });
     mockSupa.enqueue(null);
     enqueueLeaderPack();
@@ -288,6 +323,7 @@ describe("GET /api/handbook-dispatch", () => {
     mockSupa.enqueue([]);
     mockSupa.enqueue([]);
     mockSupa.enqueue(null);
+    mockSupa.enqueue([]); // question history (never-twice)
     mockSupa.enqueue({ id: "hb-1" });
     mockSupa.enqueue(null);
     enqueueLeaderPack();
@@ -322,6 +358,7 @@ describe("GET /api/handbook-dispatch", () => {
     mockSupa.enqueue(QUESTIONS);
     mockSupa.enqueue([]);
     mockSupa.enqueue(null); // count
+    mockSupa.enqueue([]); // question history (never-twice)
     mockSupa.enqueue({ id: "hb-1" });
     sendMock.mockRejectedValueOnce(new Error("resend down"));
     enqueueLeaderPack([], []);
@@ -449,6 +486,7 @@ describe("GET /api/handbook-dispatch — the daily reminder", () => {
     mockSupa.enqueue(QUESTIONS); // meeting_questions
     mockSupa.enqueue([]); // existing handbooks
     mockSupa.enqueue(null); // prior completed count
+    mockSupa.enqueue([]); // question history (never-twice)
     mockSupa.enqueue({ id: "hb-1" }); // insert
     mockSupa.enqueue(null); // emailed_at stamp
     enqueueLeaderPack();

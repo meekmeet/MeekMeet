@@ -146,6 +146,7 @@ describe("saveHandbook", () => {
 describe("regenerateHandbookQuestion — the redraw engine", () => {
   it("replaces the question with a different one from the same topic and logs the swap", async () => {
     mockSupa.enqueue(handbookRow()); // load
+    mockSupa.enqueue([]); // question history (never-twice)
     mockSupa.enqueue(null); // update responses
     mockSupa.enqueue(null); // insert swap log
 
@@ -177,6 +178,7 @@ describe("regenerateHandbookQuestion — the redraw engine", () => {
     answered[0].answer = "My answer about home.";
     answered[2].answer = "My answer about the street.";
     mockSupa.enqueue(handbookRow({ responses: answered }));
+    mockSupa.enqueue([]); // question history (never-twice)
     mockSupa.enqueue(null);
     mockSupa.enqueue(null);
 
@@ -202,6 +204,7 @@ describe("regenerateHandbookQuestion — the redraw engine", () => {
         ],
       })
     );
+    mockSupa.enqueue([]); // question history (never-twice)
     mockSupa.enqueue(null); // update
     mockSupa.enqueue(null); // swap log
 
@@ -244,6 +247,7 @@ describe("regenerateHandbookQuestion — the redraw engine", () => {
       answer: "",
     }));
     mockSupa.enqueue(handbookRow({ topic_id: null, responses, meetings: { scheduled_at: scheduledAt } }));
+    mockSupa.enqueue([]); // question history (never-twice)
     mockSupa.enqueue(null);
     mockSupa.enqueue(null);
 
@@ -251,6 +255,40 @@ describe("regenerateHandbookQuestion — the redraw engine", () => {
     expect(fallbackTopic.questions.some((q) => q.id === result.responses[0].question_id)).toBe(true);
     const swap = mockSupa.inserts[0] as { topic_id: string };
     expect(swap.topic_id).toBe(fallbackTopic.id);
+  });
+
+  it("prefers a question the member has never been dealt, across all past handbooks", async () => {
+    // The handbook holds hom-1..3; the member has already seen every other
+    // topic question except hom-21 in past circles.
+    const seenElsewhere = TOPIC.questions
+      .filter((q) => !["hom-1", "hom-2", "hom-3", "hom-21"].includes(q.id))
+      .map((q) => ({ question_id: q.id, question: q.text, answer: "seen" }));
+    mockSupa.enqueue(handbookRow()); // load
+    mockSupa.enqueue([{ responses: seenElsewhere }]); // history
+    mockSupa.enqueue(null); // update
+    mockSupa.enqueue(null); // swap log
+
+    const result = await regenerateHandbookQuestion(MEETING_ID, "hom-2");
+    expect(result.responses[1].question_id).toBe("hom-21");
+  });
+
+  it("falls back to the seen pool only when every fresh question is exhausted", async () => {
+    // Every pool question has been seen before — the cycle turns over, but
+    // the redraw still never returns a question already in THIS handbook.
+    const seenElsewhere = TOPIC.questions
+      .filter((q) => !["hom-1", "hom-2", "hom-3"].includes(q.id))
+      .map((q) => ({ question_id: q.id, question: q.text, answer: "seen" }));
+    mockSupa.enqueue(handbookRow()); // load
+    mockSupa.enqueue([{ responses: seenElsewhere }]); // history
+    mockSupa.enqueue(null); // update
+    mockSupa.enqueue(null); // swap log
+
+    const result = await regenerateHandbookQuestion(MEETING_ID, "hom-2");
+    const replaced = result.responses[1];
+    expect(replaced.question_id).not.toBe("hom-1");
+    expect(replaced.question_id).not.toBe("hom-2");
+    expect(replaced.question_id).not.toBe("hom-3");
+    expect(TOPIC.questions.some((q) => q.id === replaced.question_id)).toBe(true);
   });
 
   it("refuses to redraw once the handbook has sealed", async () => {

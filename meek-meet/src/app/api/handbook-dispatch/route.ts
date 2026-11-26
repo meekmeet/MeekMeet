@@ -5,6 +5,8 @@ import { isAuthorizedCron } from "@/lib/cron-auth";
 import { rateLimit, rateLimitResponse, limiters } from "@/lib/rate-limit";
 import {
   HANDBOOK_LEAD_DAYS,
+  HANDBOOK_QUESTION_COUNT,
+  HANDBOOK_THRESHOLD_COUNT,
   REMINDER_INTERVAL_HOURS,
   buildHandbookEmail,
   buildHandbookQuestions,
@@ -156,9 +158,21 @@ export async function GET(request: NextRequest) {
       const variant = handbookVariant(count ?? 0);
 
       // The member's own draw: the day's theme, then one threshold question
-      // that crosses every day, then any leader-set custom questions.
-      const drawn = drawHandbookQuestions(topic);
-      const threshold = drawThresholdQuestions();
+      // that crosses every day, then any leader-set custom questions. Never
+      // twice: the draw excludes every question this member has ever been
+      // dealt — past handbooks and past redraws alike — so the well only
+      // turns over once a bank is truly exhausted.
+      const { data: pastHandbooks } = await supabase
+        .from("session_handbooks")
+        .select("responses")
+        .eq("profile_id", rsvp.user_id)
+        .order("created_at", { ascending: false })
+        .limit(80);
+      const historyIds = ((pastHandbooks ?? []) as { responses: HandbookQuestion[] | null }[])
+        .flatMap((h) => (h.responses ?? []).map((r) => r.question_id));
+
+      const drawn = drawHandbookQuestions(topic, HANDBOOK_QUESTION_COUNT, historyIds);
+      const threshold = drawThresholdQuestions(HANDBOOK_THRESHOLD_COUNT, historyIds);
       const questions = [...drawn, ...threshold, ...customQuestions];
 
       const { data: inserted, error: insertError } = await supabase

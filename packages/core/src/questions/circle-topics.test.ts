@@ -25,9 +25,9 @@ describe("circle topic bank integrity", () => {
     }
   });
 
-  it("has a deep bank for every topic (at least 10 questions)", () => {
+  it("has a deep bank for every topic (exactly 21 questions)", () => {
     for (const topic of CIRCLE_TOPICS) {
-      expect(topic.questions.length).toBeGreaterThanOrEqual(10);
+      expect(topic.questions).toHaveLength(21);
     }
   });
 
@@ -103,7 +103,7 @@ describe("sydneyWeekday — circle themes follow the local day", () => {
 });
 
 describe("drawQuestions — the questions are never fixed", () => {
-  const topic = getTopicForWeekday(2); // home-and-street, 12 questions
+  const topic = getTopicForWeekday(2); // home-and-street, 21 questions
 
   it("draws the requested number of questions", () => {
     expect(drawQuestions(topic, 3)).toHaveLength(3);
@@ -125,7 +125,7 @@ describe("drawQuestions — the questions are never fixed", () => {
   });
 
   it("excludes questions already in play (the regenerate path)", () => {
-    const first = drawQuestions(topic, 11);
+    const first = drawQuestions(topic, 20);
     const remaining = drawQuestions(topic, 3, {
       excludeIds: first.map((q) => q.id),
     });
