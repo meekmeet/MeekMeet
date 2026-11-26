@@ -210,9 +210,12 @@ export default function LeaderRoomPage({ params }: Props) {
     void Promise.resolve().then(() => load(ids.circleId, ids.meetingId));
   }, [ids, load]);
 
-  // Seed the forms once the room arrives
-  useEffect(() => {
-    if (!data) return;
+  // Seed the forms when (and only when) a fresh room snapshot arrives. Done
+  // during render with a guard, per the React docs on adjusting state when
+  // data changes — not in an effect.
+  const [seededFrom, setSeededFrom] = useState<LeaderRoomData | null>(null);
+  if (data && seededFrom !== data) {
+    setSeededFrom(data);
     setJoinUrl(data.meeting.join_url ?? "");
     setAccessId(data.meeting.access_id ?? "");
     setAccessCode(data.meeting.access_code ?? "");
@@ -223,7 +226,7 @@ export default function LeaderRoomPage({ params }: Props) {
     setCircleMeetingAddress(data.circle.meeting_address ?? "");
     setCircleImage(data.circle.image_url ?? "");
     setCircleRoom(data.circle.zoom_room_url ?? "");
-  }, [data]);
+  }
 
   const handleMark = useCallback(
     (rsvpId: string, attendance: "attended" | "absent" | null) => {

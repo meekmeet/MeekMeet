@@ -190,7 +190,7 @@ export default async function ShepherdDashboardPage() {
                       </h3>
                     </div>
                     <p className="text-sm text-charcoal-muted">
-                      Name, description, image, and the circle's standing room.
+                      Name, description, image, and the circle&rsquo;s standing room.
                     </p>
                   </Link>
                 </div>
