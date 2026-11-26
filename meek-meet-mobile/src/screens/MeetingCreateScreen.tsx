@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Calendar, MapPin, Clock, FileText, Send, CheckCircle2, BookOpen, Video, MapPinned } from 'lucide-react'
+import { ArrowLeft, Calendar, Clock, FileText, Send, CheckCircle2, BookOpen, Video } from 'lucide-react'
 import { hapticSelect, hapticSuccess } from '@/lib/haptics'
 import { useToast } from '@/hooks/useToast'
 import { supabase } from '@/lib/supabase'
@@ -37,7 +37,7 @@ export default function MeetingCreateScreen() {
     durationMinutes: 120,
     notes: '',
     questionsReleaseMode: 'immediate' as ReleaseMode,
-    meetingType: 'in_person' as MeetingType,
+    meetingType: 'digital' as MeetingType,
     joinUrl: '',
   })
 
@@ -54,12 +54,9 @@ export default function MeetingCreateScreen() {
       )
       return
     }
-    if (form.meetingType !== 'digital' && !form.locationName) {
-      showToast('Please fill in location name', 'error')
-      return
-    }
-    if ((form.meetingType === 'digital' || form.meetingType === 'hybrid') && !form.joinUrl.trim()) {
-      showToast('Please add a join link for digital meetings', 'error')
+    // Meek Meet gathers online only.
+    if (form.meetingType !== 'digital') {
+      showToast('Meek Meet gathers online only. Choose a digital meeting.', 'error')
       return
     }
     if (!circleId) {
@@ -164,7 +161,7 @@ export default function MeetingCreateScreen() {
           />
         </motion.div>
 
-        {/* Meeting Type */}
+        {/* Meek Meet gathers online only */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -172,92 +169,31 @@ export default function MeetingCreateScreen() {
         >
           <label className="text-xs font-medium text-charcoal-muted uppercase tracking-wider mb-1.5 block flex items-center gap-1.5">
             <Video className="w-3.5 h-3.5" strokeWidth={1.5} />
-            Meet Type
+            The Room
           </label>
-          <div className="flex gap-2">
-            {[
-              { key: 'in_person', label: 'In Person', icon: MapPinned },
-              { key: 'digital', label: 'Digital', icon: Video },
-              { key: 'hybrid', label: 'Hybrid', icon: MapPin },
-            ].map((t) => {
-              const Icon = t.icon
-              const active = form.meetingType === t.key
-              return (
-                <button
-                  key={t.key}
-                  onClick={() => setForm((f) => ({ ...f, meetingType: t.key as MeetingType }))}
-                  className={`flex-1 py-2.5 rounded-xl text-xs font-medium border transition-all flex items-center justify-center gap-1.5 ${
-                    active
-                      ? 'bg-midnight text-cream border-midnight'
-                      : 'bg-white text-charcoal-muted border-border-soft'
-                  }`}
-                >
-                  <Icon className="w-3.5 h-3.5" strokeWidth={1.5} />
-                  {t.label}
-                </button>
-              )
-            })}
+          <div className="flex items-center gap-2 p-3 rounded-xl bg-sage-pale/50 border border-sage/20 text-xs text-charcoal-light">
+            <Video className="w-3.5 h-3.5 text-sage-dark flex-shrink-0" strokeWidth={1.5} />
+            Online only — the circle meets in a private video room.
           </div>
         </motion.div>
 
-        {/* Location (in_person / hybrid only) */}
-        {(form.meetingType === 'in_person' || form.meetingType === 'hybrid') && (
-          <>
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.08 }}
-            >
-              <label className="text-xs font-medium text-charcoal-muted uppercase tracking-wider mb-1.5 block flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5" strokeWidth={1.5} />
-                Location Name {form.meetingType === 'in_person' ? '*' : ''}
-              </label>
-              <input
-                value={form.locationName}
-                onChange={(e) => setForm((f) => ({ ...f, locationName: e.target.value }))}
-                placeholder="e.g. St. Mary's Community Hall"
-                className="w-full px-4 py-3 bg-white border border-border-soft rounded-xl text-sm text-charcoal placeholder:text-charcoal-muted focus:outline-none focus:ring-1 focus:ring-terracotta"
-              />
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-            >
-              <label className="text-xs font-medium text-charcoal-muted uppercase tracking-wider mb-1.5 block flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5" strokeWidth={1.5} />
-                Address
-              </label>
-              <input
-                value={form.locationAddress}
-                onChange={(e) => setForm((f) => ({ ...f, locationAddress: e.target.value }))}
-                placeholder="123 Main St, Sydney NSW 2000"
-                className="w-full px-4 py-3 bg-white border border-border-soft rounded-xl text-sm text-charcoal placeholder:text-charcoal-muted focus:outline-none focus:ring-1 focus:ring-terracotta"
-              />
-            </motion.div>
-          </>
-        )}
-
-        {/* Join URL (digital / hybrid) */}
-        {(form.meetingType === 'digital' || form.meetingType === 'hybrid') && (
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.08 }}
-          >
-            <label className="text-xs font-medium text-charcoal-muted uppercase tracking-wider mb-1.5 block flex items-center gap-1.5">
-              <Video className="w-3.5 h-3.5" strokeWidth={1.5} />
-              Join Link *
-            </label>
-            <input
-              value={form.joinUrl}
-              onChange={(e) => setForm((f) => ({ ...f, joinUrl: e.target.value }))}
-              placeholder="https://zoom.us/j/... or Google Meet link"
-              className="w-full px-4 py-3 bg-white border border-border-soft rounded-xl text-sm text-charcoal placeholder:text-charcoal-muted focus:outline-none focus:ring-1 focus:ring-terracotta"
-            />
-          </motion.div>
-        )}
+        {/* Join URL */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.08 }}
+        >
+          <label className="text-xs font-medium text-charcoal-muted uppercase tracking-wider mb-1.5 block flex items-center gap-1.5">
+            <Video className="w-3.5 h-3.5" strokeWidth={1.5} />
+            Join Link
+          </label>
+          <input
+            value={form.joinUrl}
+            onChange={(e) => setForm((f) => ({ ...f, joinUrl: e.target.value }))}
+            placeholder="https://zoom.us/j/... or Google Meet link"
+            className="w-full px-4 py-3 bg-white border border-border-soft rounded-xl text-sm text-charcoal placeholder:text-charcoal-muted focus:outline-none focus:ring-1 focus:ring-terracotta"
+          />
+        </motion.div>
 
         {/* Duration */}
         <motion.div

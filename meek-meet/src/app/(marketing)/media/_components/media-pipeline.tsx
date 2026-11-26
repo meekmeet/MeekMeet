@@ -11,7 +11,7 @@ const steps = [
     icon: Moon,
     title: "Reserve Your Seat for the New Moon",
     description:
-      "Circles gather on the new moon, online and in person, and every new moon lands on a different weekday — so the night never repeats itself. Reserve your seat, and the gathering is yours — no reservation, no participation.",
+      "Circles gather on the new moon, online, and every new moon lands on a different weekday — so the night never repeats itself. Reserve your seat, and the gathering is yours — no reservation, no participation.",
     status: "live" as const,
   },
   {

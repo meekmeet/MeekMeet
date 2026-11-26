@@ -241,7 +241,7 @@ function pitchCircle(p: PitchCtx): Pitch {
           "Councils are flooded with petitions — and they know the dirty secret of a petition: most signatories never gave it more than a second's thought. A signature costs nothing, which is exactly what it's worth."
         )}
         ${h.paragraph(
-          "A circle is different. Seven neighbours who show up, in person or online, who answer a real question out loud — that goes in a different pile entirely. When Meek Meet delivers anonymised insights from a circle, decision-makers read them, because they know everyone in that room actually lives there and actually showed up."
+          "A circle is different. Seven neighbours who show up to one online room, who answer a real question out loud — that goes in a different pile entirely. When Meek Meet delivers anonymised insights from a circle, decision-makers read them, because they know everyone in that room actually lives there and actually showed up."
         )}
         ${h.paragraph(
           "Seven of your neighbours have already shown up. The circle meets soon — and a circle of seven is a curiosity. A circle of eight is a voice."

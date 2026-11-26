@@ -25,17 +25,13 @@ interface Meeting {
 
 export default function MeetingsPage({ params }: Props) {
   const [circleId, setCircleId] = useState<string | null>(null);
-  const [circleKind, setCircleKind] = useState<"global" | "local" | null>(null);
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [duration, setDuration] = useState("120");
-  const [locationName, setLocationName] = useState("");
-  const [locationAddress, setLocationAddress] = useState("");
   const [notes, setNotes] = useState("");
-  const [meetingType, setMeetingType] = useState<"in_person" | "digital" | "hybrid">("in_person");
   const [joinUrl, setJoinUrl] = useState("");
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -80,26 +76,11 @@ export default function MeetingsPage({ params }: Props) {
     params.then(({ circleId: id }) => {
       setCircleId(id);
       loadMeetings(id);
-      // Virtual-first circles default new meetings to digital.
-      supabase
-        .from("circles")
-        .select("kind")
-        .eq("id", id)
-        .single()
-        .then(({ data }) => {
-          const kind = data?.kind === "global" ? "global" : "local";
-          setCircleKind(kind);
-          setMeetingType(kind === "global" ? "digital" : "in_person");
-        });
     });
-  }, [params, loadMeetings, supabase]);
+  }, [params, loadMeetings]);
 
   const handleAdd = () => {
     if (!date || !time || !circleId) return;
-    if (meetingType === "digital" && !joinUrl.trim()) {
-      setError("A join URL is required for digital meetings — e.g. a Zoom or Google Meet link.");
-      return;
-    }
     const scheduledAt = new Date(`${date}T${time}`).toISOString();
     setError(null);
 
@@ -109,19 +90,16 @@ export default function MeetingsPage({ params }: Props) {
           circleId,
           scheduledAt,
           parseInt(duration) || 120,
-          locationName,
-          locationAddress,
+          "",
+          "",
           notes,
-          meetingType,
+          "digital",
           joinUrl
         );
         setDate("");
         setTime("");
         setDuration("120");
-        setLocationName("");
-        setLocationAddress("");
         setNotes("");
-        setMeetingType(circleKind === "global" ? "digital" : "in_person");
         setJoinUrl("");
         setShowForm(false);
         await loadMeetings(circleId);
@@ -246,64 +224,29 @@ export default function MeetingsPage({ params }: Props) {
             />
           </div>
 
-          <div>
-            <label className="text-sm text-charcoal-light font-medium mb-1.5 block">Meeting Type</label>
-            <select
-              value={meetingType}
-              onChange={(e) => setMeetingType(e.target.value as Meeting["meeting_type"])}
-              className="w-full px-4 py-3 bg-cream border border-border-soft rounded-xl focus:border-terracotta focus:outline-none text-sm"
-            >
-              <option value="in_person">In Person</option>
-              <option value="digital">Digital</option>
-              <option value="hybrid">Hybrid</option>
-            </select>
+          <div className="flex items-center gap-2 text-sm text-charcoal-light font-medium">
+            <Video className="w-4 h-4 text-sage" strokeWidth={1.5} />
+            Online only — the circle meets in a private video room.
           </div>
 
           <div>
             <label className="text-sm text-charcoal-light font-medium mb-1.5 block flex items-center gap-1.5">
-              <MapPin className="w-3.5 h-3.5" strokeWidth={1.5} />
-              Location Name
+              <Video className="w-3.5 h-3.5" strokeWidth={1.5} />
+              Join URL
             </label>
             <input
-              type="text"
-              value={locationName}
-              onChange={(e) => setLocationName(e.target.value)}
-              placeholder="e.g., St. Marks Community Hall"
+              type="url"
+              value={joinUrl}
+              onChange={(e) => setJoinUrl(e.target.value)}
+              placeholder="https://zoom.us/j/... or https://meet.google.com/..."
               className="w-full px-4 py-3 bg-cream border border-border-soft rounded-xl focus:border-terracotta focus:outline-none text-sm"
             />
+            <p className="text-xs text-charcoal-muted mt-1.5">
+              Paste a Zoom or Google Meet link, or leave blank to use the circle&rsquo;s
+              standing room. It is only shown to members who RSVP &ldquo;Going&rdquo; — never
+              published publicly.
+            </p>
           </div>
-
-          <div>
-            <label className="text-sm text-charcoal-light font-medium mb-1.5 block">Address</label>
-            <input
-              type="text"
-              value={locationAddress}
-              onChange={(e) => setLocationAddress(e.target.value)}
-              placeholder="e.g., 123 Chapel St, Sydney NSW"
-              className="w-full px-4 py-3 bg-cream border border-border-soft rounded-xl focus:border-terracotta focus:outline-none text-sm"
-            />
-          </div>
-
-          {(meetingType === "digital" || meetingType === "hybrid") && (
-            <div>
-              <label className="text-sm text-charcoal-light font-medium mb-1.5 block flex items-center gap-1.5">
-                <Video className="w-3.5 h-3.5" strokeWidth={1.5} />
-                Join URL {meetingType === "digital" && <span className="text-terracotta">*</span>}
-              </label>
-              <input
-                type="url"
-                value={joinUrl}
-                onChange={(e) => setJoinUrl(e.target.value)}
-                placeholder="https://zoom.us/j/... or https://meet.google.com/..."
-                required={meetingType === "digital"}
-                className="w-full px-4 py-3 bg-cream border border-border-soft rounded-xl focus:border-terracotta focus:outline-none text-sm"
-              />
-              <p className="text-xs text-charcoal-muted mt-1.5">
-                Paste a Zoom or Google Meet link. It is only shown to members who
-                RSVP &ldquo;Going&rdquo; — never published publicly.
-              </p>
-            </div>
-          )}
 
           <div>
             <label className="text-sm text-charcoal-light font-medium mb-1.5 block">Notes</label>
@@ -318,7 +261,7 @@ export default function MeetingsPage({ params }: Props) {
 
           <button
             onClick={handleAdd}
-            disabled={isPending || !date || !time || !circleId || (meetingType === "digital" && !joinUrl.trim())}
+            disabled={isPending || !date || !time || !circleId}
             className="w-full py-3 bg-midnight text-cream rounded-full hover:bg-midnight-soft transition-all text-sm font-medium disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}

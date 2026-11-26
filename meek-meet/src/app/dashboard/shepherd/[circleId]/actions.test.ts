@@ -91,22 +91,28 @@ describe("createMeeting", () => {
     ).resolves.toBeUndefined();
   });
 
-  it.each(["in_person", "digital", "hybrid"] as const)(
-    "accepts meeting type %s",
+  it.each(["in_person", "hybrid"] as const)(
+    "rejects %s meetings — Meek Meet gathers online only",
     async (meetingType) => {
       asShepherd();
-      mockSupa.enqueue(null);
       await expect(
         createMeeting(circleId, future, 60, "Hall", "1 St", "Notes", meetingType)
-      ).resolves.toBeUndefined();
+      ).rejects.toThrow(/gathers online only/);
     }
   );
 
-  it("falls back to in_person for invalid meeting types", async () => {
+  it("rejects invalid meeting types (nothing falls back to in-person)", async () => {
+    asShepherd();
+    await expect(
+      createMeeting(circleId, future, 60, "", "", "", "telepathy" as never)
+    ).rejects.toThrow(/gathers online only/);
+  });
+
+  it("accepts digital meetings", async () => {
     asShepherd();
     mockSupa.enqueue(null);
     await expect(
-      createMeeting(circleId, future, 60, "", "", "", "telepathy" as never)
+      createMeeting(circleId, future, 60, "", "", "Notes", "digital")
     ).resolves.toBeUndefined();
   });
 
@@ -128,15 +134,15 @@ describe("createMeeting", () => {
     ).resolves.toBeUndefined();
   });
 
-  it("treats blank join URL as null", async () => {
+  it("treats blank join URL as null (the standing room may hold the door)", async () => {
     asShepherd();
-    mockSupa.enqueue(null);
-    await expect(createMeeting(circleId, future, 60, "", "", "", "in_person", "   ")).resolves.toBeUndefined();
+    mockSupa.enqueue({ zoom_room_url: null }).enqueue(null);
+    await expect(createMeeting(circleId, future, 60, "", "", "", "digital", "   ")).resolves.toBeUndefined();
   });
 
   it("throws when the insert fails", async () => {
     asShepherd();
-    mockSupa.enqueue(null, { message: "insert failed" });
+    mockSupa.enqueue(null).enqueue(null, { message: "insert failed" });
     await expect(createMeeting(circleId, future, 60, "", "", "")).rejects.toThrow("insert failed");
   });
 });
@@ -301,12 +307,12 @@ describe("updateCircle", () => {
     expect(mockSupa.tables.filter((t) => t === "circles")).toHaveLength(0);
   });
 
-  it("does not fall back for in-person meetings", async () => {
-    const future = getNextNewMoon().toISOString();
+  it("always looks for the standing room when no join URL is given (meetings are digital)", async () => {
+    const future2 = getNextNewMoon().toISOString();
     asShepherd();
-    mockSupa.enqueue({ id: "shep-1", role: "lead" }).enqueue(null);
-    await expect(createMeeting(circleId, future, 60, "Hall", "1 St", "")).resolves.toBeUndefined();
-    expect(mockSupa.tables.filter((t) => t === "circles")).toHaveLength(0);
+    mockSupa.enqueue({ zoom_room_url: null }).enqueue(null);
+    await expect(createMeeting(circleId, future2, 60, "", "", "")).resolves.toBeUndefined();
+    expect(mockSupa.tables.filter((t) => t === "circles")).toHaveLength(1);
   });
 
   it("throws when the update fails", async () => {

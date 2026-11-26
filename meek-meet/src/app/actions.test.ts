@@ -25,7 +25,6 @@ const validApplication = {
   wwccNumber: "WCC123456",
   wwccExpiry: "2027-01-01",
   policeCheckDate: "2026-01-01",
-  firstAidExpiry: "",
   emergencyName: "John Doe",
   emergencyPhone: "0401 000 000",
   referenceName: "Pastor Joe",
@@ -103,7 +102,6 @@ describe("submitApplication", () => {
         ...validApplication,
         wwccExpiry: "",
         policeCheckDate: "",
-        firstAidExpiry: "",
       })
     ).resolves.toBe("new-app");
   });

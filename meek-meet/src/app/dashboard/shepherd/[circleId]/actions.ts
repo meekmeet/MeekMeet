@@ -48,10 +48,18 @@ export async function createMeeting(
   locationName: string,
   locationAddress: string,
   notes: string,
-  meetingType: "in_person" | "digital" | "hybrid" = "in_person",
+  meetingType: "in_person" | "digital" | "hybrid" = "digital",
   joinUrl?: string
 ) {
   const { supabase } = await verifyShepherd(circleId);
+
+  // Meek Meet gathers online only. A circle is a video room; there is no
+  // in-person path for new meetings.
+  if (meetingType !== "digital") {
+    throw new Error(
+      "Meek Meet gathers online only. Schedule a digital meeting and give the circle a join link."
+    );
+  }
 
   const safeScheduledAt = assertNonEmptyString(scheduledAt, "Scheduled date", 50);
   const scheduledDate = new Date(safeScheduledAt);
@@ -76,14 +84,12 @@ export async function createMeeting(
   const safeLocationName = assertOptionalString(locationName, "Location name", 200);
   const safeLocationAddress = assertOptionalString(locationAddress, "Location address", 500);
   const safeNotes = assertOptionalString(notes, "Notes", 5000);
-  const safeMeetingType = ["in_person", "digital", "hybrid"].includes(meetingType)
-    ? meetingType
-    : "in_person";
+  const safeMeetingType = "digital" as const;
   let safeJoinUrl = joinUrl && joinUrl.trim() ? assertOptionalString(joinUrl, "Join URL", 500) : null;
 
-  // Digital meetings fall back to the circle's standing room, so a circle
-  // with a configured room always has a door to walk through.
-  if (safeMeetingType === "digital" && !safeJoinUrl) {
+  // Meetings fall back to the circle's standing room, so a circle with a
+  // configured room always has a door to walk through.
+  if (!safeJoinUrl) {
     const { data: circleRoom } = await supabase
       .from("circles")
       .select("zoom_room_url")

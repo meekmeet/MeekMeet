@@ -169,7 +169,7 @@ export function buildAuthorityLetter(input: AuthorityLetterInput): AuthorityLett
         <li>Every response is anonymised before aggregation. No name, email, or identifying detail reaches this report.</li>
         <li>Answers are written individually before each gathering, then read aloud, so what you read is considered, not performed.</li>
         <li>Themes are counted across responses, not drawn from a single voice. A theme appears only where it repeats.</li>
-        <li>Every circle leader is identity verified, holds a current Working With Children Check, a National Police Check, and first aid certification.</li>
+        <li>Every circle leader is identity verified, holds a current Working With Children Check and a National Police Check.</li>
         <li>Gatherings follow the new moon rhythm and a consistent question discipline, so results across months can be compared fairly.</li>
       </ul>
 

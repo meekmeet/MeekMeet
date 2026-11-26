@@ -40,8 +40,8 @@ export default function PrivacyPage() {
             </li>
             <li>
               <strong>Verification documents:</strong> if you apply to become a leader, we
-              collect a government-issued photo ID, Working With Children Check, police check,
-              and first aid documentation to protect community safety. These documents are
+              collect a government-issued photo ID, Working With Children Check, and police
+              check to protect community safety. These documents are
               stored securely, visible only to authorised administrators, and deleted when
               you delete your account (see{" "}
               <a href="/delete-account" className="text-terracotta hover:underline">

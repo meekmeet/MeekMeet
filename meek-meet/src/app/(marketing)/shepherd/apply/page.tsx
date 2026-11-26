@@ -9,7 +9,6 @@ import {
   CheckCircle,
   User,
   Shield,
-  HeartPulse,
   FileCheck,
   Upload,
   AlertCircle,
@@ -32,7 +31,6 @@ interface FormData {
   wwccNumber: string;
   wwccExpiry: string;
   policeCheckDate: string;
-  firstAidExpiry: string;
   emergencyName: string;
   emergencyPhone: string;
   referenceName: string;
@@ -42,7 +40,7 @@ interface FormData {
   understandsChecks: boolean;
 }
 
-type DocumentType = "wwcc" | "police_check" | "first_aid";
+type DocumentType = "wwcc" | "police_check";
 type UploadStatus = "idle" | "uploading" | "success" | "error";
 
 const initialForm: FormData = {
@@ -54,7 +52,6 @@ const initialForm: FormData = {
   wwccNumber: "",
   wwccExpiry: "",
   policeCheckDate: "",
-  firstAidExpiry: "",
   emergencyName: "",
   emergencyPhone: "",
   referenceName: "",
@@ -73,12 +70,10 @@ export default function ShepherdApplyPage() {
   const [files, setFiles] = useState<Record<DocumentType, File | null>>({
     wwcc: null,
     police_check: null,
-    first_aid: null,
   });
   const [uploadStatus, setUploadStatus] = useState<Record<DocumentType, UploadStatus>>({
     wwcc: "idle",
     police_check: "idle",
-    first_aid: "idle",
   });
 
   const allChecked =
@@ -412,38 +407,6 @@ export default function ShepherdApplyPage() {
                   </label>
                 </div>
 
-                <div className="p-4 bg-cream rounded-xl border border-border-soft space-y-3">
-                  <div className="flex items-center gap-2">
-                    <HeartPulse className="w-4 h-4 text-terracotta" strokeWidth={1.5} />
-                    <span className="text-sm text-charcoal font-medium">First Aid Certificate</span>
-                  </div>
-                  <div className="relative">
-                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-charcoal-muted" strokeWidth={1.5} />
-                    <input
-                      type="date"
-                      required
-                      value={formData.firstAidExpiry}
-                      onChange={(e) => update("firstAidExpiry", e.target.value)}
-                      className="w-full pl-10 pr-4 py-2.5 bg-cream border border-border-soft text-charcoal rounded-xl focus:border-wheat focus:outline-none transition-colors text-sm"
-                    />
-                  </div>
-                  <p className="text-xs text-charcoal-muted">HLTAID011 or equivalent. Must be current.</p>
-                  <label className="flex items-center gap-3 cursor-pointer group">
-                    <input
-                      type="file"
-                      accept=".pdf,.jpg,.jpeg,.png,.webp"
-                      className="sr-only"
-                      onChange={(e) => updateFile("first_aid", e.target.files?.[0] ?? null)}
-                    />
-                    <div className="flex items-center gap-2 px-4 py-2 bg-cream border border-border-soft rounded-lg text-charcoal-muted group-hover:text-charcoal group-hover:border-wheat transition-all text-sm">
-                      <Upload className="w-3.5 h-3.5" strokeWidth={1.5} />
-                      {files.first_aid ? files.first_aid.name : "Upload First Aid Certificate"}
-                    </div>
-                    {uploadStatus.first_aid === "uploading" && <Loader2 className="w-4 h-4 animate-spin text-terracotta" />}
-                    {uploadStatus.first_aid === "success" && <CheckCircle className="w-4 h-4 text-sage-dark" />}
-                    {uploadStatus.first_aid === "error" && <span className="text-xs text-terracotta">Failed</span>}
-                  </label>
-                </div>
               </div>
 
               {/* Emergency Contact */}
@@ -540,8 +503,8 @@ export default function ShepherdApplyPage() {
                     className="mt-1 w-4 h-4 rounded border-charcoal/20 bg-cream text-terracotta focus:ring-terracotta/30"
                   />
                   <span className="text-sm text-charcoal-muted group-hover:text-charcoal transition-colors">
-                    I understand that Meek Meet will verify my WWCC, police check, and first aid
-                    certificate directly with issuing authorities. I consent to this verification.
+                    I understand that Meek Meet will verify my WWCC and police
+                    check directly with issuing authorities. I consent to this verification.
                   </span>
                 </label>
               </div>

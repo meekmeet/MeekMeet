@@ -20,7 +20,6 @@ interface ApplicationData {
   wwccNumber: string;
   wwccExpiry: string;
   policeCheckDate: string;
-  firstAidExpiry: string;
   emergencyName: string;
   emergencyPhone: string;
   referenceName: string;
@@ -54,7 +53,6 @@ export async function submitApplication(data: ApplicationData) {
   const wwccNumber = assertNonEmptyString(data.wwccNumber, "WWCC Number", 100);
   const wwccExpiry = assertOptionalDate(data.wwccExpiry, "WWCC Expiry");
   const policeCheckDate = assertOptionalDate(data.policeCheckDate, "Police Check Date");
-  const firstAidExpiry = assertOptionalDate(data.firstAidExpiry, "First Aid Expiry");
   const emergencyName = assertNonEmptyString(data.emergencyName, "Emergency Contact Name", 100);
   const emergencyPhone = assertNonEmptyString(data.emergencyPhone, "Emergency Contact Phone", 50);
   const referenceName = assertNonEmptyString(data.referenceName, "Reference Name", 100);
@@ -73,7 +71,6 @@ export async function submitApplication(data: ApplicationData) {
       wwcc_number: wwccNumber,
       wwcc_expiry: wwccExpiry,
       police_check_date: policeCheckDate,
-      first_aid_expiry: firstAidExpiry,
       emergency_name: emergencyName,
       emergency_phone: emergencyPhone,
       reference_name: referenceName,

@@ -17,9 +17,9 @@ const steps = [
   {
     number: "02",
     icon: MapPin,
-    title: "A Room Is Chosen",
+    title: "A Room Is Opened",
     description:
-      "Online or in person: a park bench, a church hall, a mosque's meeting room, a temple courtyard, a community centre, or a video room whose link only members can open. Somewhere warm and welcoming, where anyone can find a seat and be heard.",
+      "A private video room, its link held for members only — a kitchen table stretched across postcodes. Somewhere warm and welcoming, where anyone can find a seat and be heard.",
     verse: "For where two or three gather in my name, there am I with them. — Matthew 18:20",
   },
   {
@@ -35,7 +35,7 @@ const steps = [
     icon: Users,
     title: "We Gather, Already Prepared",
     description:
-      "Online or in person, the circle sits with what its members have written. No one is asked anything on the spot; each reads aloud what they already thought through, until everyone is heard. And the door keeps one gentle law: no sealed handbook, no entry.",
+      "From loungerooms and kitchens across the country, the circle sits with what its members have written. No one is asked anything on the spot; each reads aloud what they already thought through, until everyone is heard. And the door keeps one gentle law: no sealed handbook, no entry.",
     verse: "The light shines in the darkness, and the darkness has not overcome it. — John 1:5",
   },
   {

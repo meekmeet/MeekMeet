@@ -439,7 +439,7 @@ function MeetingsTab({ circleId, circleName }: { circleId: string; circleName: s
   const [locName, setLocName] = useState('')
   const [locAddr, setLocAddr] = useState('')
   const [notes, setNotes] = useState('')
-  const [meetingType, setMeetingType] = useState<'in_person' | 'digital' | 'hybrid'>('in_person')
+  const [meetingType, setMeetingType] = useState<'in_person' | 'digital' | 'hybrid'>('digital')
   const [joinUrl, setJoinUrl] = useState('')
   const [loading, setLoading] = useState(true)
 
@@ -476,6 +476,11 @@ function MeetingsTab({ circleId, circleName }: { circleId: string; circleName: s
       )
       return
     }
+    // Meek Meet gathers online only.
+    if (meetingType !== 'digital') {
+      window.alert('Meek Meet gathers online only. Choose a digital meeting.')
+      return
+    }
     const scheduled = scheduledDate.toISOString()
     const { data } = await supabase
       .from('meetings')
@@ -487,7 +492,7 @@ function MeetingsTab({ circleId, circleName }: { circleId: string; circleName: s
         location_address: locAddr.trim() || null,
         notes: notes.trim() || null,
         status: 'scheduled',
-        meeting_type: meetingType,
+        meeting_type: 'digital',
         join_url: joinUrl.trim() || null,
       })
       .select()
@@ -502,7 +507,7 @@ function MeetingsTab({ circleId, circleName }: { circleId: string; circleName: s
     setLocName('')
     setLocAddr('')
     setNotes('')
-    setMeetingType('in_person')
+    setMeetingType('digital')
     setJoinUrl('')
     setShowForm(false)
   }
@@ -521,7 +526,7 @@ function MeetingsTab({ circleId, circleName }: { circleId: string; circleName: s
     setLocName(m.location_name ?? '')
     setLocAddr(m.location_address ?? '')
     setNotes(m.notes ?? '')
-    setMeetingType(m.meeting_type ?? 'in_person')
+    setMeetingType('digital')
     setJoinUrl(m.join_url ?? '')
     setEditingId(m.id)
     setShowForm(true)
@@ -539,7 +544,7 @@ function MeetingsTab({ circleId, circleName }: { circleId: string; circleName: s
         location_name: locName.trim() || null,
         location_address: locAddr.trim() || null,
         notes: notes.trim() || null,
-        meeting_type: meetingType,
+        meeting_type: 'digital',
         join_url: joinUrl.trim() || null,
         rescheduled_at: new Date().toISOString(),
       })
@@ -559,7 +564,7 @@ function MeetingsTab({ circleId, circleName }: { circleId: string; circleName: s
       setLocName('')
       setLocAddr('')
       setNotes('')
-      setMeetingType('in_person')
+      setMeetingType('digital')
       setJoinUrl('')
     }
   }
@@ -589,37 +594,13 @@ function MeetingsTab({ circleId, circleName }: { circleId: string; circleName: s
           </div>
           <input type="number" value={duration} onChange={(e) => setDuration(e.target.value)} placeholder="Duration (min)" className="w-full px-3 py-2.5 bg-cream border border-border-soft rounded-xl text-sm" />
 
-          {/* Meeting Type */}
-          <div className="flex gap-2">
-            {[
-              { key: 'in_person', label: 'In Person' },
-              { key: 'digital', label: 'Digital' },
-              { key: 'hybrid', label: 'Hybrid' },
-            ].map((t) => (
-              <button
-                key={t.key}
-                onClick={() => setMeetingType(t.key as typeof meetingType)}
-                className={`flex-1 py-2 rounded-xl text-xs font-medium border transition-all ${
-                  meetingType === t.key
-                    ? 'bg-midnight text-cream border-midnight'
-                    : 'bg-white text-charcoal-muted border-border-soft'
-                }`}
-              >
-                {t.label}
-              </button>
-            ))}
+          {/* Online only */}
+          <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-sage-pale/50 border border-sage/20 text-xs text-charcoal-light">
+            <Video className="w-3.5 h-3.5 text-sage-dark flex-shrink-0" strokeWidth={1.5} />
+            Online only — the circle meets in a private video room.
           </div>
 
-          {(meetingType === 'in_person' || meetingType === 'hybrid') && (
-            <>
-              <input value={locName} onChange={(e) => setLocName(e.target.value)} placeholder="Location name" className="w-full px-3 py-2.5 bg-cream border border-border-soft rounded-xl text-sm" />
-              <input value={locAddr} onChange={(e) => setLocAddr(e.target.value)} placeholder="Address" className="w-full px-3 py-2.5 bg-cream border border-border-soft rounded-xl text-sm" />
-            </>
-          )}
-
-          {(meetingType === 'digital' || meetingType === 'hybrid') && (
-            <input value={joinUrl} onChange={(e) => setJoinUrl(e.target.value)} placeholder="Join link (Zoom, Meet...)" className="w-full px-3 py-2.5 bg-cream border border-border-soft rounded-xl text-sm" />
-          )}
+          <input value={joinUrl} onChange={(e) => setJoinUrl(e.target.value)} placeholder="Join link (Zoom, Meet...)" className="w-full px-3 py-2.5 bg-cream border border-border-soft rounded-xl text-sm" />
 
           <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Notes for attendees..." rows={2} className="w-full px-3 py-2.5 bg-cream border border-border-soft rounded-xl text-sm resize-none" />
           <button onClick={editingId ? saveEdit : add} disabled={!date || !time} className="w-full py-2.5 bg-sage text-cream rounded-xl text-sm font-medium disabled:opacity-50">

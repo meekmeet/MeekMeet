@@ -16,7 +16,6 @@ interface ShepherdApplication {
   wwcc_number?: string | null;
   wwcc_expiry?: string | null;
   police_check_date?: string | null;
-  first_aid_expiry?: string | null;
   emergency_name?: string | null;
   emergency_phone?: string | null;
   reference_name?: string | null;
@@ -182,16 +181,6 @@ export default async function AdminApplicationsPage({
                       {app.police_check_date ? (
                         <span className="text-charcoal">
                           {new Date(app.police_check_date).toLocaleDateString("en-AU")}
-                        </span>
-                      ) : (
-                        <span className="text-charcoal-muted">—</span>
-                      )}
-                    </div>
-                    <div className="text-sm">
-                      <span className="text-xs text-charcoal-muted block">First Aid</span>
-                      {app.first_aid_expiry ? (
-                        <span className="text-charcoal">
-                          Expires {new Date(app.first_aid_expiry).toLocaleDateString("en-AU")}
                         </span>
                       ) : (
                         <span className="text-charcoal-muted">—</span>

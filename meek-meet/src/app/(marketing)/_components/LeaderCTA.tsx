@@ -105,7 +105,7 @@ export default function LeaderCTA() {
               </h3>
               <p className="text-cream/60 leading-relaxed mb-8 max-w-sm mx-auto">
                 The full application takes about 10 minutes. You will need your
-                WWCC, police check, and first aid details ready.
+                WWCC and police check details ready.
               </p>
 
               <div className="space-y-4 mb-8">

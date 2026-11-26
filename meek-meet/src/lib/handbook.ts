@@ -419,7 +419,7 @@ export const LEADER_RUN_SHEET: { title: string; body: string }[] = [
   },
   {
     title: "Open",
-    body: "Welcome everyone as they land. Online, greet each by name as they enter the room; in person, at the door. When all are seated, name the day's theme aloud: every circle gathering on this weekday, across the country, is sitting with the same theme tonight. Then read the opening words, slowly.",
+    body: "Welcome everyone as they land. Greet each by name as they enter the room. When all are seated, name the day's theme aloud: every circle gathering on this weekday, across the country, is sitting with the same theme tonight. Then read the opening words, slowly.",
   },
   {
     title: "Introductions",

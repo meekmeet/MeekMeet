@@ -2,7 +2,7 @@
 
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import { Shield, HeartPulse, FileCheck, UserCheck, AlertTriangle } from "lucide-react";
+import { Shield, FileCheck, UserCheck, AlertTriangle, Video } from "lucide-react";
 import AsciiArt from "./AsciiArt";
 
 const requirements = [
@@ -28,11 +28,11 @@ const requirements = [
     why: "The past matters when people are placing their trust in you.",
   },
   {
-    icon: HeartPulse,
-    title: "First Aid Certified",
+    icon: Video,
+    title: "Private Online Rooms",
     description:
-      "A current first aid certificate (HLTAID011 or equivalent). Emergencies do not wait. Someone at every meet must be prepared.",
-    why: "To love your neighbour includes being ready when they are hurt.",
+      "Every circle meets in a private video room. The join link is never public — only reserved members with a sealed handbook receive the door.",
+    why: "A circle is a sanctuary. Its door is kept.",
   },
 ];
 
@@ -85,8 +85,8 @@ export default function SafetyTrust() {
                 No exceptions. No shortcuts.
               </p>
               <p className="text-charcoal-muted text-sm leading-relaxed">
-                If a leader cannot provide all four verifications, they cannot lead a Meek Meet. 
-                This policy exists because the people who come to us — the quiet, the overlooked, 
+                If a leader cannot provide every verification, they cannot lead a Meek Meet.
+                This policy exists because the people who come to us — the quiet, the overlooked,
                 the vulnerable — deserve nothing less than complete confidence in their leaders.
               </p>
             </div>
