@@ -20,11 +20,12 @@ export default async function DashboardPage() {
     { data: upcomingMeetings },
     { data: nearbyCircles },
     { data: myRsvps },
+    { data: myLeaderships },
   ] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", user.id).single(),
     supabase
       .from("meetings")
-      .select("*, circles(name, slug)")
+      .select("*, circles(id, name, slug)")
       .gte("scheduled_at", new Date().toISOString())
       .eq("is_cancelled", false)
       .order("scheduled_at", { ascending: true })
@@ -41,7 +42,14 @@ export default async function DashboardPage() {
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
       .limit(10),
+    supabase.from("circle_shepherds").select("circle_id").eq("user_id", user.id),
   ]);
+
+  // Circles this user leads — their gatherings link to the leader room,
+  // not only to the member handbook.
+  const ledCircleIds = new Set(
+    (myLeaderships ?? []).map((row) => row.circle_id as string)
+  );
 
   // Extract unique circles from RSVPs
   const myCircles =
@@ -155,6 +163,14 @@ export default async function DashboardPage() {
                   )}
                 </div>
                 <div className="flex flex-col items-stretch sm:items-end gap-2">
+                  {ledCircleIds.has(meeting.circles?.id) && (
+                    <Link
+                      href={`/dashboard/shepherd/${meeting.circles?.id}/meetings/${meeting.id}`}
+                      className="px-5 py-2 bg-midnight text-cream text-sm rounded-full hover:bg-midnight-soft transition-all text-center"
+                    >
+                      Open the leader room
+                    </Link>
+                  )}
                   <Link
                     href={`/circles/${meeting.circles?.slug}`}
                     className="px-5 py-2 bg-midnight text-cream text-sm rounded-full hover:bg-midnight-soft transition-all text-center"

@@ -404,37 +404,46 @@ export function buildHandbookReminderEmail(options: {
 
 /** Read aloud to open the circle, after everyone has arrived. */
 export const LEADER_OPENING_WORDS =
-  "We gather in the open — every faith and none — under one promise: that the meek shall inherit the earth. Nobody here leads and nobody here follows; we are shepherds to each other and to the street outside. What is said in this circle is read from what each of us has already written — no one will be asked to think on the spot, and no one will be interrupted. Let us begin.";
+  "We gather in the open, every faith and none, under one promise: that the meek shall inherit the earth. Nobody here leads and nobody here follows; we are shepherds to each other and to the street outside. What is said in this circle is read from what each of us has already written. No one will be asked to think on the spot, and no one will be interrupted. Let us begin.";
 
 /** Read aloud to close the circle, after the last member has spoken. */
 export const LEADER_CLOSING_WORDS =
-  "What was spoken here is carried now — anonymised, gathered with every other circle, and taken to the people with the power to act. You were heard. Go gently, and keep the street. The circle is closed.";
+  "What was spoken here is carried now: anonymised, gathered with every other circle, and taken to the people with the power to act. You were heard. Go gently, and keep the street. The circle is closed.";
 
-/** The shape of the night, step by step. The leader keeps order, never time. */
+/** The shape of the night, step by step. The leader keeps order, never time.
+ *  The structure is strict; the room inside it is alive. */
 export const LEADER_RUN_SHEET: { title: string; body: string }[] = [
   {
+    title: "Before the night",
+    body: "An hour early, walk the way in yourself: open the link, check the meeting ID and passcode, sit in the empty room for a moment. Then read your roster: who is coming, who is new, whose handbook has not sealed. Newcomers are nervous; know their names before they arrive.",
+  },
+  {
     title: "Open",
-    body: "Welcome everyone. Name the day's theme aloud — every circle gathering on this weekday, across the country, is sitting with the same theme tonight. Then read the opening words.",
+    body: "Welcome everyone as they land. Online, greet each by name as they enter the room; in person, at the door. When all are seated, name the day's theme aloud: every circle gathering on this weekday, across the country, is sitting with the same theme tonight. Then read the opening words, slowly.",
   },
   {
     title: "Introductions",
-    body: "Each member reads the introduction they wrote in their handbook. First-circle members read the fuller introduction; returning members keep it to name, passions, and what has happened since the last circle.",
+    body: "Each member reads the introduction they wrote in their handbook, in the order they sit. First-circle members read the fuller introduction; returning members keep it to name, passions, and what has happened since the last circle. Nobody comments, nobody jumps in. The circle simply receives each name.",
   },
   {
     title: "The questions",
-    body: "Go member by member. Each person reads their answers in order — the topic questions, then the threshold question. No interruptions, no fixing, no advice unless it is asked for. After each reader, let one breath of silence pass. You read last.",
+    body: "Go member by member. Each person reads their own answers in order: the theme questions, then the threshold question. No interruptions, no fixing, no advice unless it is plainly asked for. After each reader, let one breath of silence pass before the next name. You read last.",
+  },
+  {
+    title: "The open floor",
+    body: "When the written questions are spent, the structure loosens, not the order. Call on the circle: what is still burning? If a thread deserves the whole room, draw one more question aloud from the night's theme and put it to them. You decide when the circle has said what it came to say.",
   },
   {
     title: "Keep order, never the clock",
-    body: "The session has no set time. It runs for as long as it takes for everyone to be heard. Your only job is the order of the room — who is speaking, who is next, and that every voice lands.",
+    body: "The session has no set time. It runs for as long as it takes for everyone to be heard. Your only job is the order of the room: who is speaking, who is next, and that every voice lands. If one voice is taking the air, thank it and pass the turn.",
   },
   {
     title: "Close",
-    body: "Invite one sentence from each person — what are you carrying out of this room? Then read the closing words.",
+    body: "Invite one sentence from each person: what are you carrying out of this room? Then read the closing words. Online, wait until each person has left before you do.",
   },
   {
     title: "After",
-    body: "Mark who attended and who was absent in your leader room, and carry anything urgent — a member in crisis, a decision the circle reached — to us. We organise what the circle said and keep you in the loop of the motion it makes.",
+    body: "Mark who attended and who was absent in your leader room, and carry anything urgent to us through the room: a member in crisis, a decision the circle reached. We organise what the circle said and keep you in the loop of the motion it makes.",
   },
 ];
 
@@ -470,6 +479,98 @@ export function buildLeaderPackEmail(options: {
     subject: `${options.circleName} · ${formatMeetingShort(options.scheduledAt)}`,
     html: sanctumShell({
       preheader: "The draw is done. The roster and the words wait inside.",
+      contentHtml: content,
+    }),
+  };
+}
+
+/** One line of the way in, only when the detail exists. */
+function accessLine(label: string, value: string): string {
+  const t = EMAIL_THEMES.sanctum;
+  return `<p style="font-family:${t.bodyFont}; font-size:14.5px; line-height:1.8; color:${t.muted}; margin:0 0 6px;">${label}: <strong style="color:${t.ink}; letter-spacing:0.08em;">${escapeHtml(value)}</strong></p>`;
+}
+
+/**
+ * The way in, sent to every reserved member when the leader sets or changes
+ * the room details. The sanctum rules hold: near-empty, one door, nothing
+ * forwardable that the circle would not say aloud.
+ */
+export function buildJoinDetailsEmail(options: {
+  recipientName: string;
+  circleName: string;
+  scheduledAt: string;
+  meetingType?: string | null;
+  locationName?: string | null;
+  joinUrl: string;
+  accessId?: string | null;
+  accessCode?: string | null;
+  handbookUrl: string;
+}): { subject: string; html: string } {
+  const h = themed(EMAIL_THEMES.sanctum);
+  const name = escapeHtml(options.recipientName || "Friend");
+  const circle = escapeHtml(options.circleName);
+  const when = formatMeetingWhen(options.scheduledAt);
+  const mode = meetingModePhrase(options.meetingType, options.locationName);
+
+  const content = `
+    ${h.eyebrow("The way in")}
+    ${line(`${name},`)}
+    ${line(`${circle} meets ${when}${mode ? ` &middot; ${escapeHtml(mode)}` : ""}.`)}
+    ${line("The way in is set. Keep these details to yourself and the circle: the door opens for the reserved alone.")}
+    ${h.button(options.joinUrl, "OPEN THE ROOM")}
+    ${options.accessId ? accessLine("Meeting ID", options.accessId) : ""}
+    ${options.accessCode ? accessLine("Passcode", options.accessCode) : ""}
+    ${signoff(HANDBOOK_SEAL_RULE)}
+  `;
+
+  return {
+    subject: `${options.circleName} · the way in`,
+    html: sanctumShell({
+      preheader: "The way in is set. Keep it to the circle.",
+      contentHtml: content,
+    }),
+  };
+}
+
+/**
+ * The leader's countdown: one short letter at sixty, thirty, and fifteen
+ * minutes before the circle. Counts, the way in when it exists, the door.
+ */
+export function buildLeaderReminderEmail(options: {
+  leaderName: string;
+  circleName: string;
+  scheduledAt: string;
+  meetingType?: string | null;
+  locationName?: string | null;
+  minutes: 60 | 30 | 15;
+  expectedCount: number;
+  sealedCount: number;
+  joinUrl?: string | null;
+  accessId?: string | null;
+  accessCode?: string | null;
+  leaderRoomUrl: string;
+}): { subject: string; html: string } {
+  const h = themed(EMAIL_THEMES.sanctum);
+  const name = escapeHtml(options.leaderName || "Leader");
+  const circle = escapeHtml(options.circleName);
+  const when = formatMeetingWhen(options.scheduledAt);
+  const mode = meetingModePhrase(options.meetingType, options.locationName);
+
+  const content = `
+    ${h.eyebrow(`The summons &middot; ${options.minutes} minutes`)}
+    ${line(`${name},`)}
+    ${line(`${circle} gathers in ${options.minutes} minutes &middot; ${when}${mode ? ` &middot; ${escapeHtml(mode)}` : ""}.`)}
+    ${line(`${options.expectedCount} reserved &middot; ${options.sealedCount} sealed.`)}
+    ${options.joinUrl ? line("The way in is set. Walk it yourself before they arrive.") : line("The way in is not set yet. Set it now, in the leader room, and it reaches every reserved member in one breath.")}
+    ${h.button(options.leaderRoomUrl, "OPEN THE LEADER ROOM")}
+    ${options.joinUrl ? `${accessLine("Room", options.joinUrl)}${options.accessId ? accessLine("Meeting ID", options.accessId) : ""}${options.accessCode ? accessLine("Passcode", options.accessCode) : ""}` : ""}
+    ${signoff("You hold the order. You read last. It ends when everyone has been heard.")}
+  `;
+
+  return {
+    subject: `${options.circleName} · ${options.minutes} minutes`,
+    html: sanctumShell({
+      preheader: `${options.minutes} minutes. The roster and the way in wait inside.`,
       contentHtml: content,
     }),
   };

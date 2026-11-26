@@ -36,8 +36,6 @@ export default async function CircleManageLayout({ children, params }: Props) {
   if (!shepherdRecord) notFound();
 
   const tabs = [
-    { href: `/dashboard/shepherd/${circleId}/questions`, label: "Questions" },
-    { href: `/dashboard/shepherd/${circleId}/routine`, label: "Routine" },
     { href: `/dashboard/shepherd/${circleId}/meetings`, label: "Meetings" },
     { href: `/dashboard/shepherd/${circleId}/reports`, label: "Reports" },
     { href: `/dashboard/shepherd/${circleId}/settings`, label: "Settings" },

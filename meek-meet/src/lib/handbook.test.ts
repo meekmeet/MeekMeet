@@ -17,6 +17,8 @@ import {
   handbookComplete,
   handbookVariant,
   buildHandbookReminderEmail,
+  buildJoinDetailsEmail,
+  buildLeaderReminderEmail,
   HANDBOOK_LOCK_HOURS_BEFORE,
   HANDBOOK_SEAL_RULE,
   handbookSealsAt,
@@ -230,6 +232,22 @@ describe("the leader run sheet", () => {
     expect(after?.body).toContain("attended");
     expect(after?.body).toContain("absent");
   });
+
+  it("opens with preparation: walk the way in an hour early, know the names", () => {
+    const before = LEADER_RUN_SHEET[0];
+    expect(before.title.toLowerCase()).toContain("before");
+    expect(before.body).toContain("walk the way in");
+    expect(before.body).toContain("An hour early");
+  });
+
+  it("loosens into the open floor after the written questions, without losing the order", () => {
+    const floor = LEADER_RUN_SHEET.find((s) =>
+      s.title.toLowerCase().includes("open floor")
+    );
+    expect(floor?.body).toContain("Call on the circle");
+    expect(floor?.body).toContain("draw one more question aloud");
+    expect(floor?.body).toContain("structure loosens, not the order");
+  });
 });
 
 describe("buildHandbookEmail — the summons", () => {
@@ -409,6 +427,120 @@ describe("buildHandbookReminderEmail — the summons, returned", () => {
     });
     expect(html).not.toContain("<script>alert(1)</script>");
     expect(html).not.toContain("<img src=x>");
+  });
+});
+
+describe("buildJoinDetailsEmail — the way in", () => {
+  const base = {
+    recipientName: "Miriam",
+    circleName: "Gosford Circle",
+    scheduledAt: "2026-12-01T09:00:00.000Z",
+    meetingType: "digital" as const,
+    locationName: null,
+    joinUrl: "https://zoom.us/j/85201496332",
+    handbookUrl: "https://meekmeet.com/dashboard/handbook/abc",
+  };
+
+  it("carries the link, the meeting ID, and the passcode", () => {
+    const { html, subject } = buildJoinDetailsEmail({
+      ...base,
+      accessId: "852 0149 6332",
+      accessCode: "MEEK",
+    });
+    expect(subject).toContain("the way in");
+    expect(html).toContain("Miriam");
+    expect(html).toContain("Gosford Circle meets Tuesday 1 December");
+    expect(html).toContain("https://zoom.us/j/85201496332");
+    expect(html).toContain("852 0149 6332");
+    expect(html).toContain("MEEK");
+    expect(html).toContain("OPEN THE ROOM");
+  });
+
+  it("omits the ID and passcode lines when the leader did not set them", () => {
+    const { html } = buildJoinDetailsEmail(base);
+    expect(html).toContain("OPEN THE ROOM");
+    expect(html).not.toContain("Meeting ID");
+    expect(html).not.toContain("Passcode");
+  });
+
+  it("closes with the seal law and carries no theme or questions", () => {
+    const { html } = buildJoinDetailsEmail(base);
+    expect(html).toContain("seals two hours before the circle");
+    for (const q of TOPIC.questions) {
+      expect(html).not.toContain(q.text.slice(0, 30));
+    }
+  });
+
+  it("wears the sanctum letter and contains no em dashes", () => {
+    const { html, subject } = buildJoinDetailsEmail({
+      ...base,
+      accessId: "852 0149 6332",
+      accessCode: "MEEK",
+    });
+    expect(html).toContain(SANCTUM_SKY_BG_URL);
+    expect(html).toContain(SANCTUM_MOON_IMG_URL);
+    expect(html).not.toContain("—");
+    expect(html).not.toContain("&mdash;");
+    expect(subject).not.toContain("—");
+  });
+
+  it("escapes HTML in member-controlled fields", () => {
+    const { html } = buildJoinDetailsEmail({
+      ...base,
+      recipientName: "<script>alert(1)</script>",
+      circleName: "<img src=x>",
+      accessId: "<b>bad</b>",
+    });
+    expect(html).not.toContain("<script>alert(1)</script>");
+    expect(html).not.toContain("<img src=x>");
+    expect(html).not.toContain("<b>bad</b>");
+  });
+});
+
+describe("buildLeaderReminderEmail — the countdown", () => {
+  const base = {
+    leaderName: "Miriam",
+    circleName: "Gosford Circle",
+    scheduledAt: "2026-12-01T09:00:00.000Z",
+    meetingType: "digital" as const,
+    locationName: null,
+    expectedCount: 5,
+    sealedCount: 3,
+    joinUrl: "https://zoom.us/j/room",
+    accessId: "852 0149 6332",
+    accessCode: "MEEK",
+    leaderRoomUrl: "https://meekmeet.com/dashboard/shepherd/c/m",
+  };
+
+  it("names the countdown, the counts, and the way in", () => {
+    const { html, subject } = buildLeaderReminderEmail({ ...base, minutes: 30 });
+    expect(subject).toContain("30 minutes");
+    expect(html).toContain("gathers in 30 minutes");
+    expect(html).toContain("5 reserved");
+    expect(html).toContain("3 sealed");
+    expect(html).toContain("https://zoom.us/j/room");
+    expect(html).toContain("852 0149 6332");
+    expect(html).toContain("OPEN THE LEADER ROOM");
+  });
+
+  it("nags honestly when the way in is not set yet", () => {
+    const { html } = buildLeaderReminderEmail({
+      ...base,
+      minutes: 15,
+      joinUrl: null,
+      accessId: null,
+      accessCode: null,
+    });
+    expect(html).toContain("The way in is not set yet");
+    expect(html).not.toContain("852 0149 6332");
+  });
+
+  it("carries the charge and no em dashes", () => {
+    const { html, subject } = buildLeaderReminderEmail({ ...base, minutes: 60 });
+    expect(html).toContain("You hold the order. You read last.");
+    expect(html).not.toContain("—");
+    expect(html).not.toContain("&mdash;");
+    expect(subject).not.toContain("—");
   });
 });
 

@@ -23,6 +23,9 @@ export interface HandbookData {
     circle_name: string;
     /** Personal join link — present only for digital/hybrid meetings. */
     join_url: string | null;
+    /** Meeting ID and passcode for the online room, when the leader set them. */
+    access_id: string | null;
+    access_code: string | null;
   };
 }
 
@@ -38,7 +41,7 @@ export async function getMyHandbook(meetingId: string): Promise<HandbookData> {
   const { data: row, error } = await supabase
     .from("session_handbooks")
     .select(
-      "id, meeting_id, variant, topic_id, responses, intentions, completed_at, meetings(scheduled_at, location_name, meeting_type, join_url, circles(name))"
+      "id, meeting_id, variant, topic_id, responses, intentions, completed_at, meetings(scheduled_at, location_name, meeting_type, join_url, access_id, access_code, circles(name))"
     )
     .eq("meeting_id", meetingId)
     .eq("profile_id", user.id)
@@ -53,10 +56,10 @@ export async function getMyHandbook(meetingId: string): Promise<HandbookData> {
     : (circleRel as { name: string | null } | null)?.name;
 
   const meetingType = meeting?.meeting_type as string | null;
-  const joinUrl =
-    meetingType === "digital" || meetingType === "hybrid"
-      ? ((meeting?.join_url as string | null) ?? null)
-      : null;
+  const isOnline = meetingType === "digital" || meetingType === "hybrid";
+  const joinUrl = isOnline
+    ? ((meeting?.join_url as string | null) ?? null)
+    : null;
 
   return {
     id: row.id as string,
@@ -71,6 +74,12 @@ export async function getMyHandbook(meetingId: string): Promise<HandbookData> {
       location_name: (meeting?.location_name as string | null) ?? null,
       circle_name: circleName ?? "Your circle",
       join_url: joinUrl,
+      access_id: isOnline
+        ? ((meeting?.access_id as string | null) ?? null)
+        : null,
+      access_code: isOnline
+        ? ((meeting?.access_code as string | null) ?? null)
+        : null,
     },
   };
 }

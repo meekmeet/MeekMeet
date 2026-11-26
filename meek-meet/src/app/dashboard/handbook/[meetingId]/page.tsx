@@ -179,6 +179,26 @@ export default function HandbookPage() {
             <Video className="w-4 h-4" strokeWidth={1.5} />
             The way in — join the circle online
           </a>
+          {(handbook.meeting.access_id || handbook.meeting.access_code) && (
+            <div className="mt-3 space-y-0.5">
+              {handbook.meeting.access_id && (
+                <p className="text-xs text-charcoal-muted">
+                  Meeting ID:{" "}
+                  <span className="font-medium text-charcoal tracking-wider">
+                    {handbook.meeting.access_id}
+                  </span>
+                </p>
+              )}
+              {handbook.meeting.access_code && (
+                <p className="text-xs text-charcoal-muted">
+                  Passcode:{" "}
+                  <span className="font-medium text-charcoal tracking-wider">
+                    {handbook.meeting.access_code}
+                  </span>
+                </p>
+              )}
+            </div>
+          )}
         </div>
       )}
       {handbook.meeting.join_url && !admitted && !sealed && (

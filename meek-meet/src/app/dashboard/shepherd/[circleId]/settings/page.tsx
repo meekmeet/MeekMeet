@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { Loader2, CheckCircle, MapPin } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 import { updateCircle } from "../actions";
 
 export default function SettingsPage() {
@@ -16,9 +17,33 @@ export default function SettingsPage() {
   const [meetingAddress, setMeetingAddress] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [zoomRoomUrl, setZoomRoomUrl] = useState("");
+  const [loading, setLoading] = useState(true);
   const [isPending, startTransition] = useTransition();
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Load the circle's current values — the form edits, never blanks.
+  useEffect(() => {
+    if (!circleId) return;
+    const supabase = createClient();
+    supabase
+      .from("circles")
+      .select("name, description, location, meeting_place, meeting_address, image_url, zoom_room_url")
+      .eq("id", circleId)
+      .single()
+      .then(({ data }) => {
+        if (data) {
+          setName((data.name as string) ?? "");
+          setDescription((data.description as string) ?? "");
+          setLocation((data.location as string) ?? "");
+          setMeetingPlace((data.meeting_place as string) ?? "");
+          setMeetingAddress((data.meeting_address as string) ?? "");
+          setImageUrl((data.image_url as string) ?? "");
+          setZoomRoomUrl((data.zoom_room_url as string) ?? "");
+        }
+        setLoading(false);
+      });
+  }, [circleId]);
 
   const handleSave = () => {
     if (!circleId) return;
@@ -47,6 +72,12 @@ export default function SettingsPage() {
     <div className="max-w-2xl">
       <h2 className="font-serif text-2xl text-charcoal mb-6">Circle Settings</h2>
 
+      {loading ? (
+        <div className="flex items-center gap-3 text-charcoal-muted">
+          <Loader2 className="w-5 h-5 animate-spin" />
+          Loading your circle…
+        </div>
+      ) : (
       <div className="bg-cream-warm rounded-2xl border border-border-soft p-8 space-y-6">
         {error && (
           <div className="p-3 bg-terracotta-pale rounded-xl text-sm text-terracotta">
@@ -167,6 +198,7 @@ export default function SettingsPage() {
           )}
         </button>
       </div>
+      )}
     </div>
   );
 }

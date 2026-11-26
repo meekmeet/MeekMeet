@@ -38,9 +38,10 @@ Meek Meet is a faith-rooted, interfaith community organizing platform. The core 
 - **Members may redraw any drawn question** ("Draw another" on `/dashboard/handbook/[meetingId]` → `regenerateHandbookQuestion`): same theme, new random question; every redraw is logged to `handbook_question_swaps` — the self-assortment dataset (which questions people answer vs skip). Leader-set custom questions cannot be redrawn.
 - **The form is variable**: `variant = 'first_circle'` (warmer intro, read aloud) or `'returning'` (modest check-in: name, passions, what happened since the last circle). Logic in `src/lib/handbook.ts`.
 - **The leader pack**: the same cron emails each circle leader their summons (also sanctum): the theme, the roster with first-circle markers, and the charge — the full run sheet (`LEADER_RUN_SHEET`) and the liturgies (`LEADER_OPENING_WORDS`/`LEADER_CLOSING_WORDS`) live only in the leader room. **Sessions have no set time — they run until everyone is heard.**
-- **The leader room** (`/dashboard/shepherd/[circleId]/meetings/[meetingId]`): run sheet + roster; leaders read each member's completed handbook (RLS) and mark attendance via the `mark_attendance` RPC (the ONLY write path for `rsvps.attendance` — guarded like role changes).
+- **The leader room** (`/dashboard/shepherd/[circleId]/meetings/[meetingId]`): the night's whole kit — the theme, the open-floor question drawer (a question drawn aloud from the night's bank), the full run sheet and liturgies, the leader's training (`src/lib/leader-guide.ts`, nine chapters), the roster (attendance via the `mark_attendance` RPC — the ONLY write path for `rsvps.attendance`), counts (reserved/sealed/first-circle), and **the way in**: the leader sets `join_url` + `access_id`/`access_code` (migration 000043) and one click sends them to every reserved member (`buildJoinDetailsEmail`, sanctum). Circle editing (name/description/image/standing room) lives in a panel in the room and in Settings. **Leaders never edit the questions** — the structure belongs to the platform, the room to the leader; the Questions and Routine tabs were removed with the topic engine.
+- **The leader's countdown**: `/api/leader-reminders` (external scheduler every 15 min — Vercel Hobby cron is daily-only; see CRON_SETUP.md) emails each leader at 60, 30, and 15 minutes before the circle: the counts, the way in when set (nagging honestly when not), the door. Idempotent via the `meeting_leader_reminders` ledger — a (meeting, leader, step) row is claimed before each send and rolled back on failure.
 - **The seal — no sealed handbook, no entry**: the handbook seals `HANDBOOK_LOCK_HOURS_BEFORE` (2) hours before the circle (`handbookSealsAt`/`isHandbookSealed`/`HANDBOOK_SEAL_RULE` in `src/lib/handbook.ts`). Enforced three ways: the join link renders ONLY for a completed handbook (handbook page AND the public circle page's `joinLinks`/`handbookPendingMeetingIds`), `saveHandbook`/`regenerateHandbookQuestion` refuse writes after the seal, and the leader room roster names who the door closed for ("handbook unsealed — the door closed for them") with a sealed-count in the header. The summons and reminder both declare the rule in one line. Members reach the handbook in-app via the dashboard's upcoming-gatherings chips ("Complete your handbook" / "Handbook sealed") — the email is never the only door.
-- **Online circles**: digital/hybrid meetings carry `join_url` into the handbook email, the handbook page, and the leader pack — always gated to reserved members, never public.
+- **Online circles**: digital/hybrid meetings carry `join_url` plus `access_id`/`access_code` (meeting ID and passcode, set by the leader) into the handbook page and the join-details email — always gated to reserved members with sealed handbooks, never public.
 - **The PDF handbook**: `/dashboard/handbook/[meetingId]/pdf` renders the member's own Q&A (in order) + intentions via pdf-lib (`src/lib/handbook-pdf.ts`; standard fonts — sanitize member text, it throws on non-WinAnsi chars).
 - Sample renderer: `node meek-meet/scripts/send-sample-handbook.mjs [email]` (jiti; renders the real templates — both member variants + the leader pack).
 - Demo walkthrough: `node meek-meet/scripts/seed-demo-circle.mjs [email]` (idempotently seeds a demonstration circle + digital meeting + RSVP + drawn handbook for the given member and prints the handbook / leader-room URLs — how to eyeball both rooms end to end).
@@ -74,7 +75,7 @@ src/
                           # src/app root level, they would render chrome-less
     dashboard/            # authenticated member area
       admin/              # admin-only: applications, verification, authorities, members, marketing
-      shepherd/[circleId]/# shepherd area: meetings, questions, routine, reports, settings
+      shepherd/[circleId]/# shepherd area: meetings, reports, settings
     api/                  # route handlers (cron + public insights + upload + circle-organizer)
     auth/callback/        # OAuth/magic-link callback
     login/ privacy/ terms/
@@ -99,7 +100,7 @@ src/
     setup.ts              # vitest setup (cleanup, env reset)
   proxy.ts                # session refresh + /dashboard guard (Next 16 proxy convention)
 supabase/
-  migrations/             # ordered SQL; 000025 = production hardening, 000029 = virtual-first circles, 000031 = dual admin invites (run in order)
+  migrations/             # ordered SQL; 000025 = production hardening, 000029 = virtual-first circles, 000031 = dual admin invites, 000043 = leader room (meeting access details + reminder ledger) (run in order)
   functions/              # 5 edge functions (Deno): synthesize-*, generate-*
   config.toml             # verify_jwt per function
 ```

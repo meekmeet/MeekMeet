@@ -2,9 +2,17 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { MockSupabaseClient, makeAuthUser } from "@/test/mock-supabase";
 
 vi.mock("@/lib/supabase/server", () => ({ createClient: vi.fn() }));
+vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
+vi.mock("@/lib/resend", () => ({ getResend: vi.fn() }));
 
 import { createClient } from "@/lib/supabase/server";
-import { getLeaderRoomData, markRsvpAttendance } from "./actions";
+import { getResend } from "@/lib/resend";
+import {
+  getLeaderRoomData,
+  markRsvpAttendance,
+  updateMeetingAccess,
+  notifyMembersOfJoinDetails,
+} from "./actions";
 
 const mockSupa = new MockSupabaseClient();
 const LEADER = makeAuthUser({ id: "22222222-2222-2222-2222-222222222222" });
@@ -21,9 +29,23 @@ const MEETING = {
   location_address: "123 Chapel St",
   meeting_type: "hybrid",
   join_url: "https://zoom.us/j/room",
+  access_id: null,
+  access_code: null,
   notes: "Bring the printed run sheet.",
   circles: { name: "Gosford Circle" },
 };
+
+const CIRCLE = {
+  name: "Gosford Circle",
+  description: "A circle for the Gosford street.",
+  location: "Gosford NSW",
+  meeting_place: "Gosford Library",
+  meeting_address: "123 Chapel St",
+  image_url: null,
+  zoom_room_url: "https://zoom.us/j/standing",
+};
+
+const sendMock = vi.fn().mockResolvedValue({ id: "email-1" });
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -33,6 +55,8 @@ beforeEach(() => {
   mockSupa.inserts.length = 0;
   mockSupa.asUser(LEADER);
   vi.mocked(createClient).mockResolvedValue(mockSupa as never);
+  sendMock.mockResolvedValue({ id: "email-1" });
+  vi.mocked(getResend).mockReturnValue({ emails: { send: sendMock } } as never);
 });
 
 describe("getLeaderRoomData", () => {
@@ -51,10 +75,11 @@ describe("getLeaderRoomData", () => {
     );
   });
 
-  it("lets a circle leader in and shapes the roster with handbooks", async () => {
+  it("lets a circle leader in: meeting, circle, roster with handbooks, counts", async () => {
     mockSupa.enqueue({ circle_id: CIRCLE_ID }); // circle_shepherds row
     mockSupa.enqueue({ role: "member" }); // profile (not admin — leader row suffices)
     mockSupa.enqueue(MEETING); // meeting
+    mockSupa.enqueue(CIRCLE); // circle
     mockSupa.enqueue([
       {
         id: RSVP_ID,
@@ -85,6 +110,9 @@ describe("getLeaderRoomData", () => {
 
     expect(room.meeting.circle_name).toBe("Gosford Circle");
     expect(room.meeting.join_url).toBe("https://zoom.us/j/room");
+    expect(room.meeting.access_id).toBeNull();
+    expect(room.circle.location).toBe("Gosford NSW");
+    expect(room.circle.zoom_room_url).toBe("https://zoom.us/j/standing");
     expect(room.roster).toHaveLength(2);
 
     const miriam = room.roster[0];
@@ -98,12 +126,37 @@ describe("getLeaderRoomData", () => {
     const sam = room.roster[1];
     expect(sam.attendance).toBe("attended");
     expect(sam.handbook).toBeNull(); // no handbook yet
+
+    expect(room.counts).toEqual({
+      reserved: 1,
+      maybe: 1,
+      sealed: 1,
+      firstCircle: 1,
+    });
+  });
+
+  it("carries the access details when the leader set them", async () => {
+    mockSupa.enqueue({ circle_id: CIRCLE_ID });
+    mockSupa.enqueue({ role: "member" });
+    mockSupa.enqueue({
+      ...MEETING,
+      access_id: "852 0149 6332",
+      access_code: "MEEK",
+    });
+    mockSupa.enqueue(CIRCLE);
+    mockSupa.enqueue([]);
+    mockSupa.enqueue([]);
+
+    const room = await getLeaderRoomData(CIRCLE_ID, MEETING_ID);
+    expect(room.meeting.access_id).toBe("852 0149 6332");
+    expect(room.meeting.access_code).toBe("MEEK");
   });
 
   it("lets an admin in even without a leader row", async () => {
     mockSupa.enqueue(null); // no circle_shepherds row
     mockSupa.enqueue({ role: "admin" }); // profile
     mockSupa.enqueue(MEETING);
+    mockSupa.enqueue(CIRCLE);
     mockSupa.enqueue([]); // rsvps
     mockSupa.enqueue([]); // handbooks
 
@@ -165,5 +218,115 @@ describe("markRsvpAttendance", () => {
     await expect(markRsvpAttendance(RSVP_ID, "attended")).rejects.toThrow(
       "Only the circle leader"
     );
+  });
+});
+
+describe("updateMeetingAccess", () => {
+  const ACCESS = { joinUrl: "https://zoom.us/j/new", accessId: "123 456", accessCode: "MEEK" };
+
+  function asMeetingLeader() {
+    mockSupa.enqueue({ id: MEETING_ID, circle_id: CIRCLE_ID }); // meeting lookup
+    mockSupa.enqueue({ circle_id: CIRCLE_ID }); // leadership check
+  }
+
+  it("updates join link, meeting ID, and passcode for the circle's leader", async () => {
+    asMeetingLeader();
+    await updateMeetingAccess(MEETING_ID, ACCESS);
+    expect(mockSupa.updates).toContainEqual({
+      join_url: ACCESS.joinUrl,
+      access_id: ACCESS.accessId,
+      access_code: ACCESS.accessCode,
+    });
+  });
+
+  it("blank fields clear the way in", async () => {
+    asMeetingLeader();
+    await updateMeetingAccess(MEETING_ID, { joinUrl: "", accessId: "", accessCode: "  " });
+    expect(mockSupa.updates).toContainEqual({
+      join_url: null,
+      access_id: null,
+      access_code: null,
+    });
+  });
+
+  it("rejects malformed join URLs", async () => {
+    asMeetingLeader();
+    await expect(
+      updateMeetingAccess(MEETING_ID, { ...ACCESS, joinUrl: "not a url" })
+    ).rejects.toThrow("Join URL must be a valid URL");
+  });
+
+  it("enforces field length limits", async () => {
+    asMeetingLeader();
+    await expect(
+      updateMeetingAccess(MEETING_ID, { ...ACCESS, accessId: "9".repeat(101) })
+    ).rejects.toThrow("Meeting ID must be at most 100 characters");
+  });
+
+  it("refuses non-leaders", async () => {
+    mockSupa.enqueue({ id: MEETING_ID, circle_id: CIRCLE_ID });
+    mockSupa.enqueue(null); // no leadership row
+    await expect(updateMeetingAccess(MEETING_ID, ACCESS)).rejects.toThrow(
+      "Only the circle's leader can change the way in"
+    );
+  });
+
+  it("rejects invalid meeting IDs before any query", async () => {
+    await expect(updateMeetingAccess("nope", ACCESS)).rejects.toThrow(
+      "Invalid meeting ID"
+    );
+  });
+});
+
+describe("notifyMembersOfJoinDetails", () => {
+  const MEETING_WITH_ACCESS = {
+    ...MEETING,
+    access_id: "852 0149 6332",
+    access_code: "MEEK",
+  };
+
+  function enqueueLeaderAndMeeting() {
+    mockSupa.enqueue({ id: MEETING_ID, circle_id: CIRCLE_ID }); // meeting lookup
+    mockSupa.enqueue({ circle_id: CIRCLE_ID }); // leadership check
+    mockSupa.enqueue(MEETING_WITH_ACCESS); // full meeting row
+  }
+
+  it("sends the way in to every reserved member", async () => {
+    enqueueLeaderAndMeeting();
+    mockSupa.enqueue([
+      { user_id: "u1", profiles: { email: "miriam@example.com", full_name: "Miriam" } },
+      { user_id: "u2", profiles: { email: "sam@example.com", full_name: "Sam" } },
+      { user_id: "u3", profiles: { email: null, full_name: "No Email" } },
+    ]); // going rsvps
+
+    const result = await notifyMembersOfJoinDetails(MEETING_ID);
+
+    expect(result.notified).toBe(2);
+    expect(sendMock).toHaveBeenCalledTimes(2);
+    const firstCall = sendMock.mock.calls[0][0];
+    expect(firstCall.to).toBe("miriam@example.com");
+    expect(firstCall.html).toContain("https://zoom.us/j/room");
+    expect(firstCall.html).toContain("852 0149 6332");
+    expect(firstCall.html).toContain("MEEK");
+    expect(firstCall.html).toContain("Gosford Circle");
+    expect(firstCall.subject).toContain("the way in");
+  });
+
+  it("refuses to send when the join link is not set", async () => {
+    enqueueLeaderAndMeeting();
+    mockSupa.results[2] = { data: { ...MEETING_WITH_ACCESS, join_url: null }, error: null };
+    await expect(notifyMembersOfJoinDetails(MEETING_ID)).rejects.toThrow(
+      "Set the way in first"
+    );
+    expect(sendMock).not.toHaveBeenCalled();
+  });
+
+  it("refuses non-leaders before sending anything", async () => {
+    mockSupa.enqueue({ id: MEETING_ID, circle_id: CIRCLE_ID });
+    mockSupa.enqueue(null); // no leadership row
+    await expect(notifyMembersOfJoinDetails(MEETING_ID)).rejects.toThrow(
+      "Only the circle's leader"
+    );
+    expect(sendMock).not.toHaveBeenCalled();
   });
 });
