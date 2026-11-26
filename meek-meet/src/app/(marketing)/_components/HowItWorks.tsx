@@ -11,15 +11,15 @@ const steps = [
     icon: UserPlus,
     title: "A Leader Steps Forward",
     description:
-      "Someone in a suburb, town, or city feels the call. They register their heart for their community and become the leader of a local Meek Meet — first among shepherds, never above them.",
+      "Someone in a suburb, town, or city feels the call. They register their heart for their community and step forward as a leader — first among shepherds, never above them. Some lead a circle of neighbours; some hold a virtual room open to anyone, anywhere.",
     verse: "Whoever wants to become great among you must be your servant. — Matthew 20:26",
   },
   {
     number: "02",
     icon: MapPin,
-    title: "A Place is Chosen",
+    title: "A Room Is Chosen",
     description:
-      "A park bench, a church hall, a mosque's meeting room, a temple courtyard, a community centre — somewhere warm and welcoming where anyone can find a seat and be heard.",
+      "Online or in person: a park bench, a church hall, a mosque's meeting room, a temple courtyard, a community centre, or a video room whose link only members can open. Somewhere warm and welcoming, where anyone can find a seat and be heard.",
     verse: "For where two or three gather in my name, there am I with them. — Matthew 18:20",
   },
   {
@@ -35,7 +35,7 @@ const steps = [
     icon: Users,
     title: "We Gather, Already Prepared",
     description:
-      "Online or in person, the circle sits with what its members have written. No one is asked anything on the spot; each reads aloud what they already thought through, until everyone is heard.",
+      "Online or in person, the circle sits with what its members have written. No one is asked anything on the spot; each reads aloud what they already thought through, until everyone is heard. And the door keeps one gentle law: no sealed handbook, no entry.",
     verse: "The light shines in the darkness, and the darkness has not overcome it. — John 1:5",
   },
   {
@@ -43,7 +43,7 @@ const steps = [
     icon: BarChart3,
     title: "Voices Become Numbers",
     description:
-      "Answers given in the handbooks join the community's growing body of knowledge. Every answer is anonymised, counted, and weighed. Every answer is a prayer counted.",
+      "Answers given in the handbooks join the community's growing body of knowledge. Every answer is anonymised, counted, and weighed — a prayer the world can finally hear.",
     verse: "You number my wanderings; put my tears into Your bottle. — Psalm 56:8",
   },
   {
@@ -51,7 +51,7 @@ const steps = [
     icon: Landmark,
     title: "Gentleness Moves Mountains",
     description:
-      "The data becomes a story too loud to ignore. Reports reach councils, members, and decision-makers. The meek do not shout — they prove.",
+      "The data becomes a story too loud to ignore. Reports reach councils, members of parliament, and decision-makers. The meek do not shout — they prove.",
     verse: "Truly I tell you, if you have faith as small as a mustard seed, you can say to this mountain, 'Move.' — Matthew 17:20",
   },
 ];
