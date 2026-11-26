@@ -44,6 +44,22 @@ export default function FunnelCanvas() {
       size: 0.8 + seededRandom(i * 17 + 3) * 1.6,
     }));
 
+    // Everything static is cached here: stars, gradients, particle palette.
+    // The frame loop must allocate nothing.
+    let stars: { x: number; y: number; a: number }[] = [];
+    let wallGrad: CanvasGradient | null = null;
+    let qGlowGrad: CanvasGradient | null = null;
+    let coreGrad: CanvasGradient | null = null;
+    let cx0 = 0;
+    let mouthY0 = 0;
+    let baseY0 = 0;
+    let qR0 = 0;
+    const PALETTE_STEPS = 17;
+    const heatPalette = Array.from(
+      { length: PALETTE_STEPS },
+      (_, k) => `rgba(232, 196, 124, ${0.35 + 0.5 * (k / (PALETTE_STEPS - 1))})`
+    );
+
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
       const dpr = Math.min(window.devicePixelRatio || 1, DPR_CAP);
@@ -52,13 +68,45 @@ export default function FunnelCanvas() {
       canvas.width = Math.max(1, Math.round(width * dpr));
       canvas.height = Math.max(1, Math.round(height * dpr));
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      cx0 = width / 2;
+      mouthY0 = height * 0.16;
+      baseY0 = height * 0.86;
+      const qR = Math.min(width * 0.07, 56);
+      qR0 = qR;
+
+      stars = starField(70, width, height, 2.1).map((s, i) => ({
+        x: s.x,
+        y: s.y,
+        a: 0.2 + 0.8 * seededRandom(i * 3 + 5),
+      }));
+
+      wallGrad = ctx.createLinearGradient(0, mouthY0, 0, baseY0);
+      wallGrad.addColorStop(0, "rgba(224, 185, 110, 0.05)");
+      wallGrad.addColorStop(1, "rgba(224, 185, 110, 0.12)");
+
+      qGlowGrad = ctx.createRadialGradient(cx0, mouthY0, 0, cx0, mouthY0, qR * 1.9);
+      qGlowGrad.addColorStop(0, "rgba(250, 240, 210, 0.5)");
+      qGlowGrad.addColorStop(1, "rgba(250, 240, 210, 0)");
+
+      // Core glow cached at its maximum pulsed radius so the frame loop
+      // never rebuilds it.
+      const coreRBase = Math.min(width * 0.06, 44);
+      const coreMaxR = coreRBase * 1.08 * 3.2;
+      coreGrad = ctx.createRadialGradient(cx0, baseY0, 0, cx0, baseY0, coreMaxR);
+      coreGrad.addColorStop(0, "rgba(252, 244, 214, 0.95)");
+      coreGrad.addColorStop(0.35, "rgba(232, 196, 124, 0.5)");
+      coreGrad.addColorStop(1, "rgba(232, 196, 124, 0)");
     };
 
     const draw = (now: number) => {
       const time = now / 1000;
       const cx = width / 2;
-      const mouthY = height * 0.16;
-      const baseY = height * 0.86;
+      // The Seed of Life bloom reaches 2 radii above its center (plus pulse
+      // headroom) — the mouth must sit low enough that no ring clips the top.
+      const qR = qR0;
+      const mouthY = Math.max(mouthY0, qR * 2.1 + 8);
+      const baseY = baseY0;
       const mouthWidth = Math.min(width * 0.3, 220);
       const throatWidth = Math.max(width * 0.035, 14);
       const sway = width * 0.03;
@@ -66,12 +114,11 @@ export default function FunnelCanvas() {
 
       ctx.clearRect(0, 0, width, height);
 
-      // Star field
-      const stars = starField(70, width, height, 2.1);
+      // Star field (cached positions; only the twinkle is per-frame).
       ctx.fillStyle = "rgba(240, 228, 200, 0.5)";
       for (let i = 0; i < stars.length; i++) {
         const twinkle = 0.25 + 0.5 * Math.abs(Math.sin(time * 0.7 + i * 1.7));
-        ctx.globalAlpha = twinkle * (0.2 + 0.8 * seededRandom(i * 3 + 5));
+        ctx.globalAlpha = twinkle * stars[i].a;
         ctx.fillRect(stars[i].x, stars[i].y, 1.4, 1.4);
       }
       ctx.globalAlpha = 1;
@@ -105,17 +152,13 @@ export default function FunnelCanvas() {
         ctx.lineTo(x, y);
       }
       ctx.closePath();
-      const fill = ctx.createLinearGradient(0, mouthY, 0, baseY);
-      fill.addColorStop(0, "rgba(224, 185, 110, 0.05)");
-      fill.addColorStop(1, "rgba(224, 185, 110, 0.12)");
-      ctx.fillStyle = fill;
+      if (wallGrad) ctx.fillStyle = wallGrad;
       ctx.fill();
       ctx.strokeStyle = "rgba(224, 185, 110, 0.28)";
       ctx.lineWidth = 1;
       ctx.stroke();
 
       // The Question: Seed of Life bloom at the mouth.
-      const qR = Math.min(width * 0.07, 56);
       const pulse = 1 + 0.05 * Math.sin(time * 1.4);
       const bloom = seedOfLifeCenters(mouthX, mouthY, qR * pulse);
       ctx.strokeStyle = "rgba(240, 220, 170, 0.85)";
@@ -125,15 +168,12 @@ export default function FunnelCanvas() {
         ctx.arc(bloom[i].x, bloom[i].y, qR * pulse, 0, Math.PI * 2);
         ctx.stroke();
       }
-      const qGlow = ctx.createRadialGradient(mouthX, mouthY, 0, mouthX, mouthY, qR * 1.9);
-      qGlow.addColorStop(0, "rgba(250, 240, 210, 0.5)");
-      qGlow.addColorStop(1, "rgba(250, 240, 210, 0)");
-      ctx.fillStyle = qGlow;
+      if (qGlowGrad) ctx.fillStyle = qGlowGrad;
       ctx.beginPath();
       ctx.arc(mouthX, mouthY, qR * 1.9, 0, Math.PI * 2);
       ctx.fill();
 
-      // The stream of answers.
+      // The stream of answers (fillStyle via palette lookup — zero strings).
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
         const y = mouthY + p.t * (baseY - mouthY);
@@ -149,7 +189,7 @@ export default function FunnelCanvas() {
         const x = pos.x;
         // Warmth concentrates toward the throat.
         const heat = 0.45 + 0.55 * p.t;
-        ctx.fillStyle = `rgba(232, 196, 124, ${0.35 + 0.5 * heat})`;
+        ctx.fillStyle = heatPalette[Math.round(heat * (PALETTE_STEPS - 1))];
         ctx.beginPath();
         ctx.arc(x, y, p.size * (0.8 + 0.6 * p.t), 0, Math.PI * 2);
         ctx.fill();
@@ -162,11 +202,7 @@ export default function FunnelCanvas() {
 
       // The Change: radiant core at the base, swelling with arrivals.
       const coreR = Math.min(width * 0.06, 44) * (1 + 0.08 * Math.sin(time * 2.2));
-      const core = ctx.createRadialGradient(cx, baseY, 0, cx, baseY, coreR * 3.2);
-      core.addColorStop(0, "rgba(252, 244, 214, 0.95)");
-      core.addColorStop(0.35, "rgba(232, 196, 124, 0.5)");
-      core.addColorStop(1, "rgba(232, 196, 124, 0)");
-      ctx.fillStyle = core;
+      if (coreGrad) ctx.fillStyle = coreGrad;
       ctx.beginPath();
       ctx.arc(cx, baseY, coreR * 3.2, 0, Math.PI * 2);
       ctx.fill();
