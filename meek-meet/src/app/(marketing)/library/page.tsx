@@ -35,29 +35,29 @@ export default function LibraryPage() {
 
       {/* Collections */}
       <section className="pb-24 px-6 lg:px-8">
-        <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-6">
+        <div className="max-w-5xl mx-auto grid grid-cols-2 gap-4 sm:gap-6">
           {SACRED_LIBRARY.map((entry) => (
             <Link
               key={entry.id}
               href={`/library/${entry.id}`}
-              className="group bg-parchment border border-border-warm rounded-2xl p-8 hover:border-terracotta/50 hover:shadow-lg transition-all duration-300 flex flex-col"
+              className="group bg-parchment border border-border-warm rounded-2xl p-5 sm:p-8 hover:border-terracotta/50 hover:shadow-lg transition-all duration-300 flex flex-col"
             >
-              <div className="flex items-start justify-between mb-4">
+              <div className="flex items-start justify-between mb-3 sm:mb-4">
                 <BookOpen
-                  className="w-6 h-6 text-terracotta"
+                  className="w-5 h-5 sm:w-6 sm:h-6 text-terracotta"
                   strokeWidth={1.5}
                 />
                 <span className="text-xs tracking-wider text-charcoal-muted">
                   {entry.era}
                 </span>
               </div>
-              <h2 className="font-serif text-2xl text-charcoal mb-1 group-hover:text-terracotta transition-colors">
+              <h2 className="font-serif text-xl sm:text-2xl text-charcoal mb-1 group-hover:text-terracotta transition-colors">
                 {entry.name}
               </h2>
-              <p className="text-xs tracking-wide text-charcoal-muted mb-4">
+              <p className="text-xs tracking-wide text-charcoal-muted mb-3 sm:mb-4">
                 {entry.origin}
               </p>
-              <p className="text-sm text-charcoal-muted leading-relaxed mb-6 flex-1">
+              <p className="text-sm text-charcoal-muted leading-relaxed mb-4 sm:mb-6 flex-1 line-clamp-3 sm:line-clamp-none">
                 {entry.description}
               </p>
               <div className="flex items-center justify-between">

@@ -4,7 +4,14 @@ import { useCallback, useEffect, useState, useTransition } from "react";
 import { useParams } from "next/navigation";
 import { BookOpen, CheckCircle2, Download, Loader2, RefreshCw, Video } from "lucide-react";
 import { getMyHandbook, saveHandbook, regenerateHandbookQuestion, type HandbookData } from "../actions";
-import { HANDBOOK_INTROS, handbookComplete, formatMeetingWhen, toRoman } from "@/lib/handbook";
+import {
+  HANDBOOK_INTROS,
+  handbookComplete,
+  formatMeetingWhen,
+  handbookSealsAt,
+  isHandbookSealed,
+  toRoman,
+} from "@/lib/handbook";
 import { getTopicById, THRESHOLD_TOPIC } from "@meekmeet/core/questions";
 
 function isThresholdQuestion(questionId: string): boolean {
@@ -135,6 +142,8 @@ export default function HandbookPage() {
   const allAnswered = handbookComplete(
     handbook.responses.map((r) => ({ ...r, answer: answers[r.question_id] ?? "" }))
   );
+  const sealed = isHandbookSealed(handbook.meeting.scheduled_at);
+  const admitted = handbook.completed_at !== null;
 
   return (
     <div className="max-w-2xl">
@@ -158,7 +167,8 @@ export default function HandbookPage() {
         </div>
       </div>
 
-      {handbook.meeting.join_url && (
+      {/* The way in — only ever for a sealed handbook */}
+      {handbook.meeting.join_url && admitted && (
         <div className="text-center mb-8">
           <a
             href={handbook.meeting.join_url}
@@ -169,6 +179,22 @@ export default function HandbookPage() {
             <Video className="w-4 h-4" strokeWidth={1.5} />
             The way in — join the circle online
           </a>
+        </div>
+      )}
+      {handbook.meeting.join_url && !admitted && !sealed && (
+        <p className="text-center text-xs text-charcoal-muted mb-8">
+          The way in opens here once your handbook is sealed.
+        </p>
+      )}
+
+      {/* The door, closed */}
+      {sealed && !admitted && (
+        <div className="mb-8 p-6 bg-midnight rounded-2xl text-center">
+          <p className="font-serif text-xl text-cream mb-2">The handbook has sealed.</p>
+          <p className="text-sm text-cream/60 leading-relaxed max-w-md mx-auto">
+            The circle proceeds without you this time. The next summons will
+            find you — answer it early, and the door stays open.
+          </p>
         </div>
       )}
 
@@ -238,7 +264,7 @@ export default function HandbookPage() {
                   <button
                     type="button"
                     onClick={() => redraw(r.question_id)}
-                    disabled={isPending || redrawingId !== null}
+                    disabled={isPending || redrawingId !== null || sealed}
                     title="Let the lot fall again within the same bank"
                     className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 border border-border-warm rounded-full text-xs text-charcoal-muted hover:text-charcoal hover:bg-parchment transition-colors disabled:opacity-50"
                   >
@@ -259,8 +285,9 @@ export default function HandbookPage() {
                 }
                 rows={4}
                 maxLength={4000}
+                disabled={sealed}
                 placeholder="Write what is true. Take your time."
-                className="w-full bg-white border border-border-warm rounded-xl px-4 py-3 text-[15px] font-serif text-charcoal leading-relaxed focus:outline-none focus:ring-2 focus:ring-terracotta/30 resize-y"
+                className="w-full bg-white border border-border-warm rounded-xl px-4 py-3 text-[15px] font-serif text-charcoal leading-relaxed focus:outline-none focus:ring-2 focus:ring-terracotta/30 resize-y disabled:opacity-60"
               />
             </div>
           );
@@ -279,8 +306,9 @@ export default function HandbookPage() {
           onChange={(e) => setIntentions(e.target.value)}
           rows={3}
           maxLength={2000}
+          disabled={sealed}
           placeholder="Optional."
-          className="w-full bg-white border border-border-warm rounded-xl px-4 py-3 text-[15px] font-serif text-charcoal leading-relaxed focus:outline-none focus:ring-2 focus:ring-terracotta/30 resize-y"
+          className="w-full bg-white border border-border-warm rounded-xl px-4 py-3 text-[15px] font-serif text-charcoal leading-relaxed focus:outline-none focus:ring-2 focus:ring-terracotta/30 resize-y disabled:opacity-60"
         />
       </section>
 
@@ -289,6 +317,13 @@ export default function HandbookPage() {
         <p className="text-center text-xs tracking-[0.25em] uppercase text-charcoal-muted mb-6">
           {toRoman(answeredCount)} of {toRoman(totalCount)} written
         </p>
+        {!sealed && (
+          <p className="text-center text-xs text-charcoal-muted mb-6">
+            The handbook seals {formatMeetingWhen(handbookSealsAt(handbook.meeting.scheduled_at).toISOString())},
+            two hours before the circle. After that, the door is closed.
+          </p>
+        )}
+        {!sealed && (
         <div className="flex flex-wrap items-center justify-center gap-4">
           <button
             onClick={() => save(false)}
@@ -314,9 +349,21 @@ export default function HandbookPage() {
             Take it with you — PDF
           </a>
         </div>
-        {handbook.completed_at && (
+        )}
+        {sealed && admitted && (
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <a
+              href={`/dashboard/handbook/${meetingId}/pdf`}
+              className="inline-flex items-center gap-2 px-6 py-3 border border-border-warm rounded-full text-sm text-charcoal hover:bg-parchment transition-colors"
+            >
+              <Download className="w-4 h-4" strokeWidth={1.5} />
+              Take it with you — PDF
+            </a>
+          </div>
+        )}
+        {handbook.completed_at && !sealed && (
           <p className="text-center text-xs text-sage-dark mt-4">
-            Sealed — you may still revise until the circle gathers.
+            Sealed — you may still revise until two hours before the circle.
           </p>
         )}
       </div>

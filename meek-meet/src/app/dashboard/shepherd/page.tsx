@@ -77,7 +77,7 @@ export default async function ShepherdDashboardPage() {
                 </Link>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 <Link
                   href={`/dashboard/shepherd/${circle.id}/questions`}
                   className="bg-cream rounded-xl border border-border-soft p-5 hover:border-wheat/40 transition-colors group"

@@ -292,6 +292,7 @@ export function buildHandbookEmail(options: {
     ${line(`${name},`)}
     ${line(`${circle} meets ${when}${mode ? ` &middot; ${escapeHtml(mode)}` : ""}.`)}
     ${line("Your questions are waiting inside. Answer them before you join. In the circle, you read what you wrote.")}
+    ${line("The handbook seals two hours before the circle. After that, the door is closed.")}
     ${h.button(options.handbookUrl, "ENTER YOUR HANDBOOK")}
     ${signoff(attendance)}
   `;
@@ -308,6 +309,34 @@ export function buildHandbookEmail(options: {
 /** How long after the last touch (summons or reminder) a reminder falls due.
  *  Just under a day, so the daily cron never skips a member through drift. */
 export const REMINDER_INTERVAL_HOURS = 20;
+
+// ── The seal ───────────────────────────────────────────────────
+// The handbook is not homework; it is the price of the door. Two hours
+// before the circle gathers, the handbook seals: a member whose questions
+// are still unanswered is not admitted — the circle proceeds without them,
+// and the next summons will find them. The seal is enforced three ways:
+// the join link never renders for an unsealed handbook, the save actions
+// refuse writes after the seal, and the leader's roster names who the
+// door closed for.
+
+/** Hours before the circle begins when the handbook seals shut. */
+export const HANDBOOK_LOCK_HOURS_BEFORE = 2;
+
+/** The moment the handbook seals for a given meeting start. */
+export function handbookSealsAt(scheduledAt: string): Date {
+  return new Date(
+    new Date(scheduledAt).getTime() - HANDBOOK_LOCK_HOURS_BEFORE * 3_600_000
+  );
+}
+
+/** True once the handbook has sealed — no more writing, no way in. */
+export function isHandbookSealed(scheduledAt: string, now: Date = new Date()): boolean {
+  return now.getTime() >= handbookSealsAt(scheduledAt).getTime();
+}
+
+/** The door rule in one line, for pages that must say it plainly. */
+export const HANDBOOK_SEAL_RULE =
+  "The handbook seals two hours before the circle. After that, the door is closed.";
 
 /**
  * The reminder. The summons, returned: shorter, plainer, and honest about
@@ -333,6 +362,7 @@ export function buildHandbookReminderEmail(options: {
     ${line(`${name},`)}
     ${line(`${circle} meets ${when}${mode ? ` &middot; ${escapeHtml(mode)}` : ""}.`)}
     ${line("Your questions are still unanswered. In the circle, you read what you wrote, so write it before you join.")}
+    ${line("The handbook seals two hours before the circle. After that, the door is closed.")}
     ${h.button(options.handbookUrl, "COMPLETE YOUR HANDBOOK")}
     ${signoff("This reminder returns each day until your handbook is complete.")}
   `;

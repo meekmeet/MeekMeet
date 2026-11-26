@@ -18,6 +18,7 @@ import {
   LEADER_OPENING_WORDS,
   LEADER_CLOSING_WORDS,
   LEADER_RUN_SHEET,
+  isHandbookSealed,
   toRoman,
 } from "@/lib/handbook";
 import { getTopicForDate, THRESHOLD_TOPIC } from "@meekmeet/core/questions";
@@ -37,14 +38,25 @@ function formatWhen(iso: string): string {
 
 function MemberRow({
   member,
+  sealed,
   onMark,
   marking,
 }: {
   member: LeaderRoomMember;
+  sealed: boolean;
   onMark: (rsvpId: string, attendance: "attended" | "absent" | null) => void;
   marking: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
+  const handbookStatus = member.handbook
+    ? member.handbook.completed
+      ? "handbook sealed"
+      : sealed
+        ? "handbook unsealed — the door closed for them"
+        : "handbook in progress"
+    : sealed
+      ? "no handbook — the door closed for them"
+      : "no handbook yet";
 
   return (
     <div className="bg-cream-warm rounded-xl border border-border-soft p-5">
@@ -53,8 +65,8 @@ function MemberRow({
           <p className="font-medium text-charcoal">{member.name}</p>
           <p className="text-xs text-charcoal-muted mt-0.5">
             {member.handbook
-              ? `${member.handbook.variant === "first_circle" ? "First circle" : "Returning"} · handbook ${member.handbook.completed ? "completed" : "in progress"}`
-              : "No handbook yet"}
+              ? `${member.handbook.variant === "first_circle" ? "First circle" : "Returning"} · ${handbookStatus}`
+              : handbookStatus}
             {member.status === "maybe" ? " · RSVP: maybe" : ""}
           </p>
         </div>
@@ -202,6 +214,8 @@ export default function LeaderRoomPage({ params }: Props) {
   const topic = getTopicForDate(new Date(meeting.scheduled_at));
   const online = meeting.meeting_type === "digital" || meeting.meeting_type === "hybrid";
   const markedCount = roster.filter((m) => m.attendance !== null).length;
+  const sealed = isHandbookSealed(meeting.scheduled_at);
+  const sealedCount = roster.filter((m) => m.handbook?.completed).length;
 
   return (
     <div className="max-w-3xl">
@@ -293,16 +307,18 @@ export default function LeaderRoomPage({ params }: Props) {
       <div className="flex items-center justify-between mb-4">
         <h2 className="font-serif text-xl text-charcoal">The roster</h2>
         <span className="text-xs text-charcoal-muted">
-          {markedCount} of {roster.length} marked
+          {sealedCount} of {roster.length} sealed · {markedCount} of {roster.length} marked
         </span>
       </div>
       <p className="text-sm text-charcoal-muted leading-relaxed mb-4">
         Tick who attends and who does not — during the night or after it. Expand a member
-        to read their completed handbook before you call on them.
+        to read their completed handbook before you call on them. The handbook seals two
+        hours before the circle; a member who has not sealed it cannot enter — mark them
+        absent and let the next summons find them.
       </p>
       <div className="space-y-3">
         {roster.map((member) => (
-          <MemberRow key={member.rsvpId} member={member} onMark={handleMark} marking={isPending} />
+          <MemberRow key={member.rsvpId} member={member} sealed={sealed} onMark={handleMark} marking={isPending} />
         ))}
         {roster.length === 0 && (
           <div className="text-center py-12 bg-cream-warm rounded-xl border border-border-soft">

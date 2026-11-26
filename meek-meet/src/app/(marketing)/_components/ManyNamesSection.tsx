@@ -106,16 +106,16 @@ export default function ManyNamesSection() {
           </p>
         </motion.div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
           {THREAD.map((entry, index) => (
             <motion.figure
               key={entry.tradition}
               initial={{ opacity: 0, y: 24 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.08 * index }}
-              className="bg-cream rounded-2xl border border-wheat/25 shadow-sm p-7 flex flex-col"
+              className="bg-cream rounded-2xl border border-wheat/25 shadow-sm p-5 sm:p-7 flex flex-col"
             >
-              <figcaption className="mb-4">
+              <figcaption className="mb-3 sm:mb-4">
                 <span className="text-xs tracking-[0.2em] uppercase text-terracotta font-medium">
                   {entry.tradition}
                 </span>
@@ -123,7 +123,7 @@ export default function ManyNamesSection() {
                   {entry.note}
                 </span>
               </figcaption>
-              <blockquote className="font-serif text-lg text-charcoal leading-relaxed flex-1">
+              <blockquote className="font-serif text-base sm:text-lg text-charcoal leading-relaxed flex-1">
                 &ldquo;{entry.quote}&rdquo;
               </blockquote>
               <p className="text-xs text-sage-dark tracking-wide mt-4">&mdash; {entry.ref}</p>

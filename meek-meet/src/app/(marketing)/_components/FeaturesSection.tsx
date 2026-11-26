@@ -96,14 +96,14 @@ export default function FeaturesSection() {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {features.map((feature, index) => (
             <motion.div
               key={feature.title}
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.1 * index }}
-              className="group card-warm p-8 bg-white/70 backdrop-blur-sm rounded-2xl border border-border-soft hover:border-wheat/30"
+              className="group card-warm p-6 sm:p-8 bg-white/70 backdrop-blur-sm rounded-2xl border border-border-soft hover:border-wheat/30"
             >
               <div className="w-12 h-12 flex items-center justify-center bg-wheat-pale rounded-xl mb-6 group-hover:bg-wheat/20 transition-all duration-500">
                 <feature.icon

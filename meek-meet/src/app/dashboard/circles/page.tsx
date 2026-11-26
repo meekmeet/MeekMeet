@@ -38,19 +38,19 @@ export default async function MyCirclesPage() {
       </p>
 
       {myCircles.length > 0 ? (
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4">
           {myCircles.map((circle) => (
             <Link
               key={circle.id}
               href={`/circles/${circle.slug}`}
-              className="bg-cream-warm rounded-xl border border-border-soft p-6 hover:border-terracotta/30 transition-colors"
+              className="bg-cream-warm rounded-xl border border-border-soft p-4 sm:p-6 hover:border-terracotta/30 transition-colors"
             >
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-terracotta-pale flex items-center justify-center flex-shrink-0">
-                  <MapPin className="w-5 h-5 text-terracotta" strokeWidth={1.5} />
+              <div className="flex items-start gap-3 sm:gap-4">
+                <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl bg-terracotta-pale flex items-center justify-center flex-shrink-0">
+                  <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-terracotta" strokeWidth={1.5} />
                 </div>
                 <div>
-                  <h3 className="font-serif text-lg text-charcoal mb-1">
+                  <h3 className="font-serif text-base sm:text-lg text-charcoal mb-1">
                     {circle.name}
                   </h3>
                   <p className="text-sm text-charcoal-muted">{circle.location}</p>

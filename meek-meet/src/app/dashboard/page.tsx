@@ -50,6 +50,23 @@ export default async function DashboardPage() {
       .filter(Boolean)
       .filter((c, i, arr) => arr.findIndex((t) => t?.id === c?.id) === i) ?? [];
 
+  // Handbook status for the member's upcoming gatherings — the in-app path
+  // to the handbook, so the email is never the only door.
+  const upcomingIds = (upcomingMeetings ?? []).map((m) => m.id as string);
+  const handbookByMeeting = new Map<string, { completed: boolean }>();
+  if (upcomingIds.length > 0) {
+    const { data: handbooks } = await supabase
+      .from("session_handbooks")
+      .select("meeting_id, completed_at")
+      .eq("profile_id", user.id)
+      .in("meeting_id", upcomingIds);
+    for (const h of handbooks ?? []) {
+      handbookByMeeting.set(h.meeting_id as string, {
+        completed: h.completed_at !== null,
+      });
+    }
+  }
+
   return (
     <div className="max-w-5xl mx-auto">
       {/* Welcome */}
@@ -63,37 +80,37 @@ export default async function DashboardPage() {
       </div>
 
       {/* Stats row */}
-      <div className="grid md:grid-cols-3 gap-6 mb-10">
-        <div className="bg-cream-warm rounded-2xl border border-border-soft p-6">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-terracotta-pale flex items-center justify-center">
-              <Heart className="w-5 h-5 text-terracotta" strokeWidth={1.5} />
+      <div className="grid grid-cols-3 gap-3 sm:gap-6 mb-10">
+        <div className="bg-cream-warm rounded-2xl border border-border-soft p-4 sm:p-6">
+          <div className="flex items-center gap-2 sm:gap-3 mb-2">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-terracotta-pale flex items-center justify-center">
+              <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-terracotta" strokeWidth={1.5} />
             </div>
-            <span className="text-sm text-charcoal-muted">My Circles</span>
+            <span className="text-xs sm:text-sm text-charcoal-muted">My Circles</span>
           </div>
-          <p className="font-serif text-3xl text-charcoal">{myCircles.length}</p>
+          <p className="font-serif text-2xl sm:text-3xl text-charcoal">{myCircles.length}</p>
         </div>
 
-        <div className="bg-cream-warm rounded-2xl border border-border-soft p-6">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-wheat-pale flex items-center justify-center">
-              <Calendar className="w-5 h-5 text-wheat-dark" strokeWidth={1.5} />
+        <div className="bg-cream-warm rounded-2xl border border-border-soft p-4 sm:p-6">
+          <div className="flex items-center gap-2 sm:gap-3 mb-2">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-wheat-pale flex items-center justify-center">
+              <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-wheat-dark" strokeWidth={1.5} />
             </div>
-            <span className="text-sm text-charcoal-muted">Upcoming</span>
+            <span className="text-xs sm:text-sm text-charcoal-muted">Upcoming</span>
           </div>
-          <p className="font-serif text-3xl text-charcoal">
+          <p className="font-serif text-2xl sm:text-3xl text-charcoal">
             {upcomingMeetings?.length ?? 0}
           </p>
         </div>
 
-        <div className="bg-cream-warm rounded-2xl border border-border-soft p-6">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-sage-pale flex items-center justify-center">
-              <MapPin className="w-5 h-5 text-sage-dark" strokeWidth={1.5} />
+        <div className="bg-cream-warm rounded-2xl border border-border-soft p-4 sm:p-6">
+          <div className="flex items-center gap-2 sm:gap-3 mb-2">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-sage-pale flex items-center justify-center">
+              <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-sage-dark" strokeWidth={1.5} />
             </div>
-            <span className="text-sm text-charcoal-muted">Nearby</span>
+            <span className="text-xs sm:text-sm text-charcoal-muted">Nearby</span>
           </div>
-          <p className="font-serif text-3xl text-charcoal">
+          <p className="font-serif text-2xl sm:text-3xl text-charcoal">
             {nearbyCircles?.length ?? 0}
           </p>
         </div>
@@ -137,12 +154,30 @@ export default async function DashboardPage() {
                     </p>
                   )}
                 </div>
-                <Link
-                  href={`/circles/${meeting.circles?.slug}`}
-                  className="px-5 py-2 bg-midnight text-cream text-sm rounded-full hover:bg-midnight-soft transition-all text-center"
-                >
-                  View Circle
-                </Link>
+                <div className="flex flex-col items-stretch sm:items-end gap-2">
+                  <Link
+                    href={`/circles/${meeting.circles?.slug}`}
+                    className="px-5 py-2 bg-midnight text-cream text-sm rounded-full hover:bg-midnight-soft transition-all text-center"
+                  >
+                    View Circle
+                  </Link>
+                  {handbookByMeeting.has(meeting.id) &&
+                    (handbookByMeeting.get(meeting.id)?.completed ? (
+                      <Link
+                        href={`/dashboard/handbook/${meeting.id}`}
+                        className="px-5 py-2 bg-sage-pale text-sage-dark text-xs rounded-full hover:bg-sage/25 transition-all text-center"
+                      >
+                        Handbook sealed
+                      </Link>
+                    ) : (
+                      <Link
+                        href={`/dashboard/handbook/${meeting.id}`}
+                        className="px-5 py-2 bg-terracotta text-cream text-xs rounded-full hover:bg-terracotta-light transition-all text-center"
+                      >
+                        Complete your handbook
+                      </Link>
+                    ))}
+                </div>
               </div>
             ))}
           </div>
@@ -172,17 +207,17 @@ export default async function DashboardPage() {
         </div>
 
         {nearbyCircles && nearbyCircles.length > 0 ? (
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
             {nearbyCircles.map((circle) => (
               <Link
                 key={circle.id}
                 href={`/circles/${circle.slug}`}
-                className="bg-cream-warm rounded-xl border border-border-soft p-5 hover:border-terracotta/30 transition-colors"
+                className="bg-cream-warm rounded-xl border border-border-soft p-4 sm:p-5 hover:border-terracotta/30 transition-colors"
               >
-                <h3 className="font-serif text-lg text-charcoal mb-1">
+                <h3 className="font-serif text-base sm:text-lg text-charcoal mb-1">
                   {circle.name}
                 </h3>
-                <p className="text-sm text-charcoal-muted">{circle.location}</p>
+                <p className="text-xs sm:text-sm text-charcoal-muted">{circle.location}</p>
               </Link>
             ))}
           </div>

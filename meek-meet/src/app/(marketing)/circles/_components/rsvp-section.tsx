@@ -23,11 +23,13 @@ interface Props {
   isAuthenticated: boolean;
   /** Meeting IDs with meeting_type 'digital' or 'hybrid' (only known for signed-in users). */
   digitalMeetingIds?: string[];
-  /** Join URLs, only present for meetings this user has an active 'going' RSVP on. */
+  /** Join URLs, only present for meetings this user has an active 'going' RSVP on AND a sealed handbook. */
   joinLinks?: Record<string, string>;
+  /** Meetings where the user is 'going' but their handbook is not yet sealed — the join link waits on it. */
+  handbookPendingMeetingIds?: string[];
 }
 
-export default function RsvpSection({ meetings, userRsvps, isAuthenticated, digitalMeetingIds = [], joinLinks = {} }: Props) {
+export default function RsvpSection({ meetings, userRsvps, isAuthenticated, digitalMeetingIds = [], joinLinks = {}, handbookPendingMeetingIds = [] }: Props) {
   const [rsvps, setRsvps] = useState<Record<string, string>>(
     Object.fromEntries(userRsvps.map((r) => [r.meeting_id, r.status]))
   );
@@ -121,11 +123,22 @@ export default function RsvpSection({ meetings, userRsvps, isAuthenticated, digi
                   <Video className="w-4 h-4 text-wheat" strokeWidth={1.5} />
                   Join Online
                 </a>
+              ) : handbookPendingMeetingIds.includes(meeting.id) ? (
+                <p className="flex items-center gap-1.5 text-xs text-charcoal-muted mt-2">
+                  <Video className="w-3.5 h-3.5 text-wheat" strokeWidth={1.5} />
+                  The way in opens once your handbook is sealed.{" "}
+                  <a
+                    href={`/dashboard/handbook/${meeting.id}`}
+                    className="text-terracotta hover:text-terracotta-light underline underline-offset-2"
+                  >
+                    Open your handbook
+                  </a>
+                </p>
               ) : (
                 digitalMeetingIds.includes(meeting.id) && (
                   <p className="flex items-center gap-1.5 text-xs text-charcoal-muted mt-2">
                     <Video className="w-3.5 h-3.5 text-wheat" strokeWidth={1.5} />
-                    The join link is shared with members who RSVP &ldquo;Going&rdquo;.
+                    The join link is shared with members who RSVP &ldquo;Going&rdquo; and seal their handbook.
                   </p>
                 )
               )}

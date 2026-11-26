@@ -119,6 +119,28 @@ describe("saveHandbook", () => {
     expect(update.completed_at).not.toBeNull();
     expect(update.intentions).toBe("carry this");
   });
+
+  it("refuses every write once the handbook has sealed", async () => {
+    mockSupa.enqueue({ scheduled_at: "2020-01-01T09:00:00.000Z" }); // meetings select
+    mockSupa.enqueue({ scheduled_at: "2020-01-01T09:00:00.000Z" }); // meetings select, second call
+    const answered = topicResponses(["hom-1"]).map((r) => ({ ...r, answer: "Too late" }));
+    await expect(
+      saveHandbook(MEETING_ID, answered, "", true)
+    ).rejects.toThrow("sealed");
+    await expect(
+      saveHandbook(MEETING_ID, topicResponses(["hom-1"]), "", false)
+    ).rejects.toThrow("sealed");
+    expect(mockSupa.updates).toHaveLength(0); // nothing was written
+  });
+
+  it("writes freely while the seal is still ahead", async () => {
+    mockSupa.enqueue({ scheduled_at: "2999-01-01T09:00:00.000Z" }); // meetings select
+    mockSupa.enqueue(null); // update
+    const answered = topicResponses(["hom-1"]).map((r) => ({ ...r, answer: "In time" }));
+    const result = await saveHandbook(MEETING_ID, answered, "", true);
+    expect(result.completed).toBe(true);
+    expect(mockSupa.updates).toHaveLength(1);
+  });
 });
 
 describe("regenerateHandbookQuestion — the redraw engine", () => {
@@ -229,6 +251,17 @@ describe("regenerateHandbookQuestion — the redraw engine", () => {
     expect(fallbackTopic.questions.some((q) => q.id === result.responses[0].question_id)).toBe(true);
     const swap = mockSupa.inserts[0] as { topic_id: string };
     expect(swap.topic_id).toBe(fallbackTopic.id);
+  });
+
+  it("refuses to redraw once the handbook has sealed", async () => {
+    mockSupa.enqueue(
+      handbookRow({ meetings: { scheduled_at: "2020-01-01T09:00:00.000Z" } })
+    );
+    await expect(
+      regenerateHandbookQuestion(MEETING_ID, "hom-2")
+    ).rejects.toThrow("sealed");
+    expect(mockSupa.updates).toHaveLength(0);
+    expect(mockSupa.inserts).toHaveLength(0);
   });
 
   it("rejects unauthenticated callers", async () => {

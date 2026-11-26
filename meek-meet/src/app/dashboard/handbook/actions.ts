@@ -2,7 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { isValidUuid, assertNonEmptyString } from "@/lib/validation";
-import { handbookComplete, type HandbookQuestion } from "@/lib/handbook";
+import { handbookComplete, isHandbookSealed, type HandbookQuestion } from "@/lib/handbook";
 import { drawQuestions, getTopicById, getTopicForDate, THRESHOLD_TOPIC } from "@meekmeet/core/questions";
 
 const MAX_ANSWER_LENGTH = 4000;
@@ -109,6 +109,17 @@ export async function saveHandbook(
   } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
+  // The seal: once the handbook has sealed (two hours before the circle),
+  // no more writing — complete or not, the books are closed.
+  const { data: meetingRow } = await supabase
+    .from("meetings")
+    .select("scheduled_at")
+    .eq("id", meetingId)
+    .single();
+  if (meetingRow && isHandbookSealed(meetingRow.scheduled_at as string)) {
+    throw new Error("The handbook has sealed. The door to this circle is closed.");
+  }
+
   const { error } = await supabase
     .from("session_handbooks")
     .update({
@@ -158,6 +169,9 @@ export async function regenerateHandbookQuestion(
 
   // The topic stored at dispatch; fall back to the meeting's local day.
   const meetingRel = Array.isArray(row.meetings) ? row.meetings[0] : row.meetings;
+  if (meetingRel && isHandbookSealed(meetingRel.scheduled_at as string)) {
+    throw new Error("The handbook has sealed. The door to this circle is closed.");
+  }
   const topic =
     (row.topic_id ? getTopicById(row.topic_id as string) : null) ??
     getTopicForDate(new Date(meetingRel?.scheduled_at as string));

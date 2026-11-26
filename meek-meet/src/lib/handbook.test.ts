@@ -17,6 +17,10 @@ import {
   handbookComplete,
   handbookVariant,
   buildHandbookReminderEmail,
+  HANDBOOK_LOCK_HOURS_BEFORE,
+  HANDBOOK_SEAL_RULE,
+  handbookSealsAt,
+  isHandbookSealed,
   meetingModePhrase,
   SANCTUM_MOON_IMG_URL,
   SANCTUM_SKY_BG_URL,
@@ -475,5 +479,54 @@ describe("formatMeetingWhen", () => {
 describe("HANDBOOK_LEAD_DAYS", () => {
   it("is four days", () => {
     expect(HANDBOOK_LEAD_DAYS).toBe(4);
+  });
+});
+
+describe("the seal — no sealed handbook, no entry", () => {
+  it("seals two hours before the circle begins", () => {
+    expect(HANDBOOK_LOCK_HOURS_BEFORE).toBe(2);
+    const sealsAt = handbookSealsAt("2999-12-01T09:00:00.000Z");
+    expect(sealsAt.toISOString()).toBe("2999-12-01T07:00:00.000Z");
+  });
+
+  it("is open before the seal and shut from the seal onward", () => {
+    const start = "2999-12-01T09:00:00.000Z";
+    expect(isHandbookSealed(start, new Date("2999-12-01T06:59:59.000Z"))).toBe(false);
+    expect(isHandbookSealed(start, new Date("2999-12-01T07:00:00.000Z"))).toBe(true);
+    expect(isHandbookSealed(start, new Date("2999-12-01T08:30:00.000Z"))).toBe(true);
+    expect(isHandbookSealed(start, new Date("2999-12-01T09:00:00.000Z"))).toBe(true);
+  });
+
+  it("states the rule in one plain line", () => {
+    expect(HANDBOOK_SEAL_RULE).toContain("two hours before the circle");
+    expect(HANDBOOK_SEAL_RULE).toContain("door is closed");
+    expect(HANDBOOK_SEAL_RULE).not.toContain("—");
+  });
+
+  it("is declared in the summons", () => {
+    const { html } = buildHandbookEmail({
+      recipientName: "Miriam",
+      circleName: "Gosford Circle",
+      scheduledAt: "2999-12-01T09:00:00.000Z",
+      meetingType: "digital",
+      locationName: null,
+      attendingCount: 7,
+      handbookUrl: "https://meekmeet.com/dashboard/handbook/abc",
+    });
+    expect(html).toContain("seals two hours before the circle");
+    expect(html).toContain("the door is closed");
+  });
+
+  it("is declared in the reminder, sharper", () => {
+    const { html } = buildHandbookReminderEmail({
+      recipientName: "Miriam",
+      circleName: "Gosford Circle",
+      scheduledAt: "2999-12-01T09:00:00.000Z",
+      meetingType: "digital",
+      locationName: null,
+      handbookUrl: "https://meekmeet.com/dashboard/handbook/abc",
+    });
+    expect(html).toContain("seals two hours before the circle");
+    expect(html).toContain("the door is closed");
   });
 });

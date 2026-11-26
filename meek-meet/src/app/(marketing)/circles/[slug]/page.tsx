@@ -53,12 +53,27 @@ export default async function CircleDetailPage({ params }: Props) {
 
   // join_url never appears in the public view. For signed-in users, read
   // meeting_type/join_url from the meetings table (RLS: authenticated) and
-  // only pass a join link down when this user has an active 'going' RSVP.
+  // only pass a join link down when this user has an active 'going' RSVP
+  // AND a sealed handbook — no sealed handbook, no entry.
   const goingMeetingIds = new Set(
     userRsvps.filter((r) => r.status === "going").map((r) => r.meeting_id)
   );
+  const sealedHandbookMeetingIds = new Set<string>();
+  const handbookExistsMeetingIds = new Set<string>();
+  if (user && goingMeetingIds.size > 0) {
+    const { data: handbooks } = await supabase
+      .from("session_handbooks")
+      .select("meeting_id, completed_at")
+      .eq("profile_id", user.id)
+      .in("meeting_id", [...goingMeetingIds]);
+    for (const h of handbooks ?? []) {
+      handbookExistsMeetingIds.add(h.meeting_id as string);
+      if (h.completed_at) sealedHandbookMeetingIds.add(h.meeting_id as string);
+    }
+  }
   const joinLinks: Record<string, string> = {};
   const digitalMeetingIds: string[] = [];
+  const handbookPendingMeetingIds: string[] = [];
   if (user && meetings && meetings.length > 0) {
     const { data: meetingDetails } = await supabase
       .from("meetings")
@@ -77,7 +92,11 @@ export default async function CircleDetailPage({ params }: Props) {
         typeof m.join_url === "string" &&
         m.join_url
       ) {
-        joinLinks[m.id] = m.join_url;
+        if (sealedHandbookMeetingIds.has(m.id)) {
+          joinLinks[m.id] = m.join_url;
+        } else if (handbookExistsMeetingIds.has(m.id)) {
+          handbookPendingMeetingIds.push(m.id);
+        }
       }
     }
   }
@@ -149,6 +168,7 @@ export default async function CircleDetailPage({ params }: Props) {
               isAuthenticated={!!user}
               joinLinks={joinLinks}
               digitalMeetingIds={digitalMeetingIds}
+              handbookPendingMeetingIds={handbookPendingMeetingIds}
             />
           </div>
         )}
