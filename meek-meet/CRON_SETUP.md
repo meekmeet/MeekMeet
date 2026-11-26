@@ -6,7 +6,7 @@ Meek Meet relies on five scheduled jobs to keep the platform alive:
 2. **Daily news-driven questions** — `/api/trigger-news-questions` (09:00)
 3. **Meeting lifecycle** — `/api/meeting-lifecycle` (02:00): completes past meetings, triggers insight synthesis, generates monthly draft reports
 4. **Marketing drip** — `/api/marketing-drip`, four times a day (02:30, 05:30, 08:30, 23:30 UTC — 12:30pm, 3:30pm, 6:30pm and 9:30am Sydney): sends the due step of every active outreach ladder (parchment on day 0, midnight on day 7, terracotta on day 14), picking up queued bulk-campaign day-0s at their assigned window. Each run is capped at one window's capacity (`MARKETING_DAILY_BUDGET` ÷ 4, default 20) and at the remaining daily budget. Replies, tracked clicks and bounces stop a ladder before the cron sees it, and the cron additionally refuses to email leads marked bounced/replied/engaged.
-5. **Leader countdown** — `/api/leader-reminders`, every 15 minutes via an external scheduler (Vercel Hobby cron is daily-only; on Pro you can move it into `vercel.json` with `"*/15 * * * *"`): one short letter to each circle leader at 60, 30, and 15 minutes before their circle — the reserved/sealed counts, the way in when set, and the door to the leader room. Idempotent through the `meeting_leader_reminders` ledger (migration 000043): a (meeting, leader, step) row is claimed before each send and rolled back on failure, so re-runs never double a reminder.
+5. **Leader countdown** — `/api/leader-reminders`, every 15 minutes via Vercel Cron (`*/15 * * * *` in the root `vercel.json`; Vercel attaches the `CRON_SECRET` Bearer header automatically): one short letter to each circle leader at 60, 30, and 15 minutes before their circle — the reserved/sealed counts, the way in when set, and the door to the leader room. Idempotent through the `meeting_leader_reminders` ledger (migration 000043): a (meeting, leader, step) row is claimed before each send and rolled back on failure, so re-runs never double a reminder.
 
 ## Authorization
 
@@ -49,7 +49,7 @@ curl -H "Authorization: Bearer $CRON_SECRET"   https://your-domain.com/api/leade
 Header: Authorization: Bearer <CRON_SECRET>
 ```
 
-The leader countdown wants a 15-minute cadence (e.g. cron-job.org: `*/15 * * * *`).
+The leader countdown runs on Vercel Cron every 15 minutes (`*/15 * * * *` in the root `vercel.json`). If you ever move it to an external scheduler instead, it wants a 15-minute cadence (e.g. cron-job.org: `*/15 * * * *`).
 
 ## Securing the Endpoints
 
