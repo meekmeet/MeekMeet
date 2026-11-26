@@ -104,13 +104,14 @@ export default function NewMoonSection() {
           </p>
         </motion.div>
 
+        <div className="max-w-5xl mx-auto grid lg:grid-cols-5 gap-6 items-start">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="max-w-3xl mx-auto mb-12"
+          className="lg:col-span-2"
         >
-          <div className="flex items-start gap-4 p-6 bg-white/60 backdrop-blur-sm rounded-2xl border border-wheat/20">
+          <div className="flex items-start gap-4 p-6 bg-white/60 backdrop-blur-sm rounded-2xl border border-wheat/20 h-full">
             <BookOpen className="w-5 h-5 text-wheat-dark flex-shrink-0 mt-0.5" strokeWidth={1.5} />
             <div>
               <p className="text-charcoal-light italic leading-relaxed mb-2">
@@ -130,7 +131,7 @@ export default function NewMoonSection() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={isInView ? { opacity: 1, scale: 1 } : {}}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="max-w-3xl mx-auto"
+          className="lg:col-span-3"
         >
           <div className="bg-white/80 backdrop-blur-sm rounded-3xl border border-wheat/25 p-8 md:p-12 shadow-lg shadow-wheat/5">
             <div className="flex items-center justify-center gap-3 mb-8">
@@ -185,6 +186,7 @@ export default function NewMoonSection() {
             </div>
           </div>
         </motion.div>
+        </div>
       </div>
     </section>
   );

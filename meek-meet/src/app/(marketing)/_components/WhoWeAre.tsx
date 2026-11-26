@@ -76,30 +76,30 @@ export default function WhoWeAre() {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-2 gap-3 sm:gap-8">
           {values.map((value, index) => (
             <motion.div
               key={value.title}
               initial={{ opacity: 0, y: 30 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.2 + index * 0.15 }}
-              className="group card-warm p-8 bg-white/60 backdrop-blur-sm rounded-2xl border border-border-soft hover:border-wheat/40"
+              className="group card-warm p-4 sm:p-8 bg-white/60 backdrop-blur-sm rounded-2xl border border-border-soft hover:border-wheat/40"
             >
-              <div className="flex items-start gap-5">
-                <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-wheat-pale rounded-xl group-hover:bg-wheat/20 transition-all duration-500">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-5">
+                <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-wheat-pale rounded-xl group-hover:bg-wheat/20 transition-all duration-500">
                   <value.icon
-                    className="w-5 h-5 text-wheat-dark group-hover:text-terracotta transition-colors duration-500"
+                    className="w-4 h-4 sm:w-5 sm:h-5 text-wheat-dark group-hover:text-terracotta transition-colors duration-500"
                     strokeWidth={1.5}
                   />
                 </div>
                 <div>
-                  <h3 className="font-serif text-2xl text-charcoal mb-3 group-hover:text-terracotta transition-colors duration-500">
+                  <h3 className="font-serif text-lg sm:text-2xl text-charcoal mb-2 sm:mb-3 group-hover:text-terracotta transition-colors duration-500">
                     {value.title}
                   </h3>
-                  <p className="text-charcoal-muted leading-relaxed mb-4">
+                  <p className="text-charcoal-muted text-xs sm:text-base leading-relaxed mb-3 sm:mb-4">
                     {value.description}
                   </p>
-                  <p className="text-sm text-sage-dark italic font-light border-l-2 border-sage/30 pl-3">
+                  <p className="hidden sm:block text-sm text-sage-dark italic font-light border-l-2 border-sage/30 pl-3">
                     {value.verse}
                   </p>
                 </div>

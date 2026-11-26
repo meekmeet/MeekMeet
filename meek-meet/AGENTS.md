@@ -60,7 +60,7 @@ Meek Meet is a faith-rooted, interfaith community organizing platform. The core 
 - **Animation**: Framer Motion · **Icons**: Lucide React
 - **Error monitoring**: Sentry via `@sentry/nextjs` — `src/instrumentation.ts` (server) + `src/instrumentation-client.ts` (browser), both inert without `NEXT_PUBLIC_SENTRY_DSN`. Client boundaries report through `src/lib/monitor.ts`.
 - **Rate limiting**: fixed-window per-IP limiter in `src/lib/rate-limit.ts`, applied to all `/api` routes (env-tunable, see `limiters`)
-- **Deploy**: Vercel (workspace root `vercel.json`; 3 cron jobs — see CRON_SETUP.md)
+- **Deploy**: Vercel (workspace root `vercel.json` — the authoritative cron config; 7 cron entries incl. the 15-minute leader countdown — see CRON_SETUP.md)
 - **Mobile**: sibling workspace `meek-meet-mobile` (Capacitor/React) shares the same Supabase project. Its scripture reader loads JSON from `meek-meet-mobile/public/data/scriptures/<tradition>/`; the "Sacred Library" (Dead Sea Scrolls, Nag Hammadi, Apocrypha, Pseudepigrapha, Rig Veda, Upanishads, Tao Te Ching, Analects, Japji Sahib, Jain Sutras) is editorial curation — passage texts are selected public-domain excerpts with source references, never paraphrase passed off as scripture.
 
 ## File Structure

@@ -96,28 +96,28 @@ export default function FeaturesSection() {
           </p>
         </motion.div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
           {features.map((feature, index) => (
             <motion.div
               key={feature.title}
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.1 * index }}
-              className="group card-warm p-6 sm:p-8 bg-white/70 backdrop-blur-sm rounded-2xl border border-border-soft hover:border-wheat/30"
+              className="group card-warm p-4 sm:p-8 bg-white/70 backdrop-blur-sm rounded-2xl border border-border-soft hover:border-wheat/30"
             >
-              <div className="w-12 h-12 flex items-center justify-center bg-wheat-pale rounded-xl mb-6 group-hover:bg-wheat/20 transition-all duration-500">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-wheat-pale rounded-xl mb-4 sm:mb-6 group-hover:bg-wheat/20 transition-all duration-500">
                 <feature.icon
-                  className="w-5 h-5 text-wheat-dark group-hover:text-terracotta transition-colors duration-500"
+                  className="w-4 h-4 sm:w-5 sm:h-5 text-wheat-dark group-hover:text-terracotta transition-colors duration-500"
                   strokeWidth={1.5}
                 />
               </div>
-              <h3 className="font-serif text-xl text-charcoal mb-3 group-hover:text-terracotta transition-colors duration-500">
+              <h3 className="font-serif text-lg sm:text-xl text-charcoal mb-2 sm:mb-3 group-hover:text-terracotta transition-colors duration-500">
                 {feature.title}
               </h3>
-              <p className="text-charcoal-muted text-sm leading-relaxed mb-4">
+              <p className="text-charcoal-muted text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4">
                 {feature.description}
               </p>
-              <p className="text-xs text-sage-dark italic border-l-2 border-sage/20 pl-3">
+              <p className="hidden sm:block text-xs text-sage-dark italic border-l-2 border-sage/20 pl-3">
                 {feature.verse}
               </p>
             </motion.div>

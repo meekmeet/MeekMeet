@@ -104,13 +104,13 @@ export default function HeroSection() {
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
           <a
-            href="#join"
+            href="/shepherd"
             className="px-10 py-4 bg-midnight text-cream font-medium tracking-wide text-sm rounded-full hover:bg-midnight-soft transition-all duration-300 shadow-lg hover:shadow-xl"
           >
             Lead Your Community
           </a>
           <a
-            href="#who-we-are"
+            href="/about"
             className="px-10 py-4 border-2 border-charcoal/15 text-charcoal font-medium tracking-wide text-sm rounded-full hover:border-terracotta hover:text-terracotta transition-all duration-300"
           >
             Learn Our Story

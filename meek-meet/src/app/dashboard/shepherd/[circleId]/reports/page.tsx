@@ -161,6 +161,30 @@ export default function ReportsPage() {
         </div>
 
         <div className="mb-10">
+          <h3 className="font-serif text-xl text-charcoal mb-3">Sentiment</h3>
+          {(() => {
+            const { positive, neutral, negative } = content.sentimentSummary;
+            const total = positive + neutral + negative;
+            if (total === 0) return <p className="text-sm text-charcoal-muted">Not yet measured.</p>;
+            const pct = (n: number) => `${(n / total) * 100}%`;
+            return (
+              <>
+                <div className="flex h-3 rounded-full overflow-hidden bg-cream">
+                  <div className="bg-sage" style={{ width: pct(positive) }} />
+                  <div className="bg-wheat" style={{ width: pct(neutral) }} />
+                  <div className="bg-terracotta" style={{ width: pct(negative) }} />
+                </div>
+                <div className="flex gap-4 mt-2 text-xs text-charcoal-muted">
+                  <span><span className="inline-block w-2.5 h-2.5 rounded-full bg-sage mr-1.5" />{positive} hopeful</span>
+                  <span><span className="inline-block w-2.5 h-2.5 rounded-full bg-wheat mr-1.5" />{neutral} measured</span>
+                  <span><span className="inline-block w-2.5 h-2.5 rounded-full bg-terracotta mr-1.5" />{negative} concerned</span>
+                </div>
+              </>
+            );
+          })()}
+        </div>
+
+        <div className="mb-10">
           <h3 className="font-serif text-xl text-charcoal mb-3">Summary</h3>
           <p className="text-charcoal leading-relaxed">{content.rawSummary}</p>
         </div>

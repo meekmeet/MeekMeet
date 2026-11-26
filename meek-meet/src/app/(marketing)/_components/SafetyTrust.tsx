@@ -94,30 +94,30 @@ export default function SafetyTrust() {
         </motion.div>
 
         {/* Requirements grid */}
-        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        <div className="grid grid-cols-2 gap-3 sm:gap-8 max-w-5xl mx-auto">
           {requirements.map((req, index) => (
             <motion.div
               key={req.title}
               initial={{ opacity: 0, y: 30 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.3 + index * 0.15 }}
-              className="group p-8 bg-white/70 backdrop-blur-sm rounded-2xl border border-border-soft hover:border-terracotta/30 transition-all duration-500"
+              className="group p-4 sm:p-8 bg-white/70 backdrop-blur-sm rounded-2xl border border-border-soft hover:border-terracotta/30 transition-all duration-500"
             >
-              <div className="flex items-start gap-5">
-                <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-terracotta-pale/60 rounded-xl group-hover:bg-terracotta/10 transition-all duration-500">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-5">
+                <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-terracotta-pale/60 rounded-xl group-hover:bg-terracotta/10 transition-all duration-500">
                   <req.icon
-                    className="w-5 h-5 text-terracotta group-hover:text-terracotta-light transition-colors duration-500"
+                    className="w-4 h-4 sm:w-5 sm:h-5 text-terracotta group-hover:text-terracotta-light transition-colors duration-500"
                     strokeWidth={1.5}
                   />
                 </div>
                 <div>
-                  <h3 className="font-serif text-2xl text-charcoal mb-2 group-hover:text-terracotta transition-colors duration-500">
+                  <h3 className="font-serif text-lg sm:text-2xl text-charcoal mb-2 group-hover:text-terracotta transition-colors duration-500">
                     {req.title}
                   </h3>
-                  <p className="text-charcoal-muted leading-relaxed mb-3">
+                  <p className="text-charcoal-muted text-xs sm:text-base leading-relaxed mb-3">
                     {req.description}
                   </p>
-                  <p className="text-sm text-sage-dark italic border-l-2 border-sage/30 pl-3">
+                  <p className="hidden sm:block text-sm text-sage-dark italic border-l-2 border-sage/30 pl-3">
                     {req.why}
                   </p>
                 </div>

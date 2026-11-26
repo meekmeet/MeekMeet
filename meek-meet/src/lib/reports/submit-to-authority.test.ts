@@ -157,10 +157,28 @@ describe("submitReportToAuthority", () => {
     await submitReportToAuthority(reportId, authorityId);
     const sent = emailSendMock().mock.calls[0][0];
     expect(sent.to).toBe("council@cityofsydney.nsw.gov.au");
-    expect(sent.subject).toContain("Test &lt;Circle&gt;");
+    expect(sent.subject).toContain("Sydney & surrounds");
+    expect(sent.subject).toMatch(/ref MM-\d{8}-/);
     expect(sent.html).toContain("Test &lt;Circle&gt;");
     expect(sent.html).toContain("Sydney &amp; surrounds");
     expect(sent.html).not.toContain("<Circle>");
+  });
+
+  it("sends an enterprise-grade letter with reference, method, and a clear ask", async () => {
+    mockSupa.asUser(user);
+    mockSupa
+      .enqueue(report)
+      .enqueue({ role: "admin" })
+      .enqueue(authority)
+      .enqueue(null)
+      .enqueue(null);
+    await submitReportToAuthority(reportId, authorityId);
+    const sent = emailSendMock().mock.calls[0][0];
+    expect(sent.html).toContain("Reference MM-");
+    expect(sent.html).toContain("Method and data integrity");
+    expect(sent.html).toContain("What we ask");
+    expect(sent.html).toContain("96 557 008 393");
+    expect(sent.html).not.toContain("—");
   });
 
   it("throws when the email send fails", async () => {

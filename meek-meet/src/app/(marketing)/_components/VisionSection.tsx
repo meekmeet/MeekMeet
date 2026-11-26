@@ -84,30 +84,30 @@ export default function VisionSection() {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-2 gap-3 sm:gap-8">
           {pillars.map((pillar, index) => (
             <motion.div
               key={pillar.title}
               initial={{ opacity: 0, y: 30 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.2 + index * 0.15 }}
-              className="group p-8 bg-midnight-warm/60 backdrop-blur-sm rounded-2xl border border-wheat/10 hover:border-wheat/30 transition-all duration-500"
+              className="group p-4 sm:p-8 bg-midnight-warm/60 backdrop-blur-sm rounded-2xl border border-wheat/10 hover:border-wheat/30 transition-all duration-500"
             >
-              <div className="flex items-start gap-5">
-                <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-wheat/10 rounded-xl group-hover:bg-wheat/20 transition-all duration-500">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-5">
+                <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-wheat/10 rounded-xl group-hover:bg-wheat/20 transition-all duration-500">
                   <pillar.icon
-                    className="w-5 h-5 text-wheat-light group-hover:text-wheat transition-colors duration-500"
+                    className="w-4 h-4 sm:w-5 sm:h-5 text-wheat-light group-hover:text-wheat transition-colors duration-500"
                     strokeWidth={1.5}
                   />
                 </div>
                 <div>
-                  <h3 className="font-serif text-2xl text-cream mb-3 group-hover:text-wheat-light transition-colors duration-500">
+                  <h3 className="font-serif text-lg sm:text-2xl text-cream mb-2 sm:mb-3 group-hover:text-wheat-light transition-colors duration-500">
                     {pillar.title}
                   </h3>
-                  <p className="text-cream/60 leading-relaxed mb-4">
+                  <p className="text-cream/60 text-xs sm:text-base leading-relaxed mb-3 sm:mb-4">
                     {pillar.description}
                   </p>
-                  <p className="text-sm text-wheat/40 italic font-light border-l-2 border-wheat/20 pl-3">
+                  <p className="hidden sm:block text-sm text-wheat/40 italic font-light border-l-2 border-wheat/20 pl-3">
                     {pillar.verse}
                   </p>
                 </div>
