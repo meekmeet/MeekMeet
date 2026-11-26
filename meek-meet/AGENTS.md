@@ -46,7 +46,7 @@ Meek Meet is a faith-rooted, interfaith community organizing platform. The core 
 - **Online circles**: digital/hybrid meetings carry `join_url` plus `access_id`/`access_code` (meeting ID and passcode, set by the leader) into the handbook page and the join-details email — always gated to reserved members with sealed handbooks, never public.
 - **The PDF handbook**: `/dashboard/handbook/[meetingId]/pdf` renders the member's own Q&A (in order) + intentions via pdf-lib (`src/lib/handbook-pdf.ts`; standard fonts — sanitize member text, it throws on non-WinAnsi chars).
 - Sample renderer: `node meek-meet/scripts/send-sample-handbook.mjs [email]` (jiti; renders the real templates — both member variants + the leader pack).
-- Demo walkthrough: `node meek-meet/scripts/seed-demo-circle.mjs [email]` (idempotently seeds a demonstration circle + digital meeting + RSVP + drawn handbook for the given member and prints the handbook / leader-room URLs — how to eyeball both rooms end to end).
+- Demo walkthrough: `node meek-meet/scripts/seed-demo-circle.mjs [email]` (idempotently seeds a demonstration circle + digital meeting + RSVP + drawn handbook for the given member and prints the handbook / leader-room URLs — how to eyeball both rooms end to end). The seeded circle is ACTIVE and lists publicly on `/circles` — when the walkthrough is done, remove it with `node meek-meet/scripts/remove-demo-circle.mjs` (deletes the demo circle, its meetings, RSVPs, handbooks, seats, and reminder rows; safe to re-run).
 
 ## Design Language
 - **Aesthetic**: warm, reverent, editorial — parchment/paper feel rather than institutional navy
