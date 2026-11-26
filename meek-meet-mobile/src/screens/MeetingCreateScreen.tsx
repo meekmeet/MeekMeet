@@ -5,6 +5,17 @@ import { ArrowLeft, Calendar, MapPin, Clock, FileText, Send, CheckCircle2, BookO
 import { hapticSelect, hapticSuccess } from '@/lib/haptics'
 import { useToast } from '@/hooks/useToast'
 import { supabase } from '@/lib/supabase'
+import { isNewMoonDay, getNextNewMoon, getNearestNewMoon, formatNewMoon } from '@meekmeet/core/utils'
+
+// Circles gather on the new moon and no other night.
+const toLocalInput = (d: Date) => {
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  const h = String(d.getHours()).padStart(2, '0')
+  const min = String(d.getMinutes()).padStart(2, '0')
+  return `${y}-${m}-${day}T${h}:${min}`
+}
 
 type ReleaseMode = 'immediate' | 'day_before' | 'live_reveal'
 type MeetingType = 'in_person' | 'digital' | 'hybrid'
@@ -16,10 +27,8 @@ export default function MeetingCreateScreen() {
   const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
 
-  const now = new Date()
-  const defaultDate = new Date(now.getTime() + 24 * 60 * 60 * 1000)
-    .toISOString()
-    .slice(0, 16)
+  // Default the gathering to the next new moon.
+  const defaultDate = toLocalInput(getNextNewMoon())
 
   const [form, setForm] = useState({
     scheduledAt: defaultDate,
@@ -35,6 +44,14 @@ export default function MeetingCreateScreen() {
   const handleSubmit = async () => {
     if (!form.scheduledAt) {
       showToast('Please fill in date and time', 'error')
+      return
+    }
+    const scheduledDate = new Date(form.scheduledAt)
+    if (!isNewMoonDay(scheduledDate)) {
+      showToast(
+        `Circles gather on the new moon. The nearest is ${formatNewMoon(getNearestNewMoon(scheduledDate))}.`,
+        'error',
+      )
       return
     }
     if (form.meetingType !== 'digital' && !form.locationName) {

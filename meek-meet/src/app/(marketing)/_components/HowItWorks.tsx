@@ -25,17 +25,17 @@ const steps = [
   {
     number: "03",
     icon: Calendar,
-    title: "The New Moon Whispers",
+    title: "The New Moon Sets the Night",
     description:
-      "Meek Meet calculates the next new moon for that place. The date arrives like a gentle promise. The community prepares their hearts.",
+      "Each gathering opens on the new moon, and the weekday it lands on sets the theme of the night. Four days before, every reserved member receives the summons: their questions, drawn never to repeat.",
     verse: "He made the moon to mark the seasons. — Psalm 104:19",
   },
   {
     number: "04",
     icon: Users,
-    title: "We Gather in the Dark",
+    title: "We Gather, Already Prepared",
     description:
-      "On the night of the new moon, when the sky is darkest, our small lights shine brightest. Stories are shared. Tears are welcomed. Hope is kindled.",
+      "Online or in person, the circle sits with what its members have written. No one is asked anything on the spot; each reads aloud what they already thought through, until everyone is heard.",
     verse: "The light shines in the darkness, and the darkness has not overcome it. — John 1:5",
   },
   {
@@ -43,7 +43,7 @@ const steps = [
     icon: BarChart3,
     title: "Voices Become Numbers",
     description:
-      "Through the Meek Meet app, participants share their concerns about community, housing, environment, and life. Every answer is a prayer counted.",
+      "Answers given in the handbooks join the community's growing body of knowledge. Every answer is anonymised, counted, and weighed. Every answer is a prayer counted.",
     verse: "You number my wanderings; put my tears into Your bottle. — Psalm 56:8",
   },
   {
@@ -51,7 +51,7 @@ const steps = [
     icon: Landmark,
     title: "Gentleness Moves Mountains",
     description:
-      "The data becomes a story too loud to ignore. Reports will reach councils, leaders, and decision-makers. The meek do not shout — they prove.",
+      "The data becomes a story too loud to ignore. Reports reach councils, members, and decision-makers. The meek do not shout — they prove.",
     verse: "Truly I tell you, if you have faith as small as a mustard seed, you can say to this mountain, 'Move.' — Matthew 17:20",
   },
 ];

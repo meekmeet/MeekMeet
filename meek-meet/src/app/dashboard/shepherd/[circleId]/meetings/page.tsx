@@ -3,6 +3,7 @@
 import { useState, useTransition, useEffect, useCallback } from "react";
 import { createMeeting, cancelMeeting, deleteMeeting } from "../actions";
 import { createClient } from "@/lib/supabase/client";
+import { getNextNewMoon, formatNewMoon } from "@meekmeet/core/utils";
 import Link from "next/link";
 import { Plus, Trash2, X, Loader2, Calendar, MapPin, Clock, Video, BookOpen } from "lucide-react";
 
@@ -38,6 +39,24 @@ export default function MeetingsPage({ params }: Props) {
   const [joinUrl, setJoinUrl] = useState("");
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [moonHint, setMoonHint] = useState<string | null>(null);
+
+  // Circles gather on the new moon. Opening the form offers the next one —
+  // the leader still picks the hour and the room.
+  const toggleForm = () => {
+    setShowForm((open) => {
+      const next = !open;
+      if (next) {
+        const nm = getNextNewMoon();
+        const y = nm.getFullYear();
+        const m = String(nm.getMonth() + 1).padStart(2, "0");
+        const d = String(nm.getDate()).padStart(2, "0");
+        setDate((current) => current || `${y}-${m}-${d}`);
+        setMoonHint(formatNewMoon(nm));
+      }
+      return next;
+    });
+  };
 
   const supabase = createClient();
 
@@ -172,7 +191,7 @@ export default function MeetingsPage({ params }: Props) {
       <div className="flex items-center justify-between mb-6">
         <h2 className="font-serif text-2xl text-charcoal">Scheduled Meetings</h2>
         <button
-          onClick={() => setShowForm(!showForm)}
+          onClick={toggleForm}
           className="px-5 py-2.5 bg-midnight text-cream rounded-full hover:bg-midnight-soft transition-all text-sm font-medium flex items-center gap-2"
         >
           {showForm ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
@@ -198,6 +217,12 @@ export default function MeetingsPage({ params }: Props) {
                 onChange={(e) => setDate(e.target.value)}
                 className="w-full px-4 py-3 bg-cream border border-border-soft rounded-xl focus:border-terracotta focus:outline-none text-sm"
               />
+              {moonHint && (
+                <p className="text-xs text-charcoal-muted mt-1.5">
+                  Circles gather on the new moon. The next one rises on {moonHint} — the
+                  night belongs to the circle; pick any hour that suits it.
+                </p>
+              )}
             </div>
             <div>
               <label className="text-sm text-charcoal-light font-medium mb-1.5 block">Time</label>

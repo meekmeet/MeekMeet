@@ -8,6 +8,7 @@ import {
   assertOptionalString,
   isValidUrl,
 } from "@/lib/validation";
+import { isNewMoonDay, getNearestNewMoon, formatNewMoon } from "@meekmeet/core/utils";
 
 async function verifyShepherd(circleId: string) {
   if (!isValidUuid(circleId)) throw new Error("Invalid circle ID");
@@ -56,6 +57,16 @@ export async function createMeeting(
   const scheduledDate = new Date(safeScheduledAt);
   if (isNaN(scheduledDate.getTime())) {
     throw new Error("Invalid scheduled date");
+  }
+
+  // Circles gather on the new moon and no other night. The ephemeris is
+  // accurate to within a day or two, so the date must fall within 1.5 days
+  // of the nearest computed new moon.
+  if (!isNewMoonDay(scheduledDate)) {
+    const nearest = getNearestNewMoon(scheduledDate);
+    throw new Error(
+      `Circles gather on the new moon. The nearest new moon is ${formatNewMoon(nearest)} — choose that night (or the evening beside it).`
+    );
   }
 
   const safeDuration =

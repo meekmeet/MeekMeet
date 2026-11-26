@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { MockSupabaseClient, makeAuthUser } from "@/test/mock-supabase";
+import { getNextNewMoon } from "@meekmeet/core/utils";
 
 vi.mock("@/lib/supabase/server", () => ({ createClient: vi.fn() }));
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
@@ -37,7 +38,9 @@ beforeEach(() => {
 // ============ MEETINGS ============
 
 describe("createMeeting", () => {
-  const future = new Date(Date.now() + 7 * 24 * 3600 * 1000).toISOString();
+  // Circles gather on the new moon — every happy-path date below is the
+  // upcoming new moon.
+  const future = getNextNewMoon().toISOString();
 
   it("throws for non-shepherds", async () => {
     asNonShepherd();
@@ -50,6 +53,33 @@ describe("createMeeting", () => {
     asShepherd();
     await expect(createMeeting(circleId, "not-a-date", 120, "", "", "")).rejects.toThrow(
       "Invalid scheduled date"
+    );
+  });
+
+  it("rejects a date that is not the new moon", async () => {
+    asShepherd();
+    const fullMoon = new Date(
+      getNextNewMoon().getTime() + Math.round(14.77 * 24 * 3600 * 1000)
+    ).toISOString();
+    await expect(createMeeting(circleId, fullMoon, 120, "", "", "")).rejects.toThrow(
+      /Circles gather on the new moon/
+    );
+  });
+
+  it("accepts the evening beside the new moon (tolerance)", async () => {
+    asShepherd();
+    mockSupa.enqueue(null);
+    const eve = new Date(getNextNewMoon().getTime() - 20 * 3600 * 1000).toISOString();
+    await expect(createMeeting(circleId, eve, 60, "", "", "")).resolves.toBeUndefined();
+  });
+
+  it("names the nearest new moon in the rejection message", async () => {
+    asShepherd();
+    const away = new Date(
+      getNextNewMoon().getTime() + 7 * 24 * 3600 * 1000
+    ).toISOString();
+    await expect(createMeeting(circleId, away, 60, "", "", "")).rejects.toThrow(
+      /nearest new moon is/
     );
   });
 
@@ -247,7 +277,7 @@ describe("updateCircle", () => {
   });
 
   it("falls back to the circle's standing room for digital meetings", async () => {
-    const future = new Date(Date.now() + 7 * 24 * 3600 * 1000).toISOString();
+    const future = getNextNewMoon().toISOString();
     asShepherd();
     // shepherd check → standing-room lookup → meeting insert
     mockSupa
@@ -261,7 +291,7 @@ describe("updateCircle", () => {
   });
 
   it("uses an explicit join URL over the standing room", async () => {
-    const future = new Date(Date.now() + 7 * 24 * 3600 * 1000).toISOString();
+    const future = getNextNewMoon().toISOString();
     asShepherd();
     mockSupa.enqueue({ id: "shep-1", role: "lead" }).enqueue(null);
     await expect(
@@ -272,7 +302,7 @@ describe("updateCircle", () => {
   });
 
   it("does not fall back for in-person meetings", async () => {
-    const future = new Date(Date.now() + 7 * 24 * 3600 * 1000).toISOString();
+    const future = getNextNewMoon().toISOString();
     asShepherd();
     mockSupa.enqueue({ id: "shep-1", role: "lead" }).enqueue(null);
     await expect(createMeeting(circleId, future, 60, "Hall", "1 St", "")).resolves.toBeUndefined();

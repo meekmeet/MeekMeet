@@ -50,10 +50,9 @@ export default function LeaderCTA() {
               quiet hopes and the change they long for.
             </p>
             <p className="text-cream/60 leading-relaxed mb-8">
-              You will choose the gathering place, curate the questions, welcome
-              the conversation, and receive the stories that prove your community&rsquo;s
-              needs are real and beautiful. You do not need to be loud.
-              You need only be faithful.
+              You will call the gathering on the new moon, choose the hour and the
+              room, welcome the circle, and read aloud what each member wrote in
+              their handbook. You do not need to be loud. You need only be faithful.
             </p>
 
             <div className="p-6 bg-wheat/5 rounded-2xl border border-wheat/10 mb-8">

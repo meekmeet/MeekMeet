@@ -36,6 +36,35 @@ export function getPreviousNewMoon(from: Date = new Date()): Date {
   return new Date(next.getTime() - Math.round(SYNODIC_MS));
 }
 
+/**
+ * The new moon closest to the given instant (either side).
+ */
+export function getNearestNewMoon(from: Date = new Date()): Date {
+  const next = getNextNewMoon(from);
+  const prev = new Date(next.getTime() - Math.round(SYNODIC_MS));
+  return from.getTime() - prev.getTime() <= next.getTime() - from.getTime()
+    ? prev
+    : next;
+}
+
+/**
+ * Distance from the given instant to the nearest new moon, in days.
+ * 0 means the instant IS the new moon.
+ */
+export function daysFromNearestNewMoon(from: Date = new Date()): number {
+  return Math.abs(from.getTime() - getNearestNewMoon(from).getTime()) / (24 * 60 * 60 * 1000);
+}
+
+/**
+ * Gatherings open only on the new moon. Because the simplified ephemeris is
+ * accurate to within a day or two, a meeting date must fall within
+ * `toleranceDays` of the nearest computed new moon. Default: 1.5 days, so a
+ * leader may sit the gathering on the new moon or either adjacent evening.
+ */
+export function isNewMoonDay(from: Date = new Date(), toleranceDays: number = 1.5): boolean {
+  return daysFromNearestNewMoon(from) <= toleranceDays;
+}
+
 export function formatNewMoon(date: Date): string {
   return date.toLocaleDateString("en-AU", {
     weekday: "long",

@@ -2,6 +2,9 @@ import { describe, it, expect } from "vitest";
 import {
   getNextNewMoon,
   getPreviousNewMoon,
+  getNearestNewMoon,
+  daysFromNearestNewMoon,
+  isNewMoonDay,
   formatNewMoon,
 } from "./moon";
 
@@ -96,6 +99,59 @@ describe("getPreviousNewMoon", () => {
   it("returns a date strictly before the given date", () => {
     const from = new Date("2026-05-05T00:00:00Z");
     expect(getPreviousNewMoon(from).getTime()).toBeLessThan(from.getTime());
+  });
+});
+
+describe("getNearestNewMoon", () => {
+  it("returns the next new moon when it is closer", () => {
+    const next = getNextNewMoon(new Date("2026-06-15T12:00:00Z"));
+    const probe = new Date(next.getTime() - 24 * 3600 * 1000);
+    expect(getNearestNewMoon(probe).getTime()).toBe(next.getTime());
+  });
+
+  it("returns the previous new moon when it is closer", () => {
+    const next = getNextNewMoon(new Date("2026-06-15T12:00:00Z"));
+    const prev = new Date(next.getTime() - Math.round(SYNODIC_MONTH * 24 * 3600 * 1000));
+    const probe = new Date(prev.getTime() + 24 * 3600 * 1000);
+    expect(getNearestNewMoon(probe).getTime()).toBe(prev.getTime());
+  });
+
+  it("is close to zero at a known new moon instant", () => {
+    expect(daysFromNearestNewMoon(new Date("2026-02-17T12:01:00Z"))).toBeLessThan(2);
+  });
+});
+
+describe("daysFromNearestNewMoon", () => {
+  it("is ~14.77 mid-cycle (full moon)", () => {
+    const full = new Date("2026-02-17T12:01:00Z").getTime() + Math.round((SYNODIC_MONTH / 2) * 24 * 3600 * 1000);
+    const days = daysFromNearestNewMoon(new Date(full));
+    expect(days).toBeGreaterThan(13);
+    expect(days).toBeLessThan(16);
+  });
+});
+
+describe("isNewMoonDay", () => {
+  it("accepts a gathering on the new moon itself", () => {
+    const next = getNextNewMoon(new Date("2026-06-15T12:00:00Z"));
+    expect(isNewMoonDay(next)).toBe(true);
+  });
+
+  it("accepts the evening before or after (within tolerance)", () => {
+    const next = getNextNewMoon(new Date("2026-06-15T12:00:00Z"));
+    expect(isNewMoonDay(new Date(next.getTime() - 20 * 3600 * 1000))).toBe(true);
+    expect(isNewMoonDay(new Date(next.getTime() + 20 * 3600 * 1000))).toBe(true);
+  });
+
+  it("rejects a date a week away from any new moon", () => {
+    const next = getNextNewMoon(new Date("2026-06-15T12:00:00Z"));
+    expect(isNewMoonDay(new Date(next.getTime() + 7 * 24 * 3600 * 1000))).toBe(false);
+  });
+
+  it("respects a custom tolerance", () => {
+    const next = getNextNewMoon(new Date("2026-06-15T12:00:00Z"));
+    const threeDaysOut = new Date(next.getTime() + 3 * 24 * 3600 * 1000);
+    expect(isNewMoonDay(threeDaysOut, 1.5)).toBe(false);
+    expect(isNewMoonDay(threeDaysOut, 3.5)).toBe(true);
   });
 });
 

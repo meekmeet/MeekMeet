@@ -33,8 +33,8 @@ export default function MediaCTA() {
             </h2>
             <p className="text-cream/60 max-w-xl mx-auto mb-10 leading-relaxed">
               Your experience — of faith, of struggle, of hope — is data the world
-              has never counted. Gather with us under the next new moon, or shepherd
-              a circle of your own.
+              has never counted. Reserve your seat in a circle, or lead one of
+              your own and hold the room while your neighbours are heard.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
@@ -49,7 +49,7 @@ export default function MediaCTA() {
                 className="inline-flex items-center gap-2 px-8 py-3 border-2 border-wheat/30 text-wheat font-medium tracking-wide text-sm rounded-full hover:border-wheat hover:text-wheat-light transition-all"
               >
                 <UserPlus className="w-4 h-4" strokeWidth={1.5} />
-                Become a Shepherd
+                Become a Leader
               </Link>
             </div>
           </div>

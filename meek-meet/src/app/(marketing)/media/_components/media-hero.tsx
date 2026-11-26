@@ -96,7 +96,7 @@ export default function MediaHero() {
             href="/shepherd/apply"
             className="px-8 py-3 border-2 border-midnight/15 text-charcoal rounded-full hover:border-terracotta hover:text-terracotta transition-all text-sm tracking-wide font-medium"
           >
-            Become a Shepherd
+            Become a Leader
           </Link>
         </motion.div>
       </div>

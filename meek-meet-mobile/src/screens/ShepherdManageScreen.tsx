@@ -29,6 +29,7 @@ import {
   Video,
 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { isNewMoonDay, getNearestNewMoon, formatNewMoon } from '@meekmeet/core/utils'
 import { useAuth } from '@/hooks/useAuth'
 import { useToast } from '@/hooks/useToast'
 import { scheduleMeetingNotifications, cancelMeetingNotifications } from '@/lib/notifications'
@@ -467,7 +468,15 @@ function MeetingsTab({ circleId, circleName }: { circleId: string; circleName: s
 
   const add = async () => {
     if (!date || !time) return
-    const scheduled = new Date(`${date}T${time}`).toISOString()
+    const scheduledDate = new Date(`${date}T${time}`)
+    // Circles gather on the new moon and no other night.
+    if (!isNewMoonDay(scheduledDate)) {
+      window.alert(
+        `Circles gather on the new moon. The nearest is ${formatNewMoon(getNearestNewMoon(scheduledDate))}.`,
+      )
+      return
+    }
+    const scheduled = scheduledDate.toISOString()
     const { data } = await supabase
       .from('meetings')
       .insert({

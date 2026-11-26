@@ -62,24 +62,24 @@ export default function MediaBeliefs() {
           </div>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-8">
           {beliefs.map((belief, index) => (
             <motion.div
               key={belief.title}
               initial={{ opacity: 0, y: 30 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.15 + index * 0.1 }}
-              className={`bg-white rounded-2xl border border-border-soft p-8 card-warm ${
-                index === beliefs.length - 1 ? "md:col-span-2 lg:col-span-1" : ""
+              className={`bg-white rounded-2xl border border-border-soft p-4 sm:p-8 card-warm ${
+                index === beliefs.length - 1 ? "col-span-2 lg:col-span-1" : ""
               }`}
             >
-              <div className="w-12 h-12 flex items-center justify-center bg-terracotta-pale rounded-xl mb-5">
-                <belief.icon className="w-5 h-5 text-terracotta" strokeWidth={1.5} />
+              <div className="w-9 h-9 sm:w-12 sm:h-12 flex items-center justify-center bg-terracotta-pale rounded-lg sm:rounded-xl mb-3 sm:mb-5">
+                <belief.icon className="w-4 h-4 sm:w-5 sm:h-5 text-terracotta" strokeWidth={1.5} />
               </div>
-              <h3 className="font-serif text-2xl text-charcoal mb-3">
+              <h3 className="font-serif text-lg sm:text-2xl text-charcoal mb-2 sm:mb-3">
                 {belief.title}
               </h3>
-              <p className="text-charcoal-muted leading-relaxed">
+              <p className="text-charcoal-muted text-xs sm:text-base leading-relaxed">
                 {belief.description}
               </p>
             </motion.div>
